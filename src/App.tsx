@@ -7,6 +7,81 @@ import './App.css'
 const navItems = ['WORK', 'ABOUT', 'CONTACT']
 const titleLead = 'Create with'
 const titleAccent = 'focus'
+type AboutItem = {
+  name: string
+  date: string
+  description?: string
+}
+type AboutCardData = {
+  title: string
+  items: AboutItem[]
+  subTitle?: string
+  subItems?: AboutItem[]
+}
+
+const aboutCards: AboutCardData[] = [
+  {
+    title: 'WORK HISTORY',
+    items: [
+      {
+        name: '대한무역투자진흥공사(KOTRA)',
+        date: '2024.03~2025.03',
+        description: '그래픽 디자인 · 공사 행정 업무',
+      },
+      {
+        name: '서울특별시미디어재단 TBS',
+        date: '2021.06~2023.01',
+        description: '영상 촬영편집 · 유튜브 업로드',
+      },
+    ],
+  },
+  {
+    title: 'CERTIFICATION',
+    items: [
+      { name: '한국사능력검정시험1급', date: '2023.08' },
+      { name: '컴퓨터그래픽스운용기능사', date: '2022.04' },
+      { name: 'GTQ(그래픽기술자격) 1급', date: '2021.08' },
+      { name: '컴퓨터활용능력 2급', date: '2020.08' },
+    ],
+  },
+  {
+    title: 'EDUCATION',
+    items: [
+      {
+        name: '이젠아카데미DX교육센터 수료',
+        date: '2025.12~2026.06',
+        description: 'UXUI디자인&웹기획 프론트엔드',
+      },
+      {
+        name: '중앙대학교(안성) 졸업',
+        date: '2016.03~2021.08',
+        description: '사진학과',
+      },
+    ],
+    subTitle: 'EXPERIENCE',
+    subItems: [{ name: '호주 워킹홀리데이', date: '2025.03~2025.12' }],
+  },
+]
+const toolLogos = [
+  { label: 'ChatGPT', src: '/assets/about/chatgpt.png', className: 'about-logo__img--xl' },
+  { label: 'Figma', src: '/assets/about/figma.svg', className: 'about-logo__img--figma' },
+  { label: 'Claude', src: '/assets/about/claude.svg', className: 'about-logo__img--lg' },
+  { label: 'React', src: '/assets/about/react.svg', className: 'about-logo__img--wide' },
+  { label: 'Notion', src: '/assets/about/notion.svg' },
+  { label: 'GitHub', src: '/assets/about/github.svg', className: 'about-logo__img--lg' },
+  { label: 'Framer', src: '/assets/about/framer.svg', className: 'about-logo__img--figma' },
+  { label: 'Motion', src: '/assets/about/motion.svg', className: 'about-logo__img--motion', tone: 'yellow' },
+  { label: 'CSS', src: '/assets/about/css.svg', className: 'about-logo__img--css' },
+  { label: 'Photoshop', src: '/assets/about/photoshop-bg.svg', className: 'about-logo__img--ps', overlay: '/assets/about/photoshop-ps.svg' },
+  { label: 'Illustrator', src: '/assets/about/illustrator.svg', className: 'about-logo__img--ps' },
+  { label: 'Perplexity', src: '/assets/about/perplexity.svg', className: 'about-logo__img--lg' },
+  { label: 'Gemini', src: '/assets/about/gemini.svg', className: 'about-logo__img--lg' },
+  { label: 'VS Code', src: '/assets/about/vscode.svg', className: 'about-logo__img--lg' },
+  { label: 'Gemini mark', src: '/assets/about/gemini-circle.svg', full: true },
+  { label: 'Midjourney', src: '/assets/about/midjourney.svg', className: 'about-logo__img--wide' },
+  { label: 'JavaScript', src: '/assets/about/javascript.svg', className: 'about-logo__img--xl' },
+  { label: 'Vercel', src: '/assets/about/vercel.svg' },
+]
 const gunitDescription = [
   '에어소프트 입문자의 정보 탐색 장벽을 낮추고, 팬덤형 커뮤니티를 통해',
   '지속적인 참여를 유도하는 AI 챗봇 기반 커뮤니티 앱 개발 팀 프로젝트',
@@ -71,6 +146,7 @@ const projects = [
 ]
 
 type Project = (typeof projects)[number]
+type ToolLogo = (typeof toolLogos)[number]
 
 function WorkCardMeta({ project }: { project: Project }) {
   const metaRef = useRef<HTMLParagraphElement>(null)
@@ -86,6 +162,180 @@ function WorkCardMeta({ project }: { project: Project }) {
         </span>
       ))}
     </p>
+  )
+}
+
+function AboutCard({ card }: { card: AboutCardData }) {
+  return (
+    <article className="about-card">
+      <h3>{card.title}</h3>
+      <div className="about-card__list">
+        {card.items.map((item) => (
+          <div className="about-card__item" key={`${card.title}-${item.name}`}>
+            <div className="about-card__row">
+              <strong>{item.name}</strong>
+              <span>{item.date}</span>
+            </div>
+            {item.description ? <p>{item.description}</p> : null}
+          </div>
+        ))}
+      </div>
+      {card.subTitle && card.subItems ? (
+        <div className="about-card__group">
+          <h3>{card.subTitle}</h3>
+          <div className="about-card__list">
+            {card.subItems.map((item) => (
+              <div className="about-card__item" key={`${card.subTitle}-${item.name}`}>
+                <div className="about-card__row">
+                  <strong>{item.name}</strong>
+                  <span>{item.date}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : null}
+    </article>
+  )
+}
+
+function ToolLogoItem({ logo }: { logo: ToolLogo }) {
+  return (
+    <li className={`about-logo${logo.tone ? ` about-logo--${logo.tone}` : ''}`}>
+      {logo.full ? (
+        <img className="about-logo__full" src={logo.src} alt={logo.label} loading="lazy" decoding="async" />
+      ) : (
+        <span className="about-logo__inner">
+          <img
+            className={`about-logo__img${logo.className ? ` ${logo.className}` : ''}`}
+            src={logo.src}
+            alt={logo.label}
+            loading="lazy"
+            decoding="async"
+          />
+          {logo.overlay ? (
+            <img
+              className="about-logo__overlay"
+              src={logo.overlay}
+              alt=""
+              aria-hidden="true"
+              loading="lazy"
+              decoding="async"
+            />
+          ) : null}
+        </span>
+      )}
+    </li>
+  )
+}
+
+function AboutSection() {
+  const introTextRef = useRef<HTMLDivElement>(null)
+  const marqueeLogos = [...toolLogos, ...toolLogos]
+
+  useEffect(() => {
+    const textElement = introTextRef.current
+
+    if (!textElement) {
+      return
+    }
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      textElement.style.setProperty('--about-text-progress', '1')
+      ;[0, 1, 2].forEach((lineIndex) => {
+        textElement.style.setProperty(`--about-line-${lineIndex}`, '1')
+      })
+      return
+    }
+
+    let animationFrame = 0
+
+    const syncTextProgress = () => {
+      const rect = textElement.getBoundingClientRect()
+      const viewportHeight = window.innerHeight || document.documentElement.clientHeight
+      const start = viewportHeight * 0.82
+      const end = viewportHeight * 0.34
+      const rawProgress = (start - rect.top) / Math.max(start - end, 1)
+      const progress = Math.min(Math.max(rawProgress * 0.72, 0), 1)
+
+      textElement.style.setProperty('--about-text-progress', progress.toFixed(4))
+      ;[0, 1, 2].forEach((lineIndex) => {
+        const lineProgress = Math.min(Math.max((progress - lineIndex * 0.24) / 0.42, 0), 1)
+        textElement.style.setProperty(`--about-line-${lineIndex}`, lineProgress.toFixed(4))
+      })
+      animationFrame = 0
+    }
+
+    const requestSync = () => {
+      if (!animationFrame) {
+        animationFrame = window.requestAnimationFrame(syncTextProgress)
+      }
+    }
+
+    syncTextProgress()
+    window.addEventListener('scroll', requestSync, { passive: true })
+    window.addEventListener('resize', requestSync)
+
+    return () => {
+      window.removeEventListener('scroll', requestSync)
+      window.removeEventListener('resize', requestSync)
+
+      if (animationFrame) {
+        window.cancelAnimationFrame(animationFrame)
+      }
+    }
+  }, [])
+
+  return (
+    <section className="about-section" id="about" aria-labelledby="about-title">
+      <div className="about-section__header">
+        <h2 id="about-title">ABOUT</h2>
+      </div>
+
+      <div className="about-intro">
+        <div className="about-person" aria-hidden="true">
+          <span className="about-person__shape about-person__shape--pill" />
+          <span className="about-person__shape about-person__shape--outline" />
+          <span className="about-person__shape about-person__shape--bar" />
+          <span className="about-person__shape about-person__shape--base" />
+          <img src="/assets/about/profile.png" alt="" width={374} height={407} decoding="async" />
+        </div>
+
+        <div className="about-intro__copy">
+          <div ref={introTextRef} className="about-intro__text">
+            <span className="about-intro__line" style={{ '--line-index': 0 } as CSSProperties}>
+              AI와 UX 빌드 프로세스를 기반으로
+            </span>
+            <span className="about-intro__line" style={{ '--line-index': 1 } as CSSProperties}>
+              디자인과 프론트엔드 개발을 넘나들며
+            </span>
+            <span className="about-intro__line" style={{ '--line-index': 2 } as CSSProperties}>
+              몰입감 있는 디지털 경험을 만듭니다.
+            </span>
+            <p>
+              AI와 UX 빌드 프로세스를 기반으로
+              <br />
+              디자인과 프론트엔드 개발을 넘나들며{' '}
+            </p>
+            <p>몰입감 있는 디지털 경험을 만듭니다.</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="about-card-grid">
+        {aboutCards.map((card) => (
+          <AboutCard card={card} key={card.title} />
+        ))}
+      </div>
+
+      <div className="about-logo-marquee" aria-label="Tools and skills">
+        <ul className="about-logo-track">
+          {marqueeLogos.map((logo, index) => (
+            <ToolLogoItem logo={logo} key={`${logo.label}-${index}`} />
+          ))}
+        </ul>
+      </div>
+    </section>
   )
 }
 
@@ -115,8 +365,10 @@ function App() {
       }
 
       event.preventDefault()
+      const isHeaderNavigation = Boolean(anchor.closest('.site-header__nav'))
       target.scrollIntoView({
-        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+        behavior:
+          isHeaderNavigation || window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
         block: 'start',
       })
       window.history.pushState(null, '', hash)
@@ -320,6 +572,8 @@ function App() {
             ))}
           </div>
         </section>
+
+        <AboutSection />
       </main>
     </>
   )

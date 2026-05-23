@@ -1,0 +1,13 @@
+<svg preserveAspectRatio="none" width="100%" height="100%" overflow="visible" style="display: block;" viewBox="0 0 114 95" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Midjourney_idVDcXZyEx_1 1" clip-path="url(#clip0_0_28)">
+<path id="waves" d="M1.50604 93.5322C4.77039 93.5322 9.66691 86.6824 15.3795 85.7039C18.6439 85.7039 21.0921 92.5536 29.253 93.5322C34.9656 93.5322 37.4139 86.6824 43.1265 86.6824C48.8391 86.6824 51.2874 93.5322 57 93.5322C62.7126 93.5322 65.1609 86.6824 70.8735 86.6824C76.5861 86.6824 79.0344 93.5322 84.747 93.5322C90.4596 93.5322 92.9079 86.6824 98.6205 86.6824C104.333 86.6824 106.781 93.5322 112.494 93.5322" stroke="var(--stroke-0, white)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="hull" d="M12.6701 86.715L8.93244 79.5717L105.231 73.3743C97.6575 80.2567 87.9297 85.8343 78.0877 90.4009" stroke="var(--stroke-0, white)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="front_sail" d="M47.2722 13.0309C63.6593 18.0378 86.575 42.224 94.3768 68.2206C90.1005 66.5408 86.9015 64.8283 80.895 66.3614C75.0845 45.2412 64.6875 25.067 47.2722 13.0309Z" stroke="var(--stroke-0, white)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="rear_sail" d="M16.7995 1.46781C37.7893 10.4378 66.5809 35.4069 71.8691 68.6609C47.664 58.9082 29.2367 64.1107 16.4078 72.0206C35.9776 47.1657 27.1965 18.9021 16.7995 1.46781Z" stroke="var(--stroke-0, white)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<defs>
+<clipPath id="clip0_0_28">
+<rect width="114" height="95" fill="white"/>
+</clipPath>
+</defs>
+</svg>
