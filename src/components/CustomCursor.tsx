@@ -8,18 +8,19 @@ function canUseCustomCursor() {
 function CustomCursor() {
   const [isEnabled, setIsEnabled] = useState(false)
   const [hasMoved, setHasMoved] = useState(false)
+  const [coordinates, setCoordinates] = useState({ x: 0, y: 0 })
 
   const mouseX = useMotionValue(0)
   const mouseY = useMotionValue(0)
   const smoothX = useSpring(mouseX, {
-    stiffness: 180,
-    damping: 28,
-    mass: 0.45,
+    stiffness: 620,
+    damping: 42,
+    mass: 0.18,
   })
   const smoothY = useSpring(mouseY, {
-    stiffness: 180,
-    damping: 28,
-    mass: 0.45,
+    stiffness: 620,
+    damping: 42,
+    mass: 0.18,
   })
 
   useEffect(() => {
@@ -46,6 +47,10 @@ function CustomCursor() {
     const moveCursor = (event: PointerEvent) => {
       mouseX.set(event.clientX)
       mouseY.set(event.clientY)
+      setCoordinates({
+        x: Math.round(event.clientX),
+        y: Math.round(event.clientY),
+      })
       setHasMoved(true)
     }
 
@@ -81,6 +86,9 @@ function CustomCursor() {
       <motion.div className="custom-cursor__dot-wrap" style={{ x: smoothX, y: smoothY }}>
         <span className="custom-cursor__dot" />
       </motion.div>
+      <span className="custom-cursor__coordinates">
+        X:{coordinates.x.toString().padStart(4, '0')} Y:{coordinates.y.toString().padStart(4, '0')}
+      </span>
     </div>
   )
 }
