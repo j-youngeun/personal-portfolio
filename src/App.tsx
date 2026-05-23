@@ -1,17 +1,34 @@
-import { useEffect, useRef, type CSSProperties, type PointerEvent } from 'react'
+import { useEffect, useRef, useState, type CSSProperties, type PointerEvent } from 'react'
 import CustomCursor from './components/CustomCursor'
+import CountUpNumber from './components/CountUpNumber'
 import './App.css'
 
 const navItems = ['WORK', 'ABOUT', 'CONTACT']
 const titleLead = 'Create with'
+const titleAccent = 'focus'
+const gunitDescription = [
+  '에어소프트 입문자의 정보 탐색 장벽을 낮추고, 팬덤형 커뮤니티를 통해',
+  '지속적인 참여를 유도하는 AI 챗봇 기반 커뮤니티 앱 개발 팀 프로젝트',
+]
+const projectDescriptions: Record<string, string[]> = {
+  Gunit: gunitDescription,
+  MMCA: [
+    '국립현대미술관 웹사이트의 정보 구조를 개선하여',
+    '해외 방문자가 정보를 직관적으로 탐색할 수 있도록 진행한 영문 웹사이트 리뉴얼 팀 프로젝트',
+  ],
+  MonoTrip: [
+    '1인 여행자를 위한 맞춤형 여행 경험을 제공하는 서비스로',
+    '안전하고 효율적인 여행 계획을 지원하는 앱 개발 개인 프로젝트',
+  ],
+}
 const projects = [
   {
     badge: 'Team Project',
     title: 'Gunit',
     meta: [
-      { text: 'Planning 20%' },
-      { text: 'Design 30%' },
-      { text: 'Frontend 50%', accent: true },
+      { label: 'Planning', value: 20, accent: false },
+      { label: 'Design', value: 30, accent: false },
+      { label: 'Frontend', value: 50, accent: true },
     ],
     description: [
       '에어소프트 입문자의 정보 탐색 장벽을 낮추고, 팬덤형 커뮤니티를 통해',
@@ -24,9 +41,9 @@ const projects = [
     badge: 'Team Project',
     title: 'MMCA',
     meta: [
-      { text: 'Planning 20%' },
-      { text: 'Design 70%', accent: true },
-      { text: 'Frontend 10%' },
+      { label: 'Planning', value: 20, accent: false },
+      { label: 'Design', value: 70, accent: true },
+      { label: 'Frontend', value: 10, accent: false },
     ],
     description: [
       '국립현대미술관 웹사이트의 정보 구조를 개선하여',
@@ -39,9 +56,9 @@ const projects = [
     badge: 'Personal Project',
     title: 'MonoTrip',
     meta: [
-      { text: 'Planning 100%' },
-      { text: 'Design 100%' },
-      { text: 'Frontend 100%' },
+      { label: 'Planning', value: 100, accent: false },
+      { label: 'Design', value: 100, accent: false },
+      { label: 'Frontend', value: 100, accent: false },
     ],
     description: [
       '1인 여행자를 위한 맞춤형 여행 경험을 제공하는 서비스로',
@@ -55,6 +72,7 @@ const projects = [
 function App() {
   const heroRef = useRef<HTMLElement>(null)
   const lensRef = useRef<HTMLImageElement>(null)
+  const [isHeaderVisible, setIsHeaderVisible] = useState(true)
 
   useEffect(() => {
     const handleAnchorClick = (event: MouseEvent) => {
@@ -133,6 +151,28 @@ function App() {
     }
   }, [])
 
+  useEffect(() => {
+    let previousScrollY = window.scrollY
+
+    const syncHeaderVisibility = () => {
+      const nextScrollY = window.scrollY
+      const scrollDelta = nextScrollY - previousScrollY
+
+      if (Math.abs(scrollDelta) < 6) {
+        return
+      }
+
+      setIsHeaderVisible(scrollDelta > 0)
+      previousScrollY = nextScrollY
+    }
+
+    window.addEventListener('scroll', syncHeaderVisibility, { passive: true })
+
+    return () => {
+      window.removeEventListener('scroll', syncHeaderVisibility)
+    }
+  }, [])
+
   const handleTitlePointerMove = (event: PointerEvent<HTMLElement>) => {
     const bounds = event.currentTarget.getBoundingClientRect()
     const x = event.clientX - bounds.left
@@ -146,7 +186,7 @@ function App() {
     <>
       <CustomCursor />
       <main className="portfolio-home" aria-label="Youngeun Jeong portfolio home">
-        <header className="site-header">
+        <header className={`site-header${isHeaderVisible ? '' : ' site-header--hidden'}`}>
           <a className="site-header__brand" href="#top" aria-label="Youngeun Jeong home">
             YOUNGEUN JEONG
           </a>
@@ -180,7 +220,18 @@ function App() {
                 ))}
               </span>
               <span className="sr-only">Create with</span>
-              <strong>focus</strong>
+              <strong aria-hidden="true">
+                {titleAccent.split('').map((letter, index) => (
+                  <span
+                    className="hero__title-letter"
+                    key={`${letter}-${index}`}
+                    style={{ '--letter-index': titleLead.length + index } as CSSProperties}
+                  >
+                    {letter}
+                  </span>
+                ))}
+              </strong>
+              <span className="sr-only"> focus</span>
             </span>
             <span className="hero__title hero__title--blur" aria-hidden="true">
               Create with <strong>focus</strong>
@@ -214,22 +265,22 @@ function App() {
                 <article
                   className={`work-card${isFeatured ? ' work-card--featured' : ''}`}
                   key={project.title}
+                  style={{ '--work-card-layer': index + 1 } as CSSProperties}
                 >
                   <div className="work-card__inner">
                     <div className="work-card__content">
                       <div className="work-card__text">
-                        <span className="work-card__badge">{project.badge}</span>
                         <h3>{project.title}</h3>
                         <p className="work-card__meta">
                           {project.meta.map((item, metaIndex) => (
-                            <span className={item.accent ? 'is-accent' : undefined} key={item.text}>
-                              {item.text}
+                            <span className={item.accent ? 'is-accent' : undefined} key={item.label}>
+                              {item.label} <CountUpNumber to={item.value} />%
                               {metaIndex < project.meta.length - 1 ? '  I  ' : ''}
                             </span>
                           ))}
                         </p>
                         <p className="work-card__description">
-                          {project.description.map((line) => (
+                          {(projectDescriptions[project.title] ?? project.description).map((line) => (
                             <span key={line}>{line}</span>
                           ))}
                         </p>

@@ -131,24 +131,4 @@ select {
     transform: translate(-50%, -50%);
   }
 
-  .custom-cursor__coordinates {
-    position: fixed;
-    top: 76px;
-    right: 56px;
-    min-width: 92px;
-    color: rgba(255, 255, 255, 0.54);
-    font-family: 'D2Coding', var(--mono);
-    font-size: 9px;
-    line-height: 110%;
-    letter-spacing: -0.04em;
-    text-align: right;
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.18);
-  }
-}
-
-@media (hover: hover) and (pointer: fine) and (max-width: 900px) {
-  .custom-cursor__coordinates {
-    top: 82px;
-    right: 24px;
-  }
 }
