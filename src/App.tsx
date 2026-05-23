@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type CSSProperties, type PointerEvent } from 'react'
 import CustomCursor from './components/CustomCursor'
 import CountUpNumber from './components/CountUpNumber'
+import { useWorkCardMetaInView } from './hooks/useWorkCardMetaInView'
 import './App.css'
 
 const navItems = ['WORK', 'ABOUT', 'CONTACT']
@@ -68,6 +69,25 @@ const projects = [
     imageAlt: 'MonoTrip project visual',
   },
 ]
+
+type Project = (typeof projects)[number]
+
+function WorkCardMeta({ project }: { project: Project }) {
+  const metaRef = useRef<HTMLParagraphElement>(null)
+  const metaInView = useWorkCardMetaInView(metaRef)
+
+  return (
+    <p ref={metaRef} className="work-card__meta">
+      {project.meta.map((item, metaIndex) => (
+        <span className={item.accent ? 'is-accent' : undefined} key={item.label}>
+          {item.label}{' '}
+          <CountUpNumber start={metaInView} to={item.value} delay={metaIndex * 0.14} duration={1.85} />%
+          {metaIndex < project.meta.length - 1 ? '  I  ' : ''}
+        </span>
+      ))}
+    </p>
+  )
+}
 
 function App() {
   const heroRef = useRef<HTMLElement>(null)
@@ -258,12 +278,9 @@ function App() {
           </div>
 
           <div className="work-list">
-            {projects.map((project, index) => {
-              const isFeatured = index === 0
-
-              return (
+            {projects.map((project, index) => (
                 <article
-                  className={`work-card${isFeatured ? ' work-card--featured' : ''}`}
+                  className="work-card"
                   key={project.title}
                   style={{ '--work-card-layer': index + 1 } as CSSProperties}
                 >
@@ -271,14 +288,7 @@ function App() {
                     <div className="work-card__content">
                       <div className="work-card__text">
                         <h3>{project.title}</h3>
-                        <p className="work-card__meta">
-                          {project.meta.map((item, metaIndex) => (
-                            <span className={item.accent ? 'is-accent' : undefined} key={item.label}>
-                              {item.label} <CountUpNumber to={item.value} />%
-                              {metaIndex < project.meta.length - 1 ? '  I  ' : ''}
-                            </span>
-                          ))}
-                        </p>
+                        <WorkCardMeta project={project} />
                         <p className="work-card__description">
                           {(projectDescriptions[project.title] ?? project.description).map((line) => (
                             <span key={line}>{line}</span>
@@ -295,12 +305,19 @@ function App() {
                     </div>
 
                     <div className="work-card__image">
-                      <img src={project.image} alt={project.imageAlt} />
+                      <img
+                        src={project.image}
+                        alt={project.imageAlt}
+                        width={928}
+                        height={560}
+                        loading={index === 0 ? 'eager' : 'lazy'}
+                        decoding="async"
+                        sizes="(max-width: 560px) calc(100vw - 32px), (max-width: 1024px) calc(100vw - 40px), (max-width: 1280px) 44vw, 928px"
+                      />
                     </div>
                   </div>
                 </article>
-              )
-            })}
+            ))}
           </div>
         </section>
       </main>

@@ -1,49 +1,60 @@
-import { useEffect, useRef } from 'react'
-import { motion, useMotionValue, useTransform } from 'framer-motion'
+import { useEffect, useState } from 'react'
+import { animate } from 'framer-motion'
+
+/** shadcn progress-text style ease-out */
+const PROGRESS_TEXT_EASE: [number, number, number, number] = [0.33, 1, 0.68, 1]
 
 type CountUpNumberProps = {
-  from?: number
   to: number
+  start: boolean
   duration?: number
   delay?: number
 }
 
-function CountUpNumber({ from = 0, to, duration = 2, delay = 0 }: CountUpNumberProps) {
-  const count = useMotionValue(from)
-  const rounded = useTransform(count, (latest) => Math.round(latest))
-  const hasAnimated = useRef(false)
-  const elementRef = useRef<HTMLSpanElement>(null)
+function CountUpNumber({ to, start, duration = 1.85, delay = 0 }: CountUpNumberProps) {
+  const [display, setDisplay] = useState(0)
 
   useEffect(() => {
-    if (!elementRef.current) return
+    if (!start) {
+      setDisplay(0)
+      return
+    }
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !hasAnimated.current) {
-          hasAnimated.current = true
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setDisplay(to)
+      return
+    }
 
-          setTimeout(() => {
-            count.set(to, {
-              type: 'tween',
-              duration,
-              ease: 'easeOut',
-            })
-          }, delay * 1000)
+    let active = true
+    let timeoutId: ReturnType<typeof setTimeout> | undefined
+    let controls: { stop: () => void } | undefined
 
-          observer.disconnect()
-        }
-      },
-      { threshold: 0.5 }
-    )
+    const run = () => {
+      controls = animate(0, to, {
+        duration,
+        ease: PROGRESS_TEXT_EASE,
+        onUpdate: (latest) => {
+          if (active) {
+            setDisplay(Math.round(latest))
+          }
+        },
+      })
+    }
 
-    observer.observe(elementRef.current)
+    if (delay > 0) {
+      timeoutId = window.setTimeout(run, delay * 1000)
+    } else {
+      run()
+    }
 
     return () => {
-      observer.disconnect()
+      active = false
+      if (timeoutId) window.clearTimeout(timeoutId)
+      controls?.stop()
     }
-  }, [count, to, duration, delay])
+  }, [start, to, duration, delay])
 
-  return <motion.span ref={elementRef}>{rounded}</motion.span>
+  return <span className="count-up-number">{display}</span>
 }
 
 export default CountUpNumber
