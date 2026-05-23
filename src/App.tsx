@@ -312,13 +312,11 @@ function AboutSection() {
             <span className="about-intro__line" style={{ '--line-index': 2 } as CSSProperties}>
               몰입감 있는 디지털 경험을 만듭니다.
             </span>
-            <p>
-              AI와 UX 빌드 프로세스를 기반으로
-              <br />
-              디자인과 프론트엔드 개발을 넘나들며{' '}
-            </p>
-            <p>몰입감 있는 디지털 경험을 만듭니다.</p>
           </div>
+          <a className="about-cv-button" href="/cv.pdf" target="_blank" rel="noreferrer" aria-label="Open CV">
+            <span>CV</span>
+            <img className="about-cv-button__icon" src="/assets/about/cv-arrow.svg" alt="" aria-hidden="true" />
+          </a>
         </div>
       </div>
 
@@ -334,6 +332,194 @@ function AboutSection() {
             <ToolLogoItem logo={logo} key={`${logo.label}-${index}`} />
           ))}
         </ul>
+      </div>
+    </section>
+  )
+}
+
+function TimelineSection() {
+  const timelineRef = useRef<HTMLElement>(null)
+  const timelineTicks = Array.from({ length: 97 }, (_, index) => index)
+
+  useEffect(() => {
+    const section = timelineRef.current
+
+    if (!section) {
+      return
+    }
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      section.style.setProperty('--timeline-progress', '0')
+      return
+    }
+
+    let timelineProgress = 0
+    let animationFrame = 0
+    let snapLocked = false
+    let snapTimer = 0
+
+    const applyTimelineProgress = () => {
+      section.style.setProperty('--timeline-progress', timelineProgress.toFixed(4))
+      animationFrame = 0
+    }
+
+    const requestSync = () => {
+      if (!animationFrame) {
+        animationFrame = window.requestAnimationFrame(applyTimelineProgress)
+      }
+    }
+
+    const handleWheel = (event: WheelEvent) => {
+      const rect = section.getBoundingClientRect()
+      const viewportHeight = window.innerHeight || document.documentElement.clientHeight
+      const isTimelineInView = rect.top < viewportHeight && rect.bottom > 0
+      const isTimelineActive = rect.top <= 1 && rect.bottom >= viewportHeight - 1
+      const shouldRewindTimeline = event.deltaY < 0 && timelineProgress > 0 && isTimelineInView
+
+      if (!isTimelineActive && !shouldRewindTimeline) {
+        return
+      }
+
+      if (snapLocked || Math.abs(event.deltaY) < 8) {
+        event.preventDefault()
+        return
+      }
+
+      const direction = event.deltaY > 0 ? 1 : -1
+      const nextProgress = Math.min(Math.max(timelineProgress + direction, 0), 8)
+
+      if (nextProgress !== timelineProgress) {
+        event.preventDefault()
+        timelineProgress = nextProgress
+        requestSync()
+        snapLocked = true
+        window.clearTimeout(snapTimer)
+        snapTimer = window.setTimeout(() => {
+          snapLocked = false
+        }, 240)
+      }
+    }
+
+    applyTimelineProgress()
+    window.addEventListener('wheel', handleWheel, { passive: false })
+
+    return () => {
+      window.removeEventListener('wheel', handleWheel)
+
+      if (animationFrame) {
+        window.cancelAnimationFrame(animationFrame)
+      }
+
+      window.clearTimeout(snapTimer)
+    }
+  }, [])
+
+  return (
+    <section ref={timelineRef} className="timeline-section" aria-labelledby="timeline-title">
+      <div className="timeline-sticky">
+        <div className="timeline-section__header">
+          <h2 id="timeline-title">TIMELINE</h2>
+          <p>AT EZEN ACADEMY</p>
+        </div>
+
+        <div className="timeline-stage" aria-label="Ezen academy learning timeline">
+          <div className="timeline-orb timeline-orb--one" aria-hidden="true">
+            <img className="timeline-orb__shadow" src="/assets/about/timeline-ellipse-shadow.svg" alt="" />
+            <img className="timeline-orb__image" src="/assets/about/timeline-ellipse.png" alt="" />
+            <img className="timeline-orb__pointer" src="/assets/about/timeline-pointer.svg" alt="" />
+          </div>
+          <div className="timeline-orb timeline-orb--two" aria-hidden="true">
+            <img className="timeline-orb__shadow" src="/assets/about/timeline-ellipse-2-shadow.svg" alt="" />
+            <img className="timeline-orb__image" src="/assets/about/timeline-ellipse-2.png" alt="" />
+            <img className="timeline-orb__pointer" src="/assets/about/timeline-pointer.svg" alt="" />
+          </div>
+          <div className="timeline-orb timeline-orb--three" aria-hidden="true">
+            <img className="timeline-orb__shadow" src="/assets/about/timeline-ellipse-3-shadow.svg" alt="" />
+            <img className="timeline-orb__image" src="/assets/about/timeline-ellipse-3.png" alt="" />
+            <img className="timeline-orb__pointer" src="/assets/about/timeline-pointer.svg" alt="" />
+          </div>
+          <div className="timeline-orb timeline-orb--four" aria-hidden="true">
+            <img className="timeline-orb__shadow" src="/assets/about/timeline-ellipse-4.png" alt="" />
+            <img className="timeline-orb__image" src="/assets/about/timeline-ellipse-4.png" alt="" />
+            <img className="timeline-orb__pointer" src="/assets/about/timeline-pointer.svg" alt="" />
+          </div>
+          <div className="timeline-orb timeline-orb--five" aria-hidden="true">
+            <img className="timeline-orb__shadow" src="/assets/about/timeline-ellipse-5-shadow.png" alt="" />
+            <img className="timeline-orb__image" src="/assets/about/timeline-ellipse-5.png" alt="" />
+            <img className="timeline-orb__pointer" src="/assets/about/timeline-pointer.svg" alt="" />
+          </div>
+          <div className="timeline-orb timeline-orb--six" aria-hidden="true">
+            <img className="timeline-orb__shadow" src="/assets/about/timeline-ellipse-6-shadow.png" alt="" />
+            <img className="timeline-orb__image" src="/assets/about/timeline-ellipse-6.png" alt="" />
+            <img className="timeline-orb__pointer" src="/assets/about/timeline-pointer.svg" alt="" />
+          </div>
+          <div className="timeline-orb timeline-orb--seven" aria-hidden="true">
+            <img className="timeline-orb__shadow" src="/assets/about/timeline-ellipse-7-shadow.png" alt="" />
+            <img className="timeline-orb__image" src="/assets/about/timeline-ellipse-7.png" alt="" />
+            <img className="timeline-orb__pointer" src="/assets/about/timeline-pointer.svg" alt="" />
+          </div>
+          <div className="timeline-orb timeline-orb--eight timeline-orb--empty" aria-hidden="true" />
+          <div className="timeline-orb timeline-orb--nine timeline-orb--empty" aria-hidden="true" />
+
+          <div className="timeline-rail" aria-hidden="true">
+            {timelineTicks.map((tick) => (
+              <span className={tick % 12 === 0 ? 'timeline-rail__tick timeline-rail__tick--major' : 'timeline-rail__tick'} key={tick} />
+            ))}
+          </div>
+
+          <p className="timeline-event timeline-event--one">
+            <time dateTime="2025-12-18">2025.12.18</time>
+            <span>
+              Web/Mobile UX/UI 프론트엔드 Level1 (HTML/CSS)
+              <br />
+              UI 퍼블리싱 및 웹 기초 학습 시작
+            </span>
+          </p>
+          <p className="timeline-event timeline-event--two">
+            <time dateTime="2025-12-30">2025.12.30</time>
+            <span>
+              Web/Mobile UX/UI 프론트엔드 Level2 (JavaScript)
+              <br />
+              인터랙션 및 동적 웹 구현 학습
+            </span>
+          </p>
+          <p className="timeline-event timeline-event--three">
+            <time dateTime="2026-02-09">2026.02.09</time>
+            <span>
+              미니프로젝트1 / Web/Mobile UX/UI 클론코딩
+              <br />
+              PAWINHAND 웹 리뉴얼 개인 프로젝트 진행
+            </span>
+          </p>
+          <p className="timeline-event timeline-event--four">
+            <time dateTime="2026-02-24">2026.02.24</time>
+            <span>
+              Web/Mobile UX/UI 프론트엔드 Level3 (TypeScript)
+              <br />
+              타입 기반 프론트엔드 개발 학습 및 MonoTrip 개인 앱 개발 진행
+            </span>
+          </p>
+          <p className="timeline-event timeline-event--five">
+            <time dateTime="2026-02-24">2026.02.24</time>
+            <span>K-Brand Contents Web/Mobile UX/UI 팀 프로젝트</span>
+          </p>
+          <p className="timeline-event timeline-event--six">
+            <time dateTime="2026-04-07">2026.04.07</time>
+            <span>
+              Web/Mobile UX/UI 프론트엔드 Level4 (React / AWS 배포)
+              <br />
+              React 기반 프론트엔드 및 배포 프로세스 학습
+            </span>
+          </p>
+          <p className="timeline-event timeline-event--seven">
+            <time dateTime="2026-04-22">2026.04.22</time>
+            <span>AI챗봇 지원 팬덤 커뮤니티 Mobile UX/UI 팀 프로젝트</span>
+          </p>
+          <p className="timeline-event timeline-event--nine">
+            <time dateTime="2026-06-04">2026.06.04</time>
+            <span>종강 및 수료</span>
+          </p>
+        </div>
       </div>
     </section>
   )
@@ -574,6 +760,8 @@ function App() {
         </section>
 
         <AboutSection />
+
+        <TimelineSection />
       </main>
     </>
   )
