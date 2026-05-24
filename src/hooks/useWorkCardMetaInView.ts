@@ -9,14 +9,8 @@ function isMetaVisibleEnough(element: HTMLElement) {
   const visibleBottom = Math.min(rect.bottom, viewportHeight)
   const visibleHeight = Math.max(0, visibleBottom - visibleTop)
   const metaVisibleRatio = visibleHeight / Math.max(rect.height, 1)
-  const viewportFill = visibleHeight / Math.max(viewportHeight - STICKY_TOP, 1)
 
-  return metaVisibleRatio >= 0.4 && viewportFill >= 0.3 && visibleHeight > 8
-}
-
-function isMetaOpaqueEnough(element: HTMLElement) {
-  const opacity = Number.parseFloat(window.getComputedStyle(element).opacity)
-  return opacity >= 0.55
+  return metaVisibleRatio >= 0.4 && visibleHeight > 8
 }
 
 export function useWorkCardMetaInView(metaRef: RefObject<HTMLElement | null>) {
@@ -27,28 +21,34 @@ export function useWorkCardMetaInView(metaRef: RefObject<HTMLElement | null>) {
     if (!element) return
 
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      setIsReady(true)
-      return
+      const frame = window.requestAnimationFrame(() => {
+        setIsReady(true)
+      })
+
+      return () => {
+        window.cancelAnimationFrame(frame)
+      }
     }
 
-    let triggered = false
+    const syncReady = (nextReady: boolean) => {
+      setIsReady((currentReady) => (currentReady === nextReady ? currentReady : nextReady))
+    }
 
-    const trigger = () => {
-      if (triggered) return
-      triggered = true
-      setIsReady(true)
+    const getIsReady = () => {
+      return isMetaVisibleEnough(element)
     }
 
     const check = () => {
-      if (triggered) return
-      if (isMetaVisibleEnough(element) && isMetaOpaqueEnough(element)) {
-        trigger()
-      }
+      syncReady(getIsReady())
     }
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (!entry?.isIntersecting) return
+        if (!entry?.isIntersecting) {
+          syncReady(false)
+          return
+        }
+
         check()
       },
       {
@@ -60,12 +60,14 @@ export function useWorkCardMetaInView(metaRef: RefObject<HTMLElement | null>) {
     observer.observe(element)
     window.addEventListener('scroll', check, { passive: true })
     window.addEventListener('resize', check)
-    check()
+
+    const initialFrame = window.requestAnimationFrame(check)
 
     return () => {
       observer.disconnect()
       window.removeEventListener('scroll', check)
       window.removeEventListener('resize', check)
+      window.cancelAnimationFrame(initialFrame)
     }
   }, [metaRef])
 

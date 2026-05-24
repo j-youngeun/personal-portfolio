@@ -130,20 +130,20 @@ const aboutCards: AboutCardData[] = [
 const toolLogos = [
   { label: 'ChatGPT', src: '/assets/about/chatgpt.png', className: 'about-logo__img--xl' },
   { label: 'Figma', src: '/assets/about/figma.svg', className: 'about-logo__img--figma' },
-  { label: 'Claude', src: '/assets/about/claude.svg', className: 'about-logo__img--lg' },
+  { label: 'Claude', src: '/assets/about/claude.svg', className: 'about-logo__img--claude' },
   { label: 'React', src: '/assets/about/react.svg', className: 'about-logo__img--wide' },
-  { label: 'Notion', src: '/assets/about/notion.svg' },
-  { label: 'GitHub', src: '/assets/about/github.svg', className: 'about-logo__img--lg' },
-  { label: 'Framer', src: '/assets/about/framer.svg', className: 'about-logo__img--figma' },
+  { label: 'Notion', src: '/assets/about/notion.svg', className: 'about-logo__img--notion' },
+  { label: 'GitHub', src: '/assets/about/github.svg', className: 'about-logo__img--github' },
+  { label: 'Framer', src: '/assets/about/framer.svg', className: 'about-logo__img--framer', itemClassName: 'about-logo--framer' },
   { label: 'Motion', src: '/assets/about/motion.svg', className: 'about-logo__img--motion', tone: 'yellow' },
-  { label: 'CSS', src: '/assets/about/css.svg', className: 'about-logo__img--css' },
+  { label: 'CSS', src: '/assets/about/css.svg', className: 'about-logo__img--css', itemClassName: 'about-logo--css' },
   { label: 'Photoshop', src: '/assets/about/photoshop-bg.svg', className: 'about-logo__img--ps', overlay: '/assets/about/photoshop-ps.svg' },
-  { label: 'Illustrator', src: '/assets/about/illustrator.svg', className: 'about-logo__img--ps' },
-  { label: 'Perplexity', src: '/assets/about/perplexity.svg', className: 'about-logo__img--lg' },
-  { label: 'Gemini', src: '/assets/about/gemini.svg', className: 'about-logo__img--lg' },
-  { label: 'VS Code', src: '/assets/about/vscode.svg', className: 'about-logo__img--lg' },
+  { label: 'Illustrator', src: '/assets/about/illustrator.svg', className: 'about-logo__img--illustrator' },
+  { label: 'Perplexity', src: '/assets/about/perplexity.svg', className: 'about-logo__img--perplexity' },
+  { label: 'Gemini', src: '/assets/about/gemini.svg', className: 'about-logo__img--claude' },
+  { label: 'VS Code', src: '/assets/about/vscode.svg', className: 'about-logo__img--claude' },
   { label: 'Gemini mark', src: '/assets/about/gemini-circle.svg', full: true },
-  { label: 'Midjourney', src: '/assets/about/midjourney.svg', className: 'about-logo__img--wide' },
+  { label: 'Midjourney', src: '/assets/about/midjourney.svg', className: 'about-logo__img--midjourney' },
   { label: 'JavaScript', src: '/assets/about/javascript.svg', className: 'about-logo__img--xl' },
   { label: 'Vercel', src: '/assets/about/vercel.svg' },
 ]
@@ -183,7 +183,7 @@ const projects = [
     title: 'MMCA',
     meta: [
       { label: 'Planning', value: 20, accent: false },
-      { label: 'Design', value: 70, accent: true },
+      { label: 'Design', value: 70, accent: false },
       { label: 'Frontend', value: 10, accent: false },
     ],
     description: [
@@ -213,18 +213,25 @@ const projects = [
 type Project = (typeof projects)[number]
 type ToolLogo = (typeof toolLogos)[number]
 
-function WorkCardMeta({ project }: { project: Project }) {
+function WorkCardMeta({ project, revealIndex }: { project: Project; revealIndex: number }) {
   const metaRef = useRef<HTMLParagraphElement>(null)
   const metaInView = useWorkCardMetaInView(metaRef)
+  const metaNodeIds: Record<string, string> = {
+    Gunit: '40002018:3892',
+    MMCA: '40002032:320',
+    MonoTrip: '40002032:338',
+  }
 
   return (
-    <p ref={metaRef} className="work-card__meta">
+    <p
+      ref={metaRef}
+      className="work-card__meta"
+      data-node-id={metaNodeIds[project.title]}
+      data-work-reveal
+      style={{ '--work-reveal-index': revealIndex } as CSSProperties}
+    >
       {project.meta.map((item, metaIndex) => (
-        <span className={item.accent ? 'is-accent' : undefined} key={item.label}>
-          {item.label}{' '}
-          <CountUpNumber start={metaInView} to={item.value} delay={metaIndex * 0.14} duration={1.85} />%
-          {metaIndex < project.meta.length - 1 ? '  I  ' : ''}
-        </span>
+        <span className={item.accent ? 'is-accent' : undefined} key={item.label}>{item.label} <CountUpNumber start={metaInView} to={item.value} delay={metaIndex * 0.14} duration={1.85} />%{metaIndex < project.meta.length - 1 ? '  I  ' : ''}</span>
       ))}
     </p>
   )
@@ -266,7 +273,7 @@ function AboutCard({ card }: { card: AboutCardData }) {
 
 function ToolLogoItem({ logo }: { logo: ToolLogo }) {
   return (
-    <li className={`about-logo${logo.tone ? ` about-logo--${logo.tone}` : ''}`}>
+    <li className={`about-logo${logo.tone ? ` about-logo--${logo.tone}` : ''}${logo.itemClassName ? ` ${logo.itemClassName}` : ''}`}>
       {logo.full ? (
         <img className="about-logo__full" src={logo.src} alt={logo.label} loading="lazy" decoding="async" />
       ) : (
@@ -298,7 +305,8 @@ function AboutSection() {
   const introRef = useRef<HTMLDivElement>(null)
   const introTextRef = useRef<HTMLDivElement>(null)
   const revealScopeRef = useRef<HTMLElement>(null)
-  const marqueeLogos = [...toolLogos, ...toolLogos]
+  const logoGroups = [toolLogos.slice(0, 8), toolLogos.slice(8, 16), toolLogos.slice(16)]
+  const marqueeGroups = [...logoGroups, ...logoGroups]
 
   useEffect(() => {
     const introElement = introRef.current
@@ -449,11 +457,15 @@ function AboutSection() {
       </div>
 
       <div className="about-logo-marquee" aria-label="Tools and skills" data-about-reveal>
-        <ul className="about-logo-track">
-          {marqueeLogos.map((logo, index) => (
-            <ToolLogoItem logo={logo} key={`${logo.label}-${index}`} />
+        <div className="about-logo-track">
+          {marqueeGroups.map((group, groupIndex) => (
+            <ul className="about-logo-group" key={groupIndex}>
+              {group.map((logo) => (
+                <ToolLogoItem logo={logo} key={`${logo.label}-${groupIndex}`} />
+              ))}
+            </ul>
           ))}
-        </ul>
+        </div>
       </div>
     </section>
   )
@@ -462,7 +474,6 @@ function AboutSection() {
 function TimelineSection() {
   const timelineRef = useRef<HTMLElement>(null)
   const timelineTicks = Array.from({ length: 97 }, (_, index) => index)
-  const [hasTimelineStarted, setHasTimelineStarted] = useState(false)
   const [isTimelineIntroVisible, setIsTimelineIntroVisible] = useState(false)
 
   useEffect(() => {
@@ -481,6 +492,14 @@ function TimelineSection() {
     let animationFrame = 0
     let snapLocked = false
     let snapTimer = 0
+    let alignLocked = false
+    let alignTimer = 0
+    let contactScrollFrame = 0
+    let previousRootScrollBehavior: string | null = null
+    let timelineExitWheelCount = 0
+    let timelineExitLocked = false
+    let timelineExitTimer = 0
+    const timelineExitWheelThreshold = 3
 
     const applyTimelineProgress = () => {
       section.style.setProperty('--timeline-progress', timelineProgress.toFixed(4))
@@ -493,18 +512,172 @@ function TimelineSection() {
       }
     }
 
+    const stopContactScroll = () => {
+      if (contactScrollFrame) {
+        window.cancelAnimationFrame(contactScrollFrame)
+        contactScrollFrame = 0
+      }
+
+      if (previousRootScrollBehavior !== null) {
+        document.documentElement.style.scrollBehavior = previousRootScrollBehavior
+        previousRootScrollBehavior = null
+      }
+    }
+
+    const setDirectScrollBehavior = () => {
+      if (previousRootScrollBehavior === null) {
+        previousRootScrollBehavior = document.documentElement.style.scrollBehavior
+      }
+
+      document.documentElement.style.scrollBehavior = 'auto'
+    }
+
+    const scrollToContact = () => {
+      const contactSection = document.getElementById('contact')
+
+      if (!contactSection) {
+        return
+      }
+
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      const targetTop = Math.round(contactSection.getBoundingClientRect().top + window.scrollY)
+      const startTop = window.scrollY
+      const distance = targetTop - startTop
+
+      stopContactScroll()
+      setDirectScrollBehavior()
+
+      if (prefersReducedMotion || Math.abs(distance) <= 1) {
+        window.scrollTo({ top: targetTop, behavior: 'auto' })
+        stopContactScroll()
+        return
+      }
+
+      const startTime = performance.now()
+      const duration = 620
+
+      const animateContactScroll = (now: number) => {
+        const progress = Math.min((now - startTime) / duration, 1)
+        const easedProgress = 1 - Math.pow(1 - progress, 3)
+
+        window.scrollTo({
+          top: Math.round(startTop + distance * easedProgress),
+          behavior: 'auto',
+        })
+
+        if (progress < 1) {
+          contactScrollFrame = window.requestAnimationFrame(animateContactScroll)
+          return
+        }
+
+        window.scrollTo({ top: targetTop, behavior: 'auto' })
+        stopContactScroll()
+      }
+
+      contactScrollFrame = window.requestAnimationFrame(animateContactScroll)
+    }
+
     const skipTimeline = () => {
       timelineProgress = 8
+      timelineExitWheelCount = 0
+      timelineExitLocked = false
+      window.clearTimeout(timelineExitTimer)
       requestSync()
+      scrollToContact()
+    }
+
+    const resetTimeline = () => {
+      timelineProgress = 0
+      timelineExitWheelCount = 0
+      timelineExitLocked = false
+      snapLocked = false
+      alignLocked = false
+      stopContactScroll()
+      window.clearTimeout(snapTimer)
+      window.clearTimeout(alignTimer)
+      window.clearTimeout(timelineExitTimer)
+      requestSync()
+    }
+
+    const requestTimelineExit = () => {
+      if (timelineExitLocked) {
+        return
+      }
+
+      timelineExitWheelCount += 1
+      timelineExitLocked = true
+      window.clearTimeout(timelineExitTimer)
+      timelineExitTimer = window.setTimeout(() => {
+        timelineExitLocked = false
+      }, 320)
+
+      if (timelineExitWheelCount >= timelineExitWheelThreshold) {
+        timelineExitWheelCount = 0
+        timelineExitLocked = false
+        window.clearTimeout(timelineExitTimer)
+        scrollToContact()
+      }
+    }
+
+    const isTimelineFramed = () => {
+      const rect = section.getBoundingClientRect()
+      const viewportHeight = window.innerHeight || document.documentElement.clientHeight
+
+      return Math.abs(rect.top) <= 2 && Math.abs(rect.bottom - viewportHeight) <= 2
+    }
+
+    const alignTimeline = () => {
+      if (alignLocked) {
+        return
+      }
+
+      alignLocked = true
+      window.scrollTo({
+        top: section.offsetTop,
+        behavior: 'smooth',
+      })
+      window.clearTimeout(alignTimer)
+      alignTimer = window.setTimeout(() => {
+        alignLocked = false
+      }, 560)
     }
 
     const handleWheel = (event: WheelEvent) => {
       const rect = section.getBoundingClientRect()
       const viewportHeight = window.innerHeight || document.documentElement.clientHeight
-      const isTimelineInView = rect.top < viewportHeight * 0.5 && rect.bottom > viewportHeight * 0.5
-      const isTimelineActive = isTimelineInView || timelineProgress > 0
+      const isTimelineVisible = rect.top < viewportHeight && rect.bottom > 0
+      const isTimelineActive = isTimelineVisible
+      const isTimelineFullyFramed = isTimelineFramed()
+
+      if (event.deltaY < 0 || timelineProgress < 8) {
+        timelineExitWheelCount = 0
+        timelineExitLocked = false
+        window.clearTimeout(timelineExitTimer)
+      }
 
       if (!isTimelineActive) {
+        return
+      }
+
+      if (timelineProgress === 0 && event.deltaY < 0) {
+        return
+      }
+
+      if (timelineProgress === 8 && event.deltaY > 0) {
+        if (isTimelineVisible) {
+          event.preventDefault()
+          requestTimelineExit()
+        }
+
+        return
+      }
+
+      if (!isTimelineFullyFramed) {
+        if (isTimelineVisible || timelineProgress > 0) {
+          event.preventDefault()
+          alignTimeline()
+        }
+
         return
       }
 
@@ -515,6 +688,8 @@ function TimelineSection() {
 
       // timelineProgress가 8이고 아래로 스크롤: Contact로 이동 허용
       if (timelineProgress === 8 && event.deltaY > 0) {
+        event.preventDefault()
+        requestTimelineExit()
         return
       }
 
@@ -534,9 +709,9 @@ function TimelineSection() {
 
         if (nextProgress !== timelineProgress) {
           timelineProgress = nextProgress
-          if (nextProgress > 0) {
-            setHasTimelineStarted(true)
-          }
+          timelineExitWheelCount = 0
+          timelineExitLocked = false
+          window.clearTimeout(timelineExitTimer)
           requestSync()
           snapLocked = true
           window.clearTimeout(snapTimer)
@@ -549,10 +724,12 @@ function TimelineSection() {
 
     applyTimelineProgress()
     section.addEventListener('timeline:skip', skipTimeline)
+    section.addEventListener('timeline:reset', resetTimeline)
     window.addEventListener('wheel', handleWheel, { passive: false })
 
     return () => {
       section.removeEventListener('timeline:skip', skipTimeline)
+      section.removeEventListener('timeline:reset', resetTimeline)
       window.removeEventListener('wheel', handleWheel)
 
       if (animationFrame) {
@@ -560,6 +737,9 @@ function TimelineSection() {
       }
 
       window.clearTimeout(snapTimer)
+      window.clearTimeout(alignTimer)
+      window.clearTimeout(timelineExitTimer)
+      stopContactScroll()
     }
   }, [])
 
@@ -572,9 +752,9 @@ function TimelineSection() {
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        setIsTimelineIntroVisible(entry.isIntersecting)
+        setIsTimelineIntroVisible(entry.intersectionRatio >= 0.98)
       },
-      { threshold: 0.42 },
+      { threshold: [0, 0.98, 1] },
     )
 
     observer.observe(section)
@@ -711,9 +891,6 @@ function TimelineSection() {
           skip
         </button>
 
-        <div className={`timeline-wheel-hint${hasTimelineStarted ? ' is-hidden' : ''}`} aria-hidden={hasTimelineStarted}>
-          <span className="timeline-wheel-hint__arrow">→</span>
-        </div>
       </div>
     </section>
   )
@@ -741,6 +918,7 @@ function ContactSection() {
 function App() {
   const heroRef = useRef<HTMLElement>(null)
   const lensRef = useRef<HTMLImageElement>(null)
+  const workRevealRef = useRef<HTMLDivElement>(null)
   const [isHeaderVisible, setIsHeaderVisible] = useState(true)
   const [isTopButtonVisible, setIsTopButtonVisible] = useState(false)
   const [scrollProgress, setScrollProgress] = useState(0)
@@ -766,11 +944,13 @@ function App() {
       }
 
       event.preventDefault()
-      const isHeaderNavigation = Boolean(anchor.closest('.site-header__nav'))
-      target.scrollIntoView({
-        behavior:
-          isHeaderNavigation || window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
-        block: 'start',
+      document.querySelector<HTMLElement>('.timeline-section')?.dispatchEvent(new Event('timeline:reset'))
+
+      const targetTop = Math.round(target.getBoundingClientRect().top + window.scrollY)
+
+      window.scrollTo({
+        top: targetTop,
+        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
       })
       window.history.pushState(null, '', hash)
     }
@@ -881,6 +1061,121 @@ function App() {
     }
   }, [])
 
+  useEffect(() => {
+    const scope = workRevealRef.current
+
+    if (!scope) {
+      return
+    }
+
+    const cards = Array.from(scope.querySelectorAll<HTMLElement>('.work-card'))
+
+    if (!cards.length) {
+      return
+    }
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      cards.forEach((card) => card.classList.add('is-work-visible'))
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          entry.target.classList.toggle('is-work-visible', entry.isIntersecting)
+        })
+      },
+      { threshold: 0.28, rootMargin: '0px 0px -10% 0px' },
+    )
+
+    cards.forEach((card) => observer.observe(card))
+
+    return () => {
+      observer.disconnect()
+    }
+  }, [])
+
+  useEffect(() => {
+    const scope = workRevealRef.current
+    const workSection = scope?.closest<HTMLElement>('.work-section')
+
+    if (!scope || !workSection) {
+      return
+    }
+
+    const cards = Array.from(scope.querySelectorAll<HTMLElement>('.work-card'))
+
+    if (!cards.length) {
+      return
+    }
+
+    let snapLocked = false
+    let snapTimer = 0
+
+    const getNearestCardIndex = () => {
+      const scrollY = window.scrollY || document.documentElement.scrollTop
+
+      return cards.reduce((nearestIndex, card, index) => {
+        const currentDistance = Math.abs(card.offsetTop - scrollY)
+        const nearestDistance = Math.abs(cards[nearestIndex].offsetTop - scrollY)
+
+        return currentDistance < nearestDistance ? index : nearestIndex
+      }, 0)
+    }
+
+    const snapToSection = (target: HTMLElement) => {
+      snapLocked = true
+      window.clearTimeout(snapTimer)
+      window.scrollTo({
+        top: Math.round(target.offsetTop),
+        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+      })
+      snapTimer = window.setTimeout(() => {
+        snapLocked = false
+      }, 760)
+    }
+
+    const handleWorkWheel = (event: WheelEvent) => {
+      const viewportHeight = window.innerHeight || document.documentElement.clientHeight
+      const workRect = workSection.getBoundingClientRect()
+      const isWorkVisible = workRect.top < viewportHeight && workRect.bottom > 0
+
+      if (!isWorkVisible || Math.abs(event.deltaY) < 8) {
+        return
+      }
+
+      event.preventDefault()
+
+      if (snapLocked) {
+        return
+      }
+
+      const direction = event.deltaY > 0 ? 1 : -1
+      const scrollY = window.scrollY || document.documentElement.scrollTop
+      const workTop = workSection.offsetTop
+      const currentIndex = getNearestCardIndex()
+      const target =
+        direction > 0
+          ? scrollY < workTop - 2
+            ? cards[0]
+            : cards[currentIndex + 1] ?? document.getElementById('about')
+          : currentIndex > 0
+            ? cards[currentIndex - 1]
+            : document.getElementById('top')
+
+      if (target) {
+        snapToSection(target)
+      }
+    }
+
+    window.addEventListener('wheel', handleWorkWheel, { passive: false })
+
+    return () => {
+      window.removeEventListener('wheel', handleWorkWheel)
+      window.clearTimeout(snapTimer)
+    }
+  }, [])
+
   const handleTitlePointerMove = (event: PointerEvent<HTMLElement>) => {
     const bounds = event.currentTarget.getBoundingClientRect()
     const x = event.clientX - bounds.left
@@ -916,6 +1211,7 @@ function App() {
           tabIndex={isTopButtonVisible ? 0 : -1}
           style={{ '--scroll-progress': scrollProgress } as CSSProperties}
           onClick={() => {
+            document.querySelector<HTMLElement>('.timeline-section')?.dispatchEvent(new Event('timeline:reset'))
             window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' })
           }}
         >
@@ -985,19 +1281,24 @@ function App() {
             </h2>
           </div>
 
-          <div className="work-list">
+          <div className="work-list" ref={workRevealRef}>
             {projects.map((project, index) => (
                 <article
                   className="work-card"
                   key={project.title}
-                  style={{ '--work-card-layer': index + 1 } as CSSProperties}
                 >
                   <div className="work-card__inner">
                     <div className="work-card__content">
                       <div className="work-card__text">
-                        <h3>{project.title}</h3>
-                        <WorkCardMeta project={project} />
-                        <p className="work-card__description">
+                        <h3 data-work-reveal style={{ '--work-reveal-index': 1 } as CSSProperties}>
+                          {project.title}
+                        </h3>
+                        <WorkCardMeta project={project} revealIndex={2} />
+                        <p
+                          className="work-card__description"
+                          data-work-reveal
+                          style={{ '--work-reveal-index': 3 } as CSSProperties}
+                        >
                           {(projectDescriptions[project.title] ?? project.description).map((line) => (
                             <span key={line}>{line}</span>
                           ))}
@@ -1005,14 +1306,18 @@ function App() {
                       </div>
 
                       <div className="work-card__actions" aria-label={`${project.title} links`}>
-                        <a href="#work">Proposal</a>
-                        <a className="is-primary" href="#work">
-                          Website
+                        <a href="#work" data-work-reveal style={{ '--work-reveal-index': 4 } as CSSProperties}>
+                          <span>Proposal</span>
+                          <img src="/assets/icons/work-arrow.svg" alt="" aria-hidden="true" />
+                        </a>
+                        <a className="is-primary" href="#work" data-work-reveal style={{ '--work-reveal-index': 5 } as CSSProperties}>
+                          <span>Website</span>
+                          <img src="/assets/icons/work-arrow.svg" alt="" aria-hidden="true" />
                         </a>
                       </div>
                     </div>
 
-                    <div className="work-card__image">
+                    <div className="work-card__image" data-work-reveal style={{ '--work-reveal-index': 0 } as CSSProperties}>
                       <img
                         src={project.image}
                         alt={project.imageAlt}

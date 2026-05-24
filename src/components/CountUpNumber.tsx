@@ -15,14 +15,26 @@ function CountUpNumber({ to, start, duration = 1.85, delay = 0 }: CountUpNumberP
   const [display, setDisplay] = useState(0)
 
   useEffect(() => {
+    let resetFrame: number | undefined
+
     if (!start) {
-      setDisplay(0)
-      return
+      resetFrame = window.requestAnimationFrame(() => {
+        setDisplay(0)
+      })
+
+      return () => {
+        if (resetFrame) window.cancelAnimationFrame(resetFrame)
+      }
     }
 
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      setDisplay(to)
-      return
+      resetFrame = window.requestAnimationFrame(() => {
+        setDisplay(to)
+      })
+
+      return () => {
+        if (resetFrame) window.cancelAnimationFrame(resetFrame)
+      }
     }
 
     let active = true
