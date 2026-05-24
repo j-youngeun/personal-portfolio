@@ -19,6 +19,71 @@ type AboutCardData = {
   subItems?: AboutItem[]
 }
 
+function SlotTitle({ text }: { text: string }) {
+  const rootRef = useRef<HTMLSpanElement>(null)
+  const previousScrollYRef = useRef(0)
+  const scrollDirectionRef = useRef<'down' | 'up'>('down')
+  const wasVisibleRef = useRef(false)
+  const [playKey, setPlayKey] = useState(0)
+  const [direction, setDirection] = useState<'down' | 'up'>('down')
+
+  useEffect(() => {
+    const root = rootRef.current
+
+    if (!root) {
+      return
+    }
+
+    previousScrollYRef.current = window.scrollY
+
+    const syncScrollDirection = () => {
+      const currentScrollY = window.scrollY
+      scrollDirectionRef.current = currentScrollY >= previousScrollYRef.current ? 'down' : 'up'
+      previousScrollYRef.current = currentScrollY
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !wasVisibleRef.current) {
+          setDirection(scrollDirectionRef.current)
+          setPlayKey((current) => current + 1)
+          wasVisibleRef.current = true
+        }
+
+        if (!entry.isIntersecting) {
+          wasVisibleRef.current = false
+        }
+      },
+      { threshold: 0.35, rootMargin: '-8% 0px -8% 0px' },
+    )
+
+    observer.observe(root)
+    window.addEventListener('scroll', syncScrollDirection, { passive: true })
+
+    return () => {
+      observer.disconnect()
+      window.removeEventListener('scroll', syncScrollDirection)
+    }
+  }, [])
+
+  return (
+    <span ref={rootRef} className={`slot-title slot-title--${direction}`} aria-label={text}>
+      <span className="slot-title__run" key={playKey}>
+        {Array.from(text).map((character, index) => {
+          const glyph = character === ' ' ? '\u00A0' : character
+
+          return (
+            <span className="slot-title__char" style={{ '--slot-index': index } as CSSProperties} aria-hidden="true" key={`${character}-${index}`}>
+              <span className="slot-title__face slot-title__face--ghost">{glyph}</span>
+              <span className="slot-title__face slot-title__face--live">{glyph}</span>
+            </span>
+          )
+        })}
+      </span>
+    </span>
+  )
+}
+
 const aboutCards: AboutCardData[] = [
   {
     title: 'WORK HISTORY',
@@ -230,13 +295,16 @@ function ToolLogoItem({ logo }: { logo: ToolLogo }) {
 }
 
 function AboutSection() {
+  const introRef = useRef<HTMLDivElement>(null)
   const introTextRef = useRef<HTMLDivElement>(null)
+  const revealScopeRef = useRef<HTMLElement>(null)
   const marqueeLogos = [...toolLogos, ...toolLogos]
 
   useEffect(() => {
+    const introElement = introRef.current
     const textElement = introTextRef.current
 
-    if (!textElement) {
+    if (!introElement || !textElement) {
       return
     }
 
@@ -251,16 +319,18 @@ function AboutSection() {
     let animationFrame = 0
 
     const syncTextProgress = () => {
-      const rect = textElement.getBoundingClientRect()
+      const rect = introElement.getBoundingClientRect()
       const viewportHeight = window.innerHeight || document.documentElement.clientHeight
       const start = viewportHeight * 0.82
-      const end = viewportHeight * 0.34
+      const end = viewportHeight * 0.18
       const rawProgress = (start - rect.top) / Math.max(start - end, 1)
-      const progress = Math.min(Math.max(rawProgress * 0.72, 0), 1)
+      const progress = Math.min(Math.max(rawProgress, 0), 1)
+      const lineStarts = [0.02, 0.38, 0.74]
+      const lineDuration = 0.22
 
       textElement.style.setProperty('--about-text-progress', progress.toFixed(4))
       ;[0, 1, 2].forEach((lineIndex) => {
-        const lineProgress = Math.min(Math.max((progress - lineIndex * 0.24) / 0.42, 0), 1)
+        const lineProgress = Math.min(Math.max((progress - lineStarts[lineIndex]) / lineDuration, 0), 1)
         textElement.style.setProperty(`--about-line-${lineIndex}`, lineProgress.toFixed(4))
       })
       animationFrame = 0
@@ -286,14 +356,64 @@ function AboutSection() {
     }
   }, [])
 
+  useEffect(() => {
+    const scope = revealScopeRef.current
+
+    if (!scope) {
+      return
+    }
+
+    const targets = Array.from(scope.querySelectorAll<HTMLElement>('[data-about-reveal]'))
+
+    if (!targets.length) {
+      return
+    }
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      targets.forEach((target) => target.classList.add('is-visible'))
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const target = entry.target as HTMLElement
+
+          if (entry.isIntersecting) {
+            target.classList.add('is-visible')
+            return
+          }
+
+          const isWaitingBelowViewport = entry.boundingClientRect.top > window.innerHeight
+          const isStableProfile = target.classList.contains('about-person')
+
+          if (isStableProfile && !isWaitingBelowViewport) {
+            return
+          }
+
+          target.classList.remove('is-visible')
+        })
+      },
+      { threshold: 0.18, rootMargin: '0px 0px -8% 0px' },
+    )
+
+    targets.forEach((target) => observer.observe(target))
+
+    return () => {
+      observer.disconnect()
+    }
+  }, [])
+
   return (
-    <section className="about-section" id="about" aria-labelledby="about-title">
+    <section ref={revealScopeRef} className="about-section" id="about" aria-labelledby="about-title">
       <div className="about-section__header">
-        <h2 id="about-title">ABOUT</h2>
+        <h2 id="about-title">
+          <SlotTitle text="ABOUT" />
+        </h2>
       </div>
 
-      <div className="about-intro">
-        <div className="about-person" aria-hidden="true">
+      <div ref={introRef} className="about-intro">
+        <div className="about-person" aria-hidden="true" data-about-reveal>
           <span className="about-person__shape about-person__shape--pill" />
           <span className="about-person__shape about-person__shape--outline" />
           <span className="about-person__shape about-person__shape--bar" />
@@ -301,7 +421,7 @@ function AboutSection() {
           <img src="/assets/about/profile.png" alt="" width={374} height={407} decoding="async" />
         </div>
 
-        <div className="about-intro__copy">
+        <div className="about-intro__copy" data-about-reveal>
           <div ref={introTextRef} className="about-intro__text">
             <span className="about-intro__line" style={{ '--line-index': 0 } as CSSProperties}>
               AI와 UX 빌드 프로세스를 기반으로
@@ -322,11 +442,13 @@ function AboutSection() {
 
       <div className="about-card-grid">
         {aboutCards.map((card) => (
-          <AboutCard card={card} key={card.title} />
+          <div data-about-reveal key={card.title}>
+            <AboutCard card={card} />
+          </div>
         ))}
       </div>
 
-      <div className="about-logo-marquee" aria-label="Tools and skills">
+      <div className="about-logo-marquee" aria-label="Tools and skills" data-about-reveal>
         <ul className="about-logo-track">
           {marqueeLogos.map((logo, index) => (
             <ToolLogoItem logo={logo} key={`${logo.label}-${index}`} />
@@ -340,6 +462,8 @@ function AboutSection() {
 function TimelineSection() {
   const timelineRef = useRef<HTMLElement>(null)
   const timelineTicks = Array.from({ length: 97 }, (_, index) => index)
+  const [hasTimelineStarted, setHasTimelineStarted] = useState(false)
+  const [isTimelineIntroVisible, setIsTimelineIntroVisible] = useState(false)
 
   useEffect(() => {
     const section = timelineRef.current
@@ -369,6 +493,11 @@ function TimelineSection() {
       }
     }
 
+    const skipTimeline = () => {
+      timelineProgress = 8
+      requestSync()
+    }
+
     const handleWheel = (event: WheelEvent) => {
       const rect = section.getBoundingClientRect()
       const viewportHeight = window.innerHeight || document.documentElement.clientHeight
@@ -391,6 +520,9 @@ function TimelineSection() {
       if (nextProgress !== timelineProgress) {
         event.preventDefault()
         timelineProgress = nextProgress
+        if (nextProgress > 0) {
+          setHasTimelineStarted(true)
+        }
         requestSync()
         snapLocked = true
         window.clearTimeout(snapTimer)
@@ -401,9 +533,11 @@ function TimelineSection() {
     }
 
     applyTimelineProgress()
+    section.addEventListener('timeline:skip', skipTimeline)
     window.addEventListener('wheel', handleWheel, { passive: false })
 
     return () => {
+      section.removeEventListener('timeline:skip', skipTimeline)
       window.removeEventListener('wheel', handleWheel)
 
       if (animationFrame) {
@@ -414,11 +548,34 @@ function TimelineSection() {
     }
   }, [])
 
+  useEffect(() => {
+    const section = timelineRef.current
+
+    if (!section) {
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsTimelineIntroVisible(entry.isIntersecting)
+      },
+      { threshold: 0.42 },
+    )
+
+    observer.observe(section)
+
+    return () => {
+      observer.disconnect()
+    }
+  }, [])
+
   return (
-    <section ref={timelineRef} className="timeline-section" aria-labelledby="timeline-title">
+    <section ref={timelineRef} className={`timeline-section${isTimelineIntroVisible ? ' is-intro-visible' : ''}`} aria-labelledby="timeline-title">
       <div className="timeline-sticky">
         <div className="timeline-section__header">
-          <h2 id="timeline-title">TIMELINE</h2>
+          <h2 id="timeline-title">
+            <SlotTitle text="TIMELINE" />
+          </h2>
           <p>AT EZEN ACADEMY</p>
         </div>
 
@@ -458,8 +615,12 @@ function TimelineSection() {
             <img className="timeline-orb__image" src="/assets/about/timeline-ellipse-7.png" alt="" />
             <img className="timeline-orb__pointer" src="/assets/about/timeline-pointer.svg" alt="" />
           </div>
-          <div className="timeline-orb timeline-orb--eight timeline-orb--empty" aria-hidden="true" />
-          <div className="timeline-orb timeline-orb--nine timeline-orb--empty" aria-hidden="true" />
+          <div className="timeline-orb timeline-orb--eight timeline-orb--empty" aria-hidden="true">
+            <img className="timeline-orb__pointer" src="/assets/about/timeline-pointer.svg" alt="" />
+          </div>
+          <div className="timeline-orb timeline-orb--nine timeline-orb--empty" aria-hidden="true">
+            <img className="timeline-orb__pointer" src="/assets/about/timeline-pointer.svg" alt="" />
+          </div>
 
           <div className="timeline-rail" aria-hidden="true">
             {timelineTicks.map((tick) => (
@@ -515,10 +676,47 @@ function TimelineSection() {
             <time dateTime="2026-04-22">2026.04.22</time>
             <span>AI챗봇 지원 팬덤 커뮤니티 Mobile UX/UI 팀 프로젝트</span>
           </p>
+          <p className="timeline-event timeline-event--eight">
+            <time dateTime="2026-06-01">2026.06.01</time>
+            <span>개인 앱 및 포트폴리오 발표</span>
+          </p>
           <p className="timeline-event timeline-event--nine">
             <time dateTime="2026-06-04">2026.06.04</time>
             <span>종강 및 수료</span>
           </p>
+        </div>
+
+        <button
+          className="timeline-skip"
+          type="button"
+          onClick={() => {
+            timelineRef.current?.dispatchEvent(new Event('timeline:skip'))
+          }}
+        >
+          skip
+        </button>
+
+        <div className={`timeline-wheel-hint${hasTimelineStarted ? ' is-hidden' : ''}`} aria-hidden={hasTimelineStarted}>
+          <span className="timeline-wheel-hint__arrow">→</span>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function ContactSection() {
+  return (
+    <section className="contact-section" id="contact" aria-labelledby="contact-title">
+      <div className="contact-section__header">
+        <h2 id="contact-title">
+          <SlotTitle text="CONTACT" />
+        </h2>
+      </div>
+
+      <div className="contact-section__content">
+        <div className="contact-info">
+          <p>Email Address</p>
+          <a href="mailto:yxungeun@gmail.com">yxungeun@gmail.com</a>
         </div>
       </div>
     </section>
@@ -529,6 +727,8 @@ function App() {
   const heroRef = useRef<HTMLElement>(null)
   const lensRef = useRef<HTMLImageElement>(null)
   const [isHeaderVisible, setIsHeaderVisible] = useState(true)
+  const [isTopButtonVisible, setIsTopButtonVisible] = useState(false)
+  const [scrollProgress, setScrollProgress] = useState(0)
 
   useEffect(() => {
     const handleAnchorClick = (event: MouseEvent) => {
@@ -631,6 +831,41 @@ function App() {
     }
   }, [])
 
+  useEffect(() => {
+    let animationFrame = 0
+
+    const syncScrollProgress = () => {
+      const scrollTop = window.scrollY || document.documentElement.scrollTop
+      const scrollableHeight = document.documentElement.scrollHeight - window.innerHeight
+      const nextProgress = scrollableHeight > 0 ? Math.min(Math.max(scrollTop / scrollableHeight, 0), 1) : 0
+      const workSection = document.getElementById('work')
+      const workStart = workSection ? workSection.offsetTop - 1 : window.innerHeight
+
+      setScrollProgress(nextProgress)
+      setIsTopButtonVisible(scrollTop >= workStart)
+      animationFrame = 0
+    }
+
+    const requestSync = () => {
+      if (!animationFrame) {
+        animationFrame = window.requestAnimationFrame(syncScrollProgress)
+      }
+    }
+
+    syncScrollProgress()
+    window.addEventListener('scroll', requestSync, { passive: true })
+    window.addEventListener('resize', requestSync)
+
+    return () => {
+      window.removeEventListener('scroll', requestSync)
+      window.removeEventListener('resize', requestSync)
+
+      if (animationFrame) {
+        window.cancelAnimationFrame(animationFrame)
+      }
+    }
+  }, [])
+
   const handleTitlePointerMove = (event: PointerEvent<HTMLElement>) => {
     const bounds = event.currentTarget.getBoundingClientRect()
     const x = event.clientX - bounds.left
@@ -657,6 +892,24 @@ function App() {
             ))}
           </nav>
         </header>
+
+        <button
+          className={`floating-top${isTopButtonVisible ? ' is-visible' : ''}`}
+          type="button"
+          aria-label="Back to top"
+          aria-hidden={!isTopButtonVisible}
+          tabIndex={isTopButtonVisible ? 0 : -1}
+          style={{ '--scroll-progress': scrollProgress } as CSSProperties}
+          onClick={() => {
+            window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' })
+          }}
+        >
+          <svg className="floating-top__progress" viewBox="0 0 48 48" aria-hidden="true">
+            <circle className="floating-top__track" cx="24" cy="24" r="21" />
+            <circle className="floating-top__bar" cx="24" cy="24" r="21" />
+          </svg>
+          <span className="floating-top__arrow">↑</span>
+        </button>
 
         <section ref={heroRef} className="hero" id="top">
           <div
@@ -712,7 +965,9 @@ function App() {
 
         <section className="work-section" id="work" aria-labelledby="work-title">
           <div className="work-section__header">
-            <h2 id="work-title">WORK</h2>
+            <h2 id="work-title">
+              <SlotTitle text="WORK" />
+            </h2>
           </div>
 
           <div className="work-list">
@@ -762,6 +1017,8 @@ function App() {
         <AboutSection />
 
         <TimelineSection />
+
+        <ContactSection />
       </main>
     </>
   )
