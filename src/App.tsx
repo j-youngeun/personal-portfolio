@@ -183,7 +183,7 @@ const projects = [
     title: 'MMCA',
     meta: [
       { label: 'Planning', value: 20, accent: false },
-      { label: 'Design', value: 70, accent: false },
+      { label: 'Design', value: 70, accent: true },
       { label: 'Frontend', value: 10, accent: false },
     ],
     description: [
@@ -231,7 +231,10 @@ function WorkCardMeta({ project, revealIndex }: { project: Project; revealIndex:
       style={{ '--work-reveal-index': revealIndex } as CSSProperties}
     >
       {project.meta.map((item, metaIndex) => (
-        <span className={item.accent ? 'is-accent' : undefined} key={item.label}>{item.label} <CountUpNumber start={metaInView} to={item.value} delay={metaIndex * 0.14} duration={1.85} />%{metaIndex < project.meta.length - 1 ? '  I  ' : ''}</span>
+        <span className={item.accent ? 'is-accent' : undefined} key={item.label}>
+          {item.label} <CountUpNumber start={metaInView} to={item.value} delay={metaIndex * 0.14} duration={1.85} />%
+          {metaIndex < project.meta.length - 1 ? <span className="work-card__meta-separator">  I  </span> : null}
+        </span>
       ))}
     </p>
   )
@@ -329,12 +332,12 @@ function AboutSection() {
     const syncTextProgress = () => {
       const rect = introElement.getBoundingClientRect()
       const viewportHeight = window.innerHeight || document.documentElement.clientHeight
-      const start = viewportHeight * 0.82
-      const end = viewportHeight * 0.18
+      const start = viewportHeight * 0.38
+      const end = -viewportHeight * 0.18
       const rawProgress = (start - rect.top) / Math.max(start - end, 1)
       const progress = Math.min(Math.max(rawProgress, 0), 1)
-      const lineStarts = [0.02, 0.38, 0.74]
-      const lineDuration = 0.22
+      const lineStarts = [-0.279, 0.34, 0.62]
+      const lineDuration = 0.32
 
       textElement.style.setProperty('--about-text-progress', progress.toFixed(4))
       ;[0, 1, 2].forEach((lineIndex) => {
@@ -441,10 +444,6 @@ function AboutSection() {
               몰입감 있는 디지털 경험을 만듭니다.
             </span>
           </div>
-          <a className="about-cv-button" href="/cv.pdf" target="_blank" rel="noreferrer" aria-label="Open CV">
-            <span>CV</span>
-            <img className="about-cv-button__icon" src="/assets/about/cv-arrow.svg" alt="" aria-hidden="true" />
-          </a>
         </div>
       </div>
 
@@ -780,6 +779,12 @@ function TimelineSection() {
             <img className="timeline-orb__image" src="/assets/about/timeline-ellipse.png" alt="" />
             <img className="timeline-orb__pointer" src="/assets/about/timeline-pointer.svg" alt="" />
           </div>
+          <div className="timeline-scroll-hint" aria-hidden="true">
+            <span className="timeline-scroll-hint__mouse">
+              <span className="timeline-scroll-hint__wheel" />
+            </span>
+            <span className="timeline-scroll-hint__chevron" />
+          </div>
           <div className="timeline-orb timeline-orb--two" aria-hidden="true">
             <img className="timeline-orb__shadow" src="/assets/about/timeline-ellipse-2-shadow.svg" alt="" />
             <img className="timeline-orb__image" src="/assets/about/timeline-ellipse-2.png" alt="" />
@@ -897,8 +902,44 @@ function TimelineSection() {
 }
 
 function ContactSection() {
+  const contactRef = useRef<HTMLElement>(null)
+
+  useEffect(() => {
+    const section = contactRef.current
+
+    if (!section) {
+      return
+    }
+
+    const targets = Array.from(section.querySelectorAll<HTMLElement>('[data-contact-reveal]'))
+
+    if (!targets.length) {
+      return
+    }
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      targets.forEach((target) => target.classList.add('is-visible'))
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        targets.forEach((target) => {
+          target.classList.toggle('is-visible', entry.isIntersecting)
+        })
+      },
+      { threshold: 0.42 },
+    )
+
+    observer.observe(section)
+
+    return () => {
+      observer.disconnect()
+    }
+  }, [])
+
   return (
-    <section className="contact-section" id="contact" aria-labelledby="contact-title">
+    <section ref={contactRef} className="contact-section" id="contact" aria-labelledby="contact-title">
       <div className="contact-section__header">
         <h2 id="contact-title">
           <SlotTitle text="CONTACT" />
@@ -907,8 +948,8 @@ function ContactSection() {
 
       <div className="contact-section__content">
         <div className="contact-info">
-          <p>Email Address</p>
-          <a href="mailto:yxungeun@gmail.com">yxungeun@gmail.com</a>
+          <p data-contact-reveal>Email Address</p>
+          <a href="mailto:yxungeun@gmail.com" data-contact-reveal>yxungeun@gmail.com</a>
         </div>
       </div>
     </section>
@@ -1112,12 +1153,18 @@ function App() {
     let snapLocked = false
     let snapTimer = 0
 
+    const getDocumentTop = (element: HTMLElement) => {
+      const scrollY = window.scrollY || document.documentElement.scrollTop
+
+      return element.getBoundingClientRect().top + scrollY
+    }
+
     const getNearestCardIndex = () => {
       const scrollY = window.scrollY || document.documentElement.scrollTop
 
       return cards.reduce((nearestIndex, card, index) => {
-        const currentDistance = Math.abs(card.offsetTop - scrollY)
-        const nearestDistance = Math.abs(cards[nearestIndex].offsetTop - scrollY)
+        const currentDistance = Math.abs(getDocumentTop(card) - scrollY)
+        const nearestDistance = Math.abs(getDocumentTop(cards[nearestIndex]) - scrollY)
 
         return currentDistance < nearestDistance ? index : nearestIndex
       }, 0)
@@ -1127,7 +1174,7 @@ function App() {
       snapLocked = true
       window.clearTimeout(snapTimer)
       window.scrollTo({
-        top: Math.round(target.offsetTop),
+        top: Math.round(getDocumentTop(target)),
         behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
       })
       snapTimer = window.setTimeout(() => {
@@ -1152,10 +1199,15 @@ function App() {
 
       const direction = event.deltaY > 0 ? 1 : -1
       const scrollY = window.scrollY || document.documentElement.scrollTop
-      const workTop = workSection.offsetTop
+      const workTop = getDocumentTop(workSection)
+      const lastCard = cards[cards.length - 1]
+      const lastCardTop = getDocumentTop(lastCard)
+      const isReturningFromAfterWork = direction < 0 && scrollY > lastCardTop + viewportHeight * 0.65
       const currentIndex = getNearestCardIndex()
       const target =
-        direction > 0
+        isReturningFromAfterWork
+          ? lastCard
+          : direction > 0
           ? scrollY < workTop - 2
             ? cards[0]
             : cards[currentIndex + 1] ?? document.getElementById('about')
