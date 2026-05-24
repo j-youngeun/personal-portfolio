@@ -2,6 +2,7 @@
   min-height: 100svh;
   background: #1a1a1a;
   color: #f3f3f3;
+  scroll-snap-type: y mandatory;
 }
 
 .site-header {
@@ -389,8 +390,11 @@
   gap: var(--work-section-gap);
   margin-top: 0;
   padding: var(--work-section-py) var(--work-section-px);
+  min-height: 100svh;
   background: #1a1a1a;
   color: #fff;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
 }
 
 .work-section__header {
@@ -687,10 +691,14 @@
   flex-direction: column;
   gap: 48px;
   align-items: center;
-  padding: 56px var(--about-px) 120px;
+  justify-content: center;
+  min-height: 100svh;
+  padding: 56px var(--about-px) 56px;
   overflow: hidden;
   background: #1a1a1a;
   color: #fff;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
 }
 
 .about-section__header {
@@ -1177,11 +1185,12 @@
   position: relative;
   z-index: 3;
   height: 100vh;
-  min-height: 720px;
   padding: 0 24px;
   overflow: hidden;
   background: #000;
   color: #fff;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
 }
 
 .timeline-sticky {
@@ -1683,10 +1692,13 @@
   gap: 18px;
   align-items: center;
   justify-content: center;
-  padding: 171px 0 296px;
+  min-height: 100svh;
+  padding: 0;
   overflow: hidden;
   background: #ff5100;
   color: #1a1a1a;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
 }
 
 .contact-section__header {

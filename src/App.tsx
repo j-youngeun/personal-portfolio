@@ -501,34 +501,49 @@ function TimelineSection() {
     const handleWheel = (event: WheelEvent) => {
       const rect = section.getBoundingClientRect()
       const viewportHeight = window.innerHeight || document.documentElement.clientHeight
-      const isTimelineInView = rect.top < viewportHeight && rect.bottom > 0
-      const isTimelineActive = rect.top <= 1 && rect.bottom >= viewportHeight - 1
-      const shouldRewindTimeline = event.deltaY < 0 && timelineProgress > 0 && isTimelineInView
+      const isTimelineInView = rect.top < viewportHeight * 0.5 && rect.bottom > viewportHeight * 0.5
+      const isTimelineActive = isTimelineInView || timelineProgress > 0
 
-      if (!isTimelineActive && !shouldRewindTimeline) {
+      if (!isTimelineActive) {
         return
       }
 
-      if (snapLocked || Math.abs(event.deltaY) < 8) {
-        event.preventDefault()
+      // timelineProgress가 0이고 위로 스크롤: About으로 이동 허용
+      if (timelineProgress === 0 && event.deltaY < 0) {
         return
       }
 
-      const direction = event.deltaY > 0 ? 1 : -1
-      const nextProgress = Math.min(Math.max(timelineProgress + direction, 0), 8)
+      // timelineProgress가 8이고 아래로 스크롤: Contact로 이동 허용
+      if (timelineProgress === 8 && event.deltaY > 0) {
+        return
+      }
 
-      if (nextProgress !== timelineProgress) {
-        event.preventDefault()
-        timelineProgress = nextProgress
-        if (nextProgress > 0) {
-          setHasTimelineStarted(true)
+      // 타임라인 내에서의 스크롤: 기본 동작 방지
+      event.preventDefault()
+
+      if (snapLocked) {
+        return
+      }
+
+      const shouldRewindTimeline = event.deltaY < 0 && timelineProgress > 0
+      const shouldAdvanceTimeline = event.deltaY > 0 && timelineProgress < 8
+
+      if (shouldRewindTimeline || shouldAdvanceTimeline) {
+        const direction = event.deltaY > 0 ? 1 : -1
+        const nextProgress = Math.min(Math.max(timelineProgress + direction, 0), 8)
+
+        if (nextProgress !== timelineProgress) {
+          timelineProgress = nextProgress
+          if (nextProgress > 0) {
+            setHasTimelineStarted(true)
+          }
+          requestSync()
+          snapLocked = true
+          window.clearTimeout(snapTimer)
+          snapTimer = window.setTimeout(() => {
+            snapLocked = false
+          }, 240)
         }
-        requestSync()
-        snapLocked = true
-        window.clearTimeout(snapTimer)
-        snapTimer = window.setTimeout(() => {
-          snapLocked = false
-        }, 240)
       }
     }
 
