@@ -177,6 +177,7 @@ const projects = [
     ],
     image: '/assets/work/gunit/cover.png',
     imageAlt: 'Gunit project visual',
+    proposalUrl: 'https://drive.google.com/file/d/1pSF6r5A6qwhJNI1KfHGi6M_ZCTvOqqls/view?usp=sharing',
     websiteUrl: 'https://airsoft-nine.vercel.app/',
   },
   {
