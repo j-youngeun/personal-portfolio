@@ -175,7 +175,7 @@ const projects = [
       '에어소프트 입문자의 정보 탐색 장벽을 낮추고, 팬덤형 커뮤니티를 통해',
       '지속적인 참여를 유도하는 AI 챗봇 기반 커뮤니티 앱 개발 팀 프로젝트',
     ],
-    image: '/assets/work/gunit.png',
+    image: '/assets/work/gunit/cover.png',
     imageAlt: 'Gunit project visual',
   },
   {
@@ -190,7 +190,7 @@ const projects = [
       '국립현대미술관 웹사이트의 정보 구조를 개선하여',
       '해외 방문자가 정보를 직관적으로 탐색할 수 있도록 진행한 영문 웹사이트 리뉴얼 팀 프로젝트',
     ],
-    image: '/assets/work/mmca.png',
+    image: '/assets/work/mmca/cover.png',
     imageAlt: 'MMCA project visual',
   },
   {
@@ -205,7 +205,7 @@ const projects = [
       '1인 여행자를 위한 맞춤형 여행 경험을 제공하는 서비스로',
       '안전하고 효율적인 여행 계획을 지원하는 앱 개발 개인 프로젝트',
     ],
-    image: '/assets/work/monotrip.png',
+    image: '/assets/work/monotrip/cover.png',
     imageAlt: 'MonoTrip project visual',
   },
 ]
