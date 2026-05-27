@@ -337,12 +337,12 @@ function AboutSection() {
     const syncTextProgress = () => {
       const rect = introElement.getBoundingClientRect()
       const viewportHeight = window.innerHeight || document.documentElement.clientHeight
-      const start = viewportHeight * 0.38
-      const end = -viewportHeight * 0.18
+      const start = viewportHeight * 0.48
+      const end = -viewportHeight * 0.08
       const rawProgress = (start - rect.top) / Math.max(start - end, 1)
       const progress = Math.min(Math.max(rawProgress, 0), 1)
-      const lineStarts = [-0.279, 0.34, 0.62]
-      const lineDuration = 0.32
+      const lineStarts = [0.02, 0.28, 0.54]
+      const lineDuration = 0.36
 
       textElement.style.setProperty('--about-text-progress', progress.toFixed(4))
       ;[0, 1, 2].forEach((lineIndex) => {
