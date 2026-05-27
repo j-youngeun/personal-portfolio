@@ -210,6 +210,7 @@ const projects = [
     ],
     image: '/assets/work/monotrip/cover.png',
     imageAlt: 'MonoTrip project visual',
+    proposalUrl: 'https://drive.google.com/file/d/1kMOjJEuQHTjxTXG73ANyANYp3tlY0XAF/view?usp=sharing',
   },
 ]
 
