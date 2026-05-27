@@ -209,7 +209,7 @@ const projects = [
       '1인 여행자를 위한 맞춤형 여행 경험을 제공하는 서비스로',
       '안전하고 효율적인 여행 계획을 지원하는 앱 개발 개인 프로젝트',
     ],
-    image: '/assets/work/monotrip/thumb2.png',
+    image: '/assets/work/monotrip/thumb3.png',
     imageAlt: 'MonoTrip project visual',
     proposalUrl: 'https://drive.google.com/file/d/1kMOjJEuQHTjxTXG73ANyANYp3tlY0XAF/view?usp=sharing',
   },
