@@ -177,6 +177,7 @@ const projects = [
     ],
     image: '/assets/work/gunit/cover.png',
     imageAlt: 'Gunit project visual',
+    websiteUrl: 'https://airsoft-nine.vercel.app/',
   },
   {
     badge: 'Team Project',
@@ -192,6 +193,8 @@ const projects = [
     ],
     image: '/assets/work/mmca/cover.png',
     imageAlt: 'MMCA project visual',
+    proposalUrl: 'https://drive.google.com/file/d/1o59_qzZYSmNiajSqSAL2pU9f4IRpUK0M/view?usp=sharing',
+    websiteUrl: 'https://angbaebultti.github.io/mmca/',
   },
   {
     badge: 'Personal Project',
@@ -1358,11 +1361,24 @@ function App() {
                       </div>
 
                       <div className="work-card__actions" aria-label={`${project.title} links`}>
-                        <a href="#work" data-work-reveal style={{ '--work-reveal-index': 4 } as CSSProperties}>
+                        <a
+                          href={project.proposalUrl ?? '#work'}
+                          target={project.proposalUrl ? '_blank' : undefined}
+                          rel={project.proposalUrl ? 'noreferrer' : undefined}
+                          data-work-reveal
+                          style={{ '--work-reveal-index': 4 } as CSSProperties}
+                        >
                           <span>Proposal</span>
                           <img src="/assets/icons/work-arrow.svg" alt="" aria-hidden="true" />
                         </a>
-                        <a className="is-primary" href="#work" data-work-reveal style={{ '--work-reveal-index': 5 } as CSSProperties}>
+                        <a
+                          className="is-primary"
+                          href={project.websiteUrl ?? '#work'}
+                          target={project.websiteUrl ? '_blank' : undefined}
+                          rel={project.websiteUrl ? 'noreferrer' : undefined}
+                          data-work-reveal
+                          style={{ '--work-reveal-index': 5 } as CSSProperties}
+                        >
                           <span>Website</span>
                           <img src="/assets/icons/work-arrow.svg" alt="" aria-hidden="true" />
                         </a>
