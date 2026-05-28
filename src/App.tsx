@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type CSSProperties } from 'react'
+import { useEffect, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from 'react'
 import { animate, motion, useMotionValue, type PanInfo } from 'framer-motion'
 import CustomCursor from './components/CustomCursor'
 import CountUpNumber from './components/CountUpNumber'
@@ -225,12 +225,15 @@ type PastWorkCard = {
   image?: string
 }
 const pastWorkTopCards: PastWorkCard[] = [
-  { label: 'KOTRA past work 01', image: '/assets/past-works/정영은_포트폴리오_2.png' },
-  { label: 'KOTRA past work 02', image: '/assets/past-works/정영은_포트폴리오_3.png' },
-  { label: 'KOTRA past work 03', image: '/assets/past-works/정영은_포트폴리오_5.png' },
-  { label: 'KOTRA past work 04', image: '/assets/past-works/정영은_포트폴리오_6.png' },
+  { label: 'Group 1917', image: '/assets/past-works/Group 1917.jpg' },
+  { label: 'Group 1919', image: '/assets/past-works/Group 1919.jpg' },
+  { label: 'Group 1921', image: '/assets/past-works/Group 1921.jpg' },
+  { label: 'Group 1922', image: '/assets/past-works/Group 1922.jpg' },
+  { label: 'Group 1924', image: '/assets/past-works/Group 1924.jpg' },
+  { label: 'Group 1926', image: '/assets/past-works/Group 1926.jpg' },
+  { label: 'Group 1930', image: '/assets/past-works/Group 1930.jpg' },
+  { label: 'Group 1933', image: '/assets/past-works/Group 1933.png' },
 ]
-const pastWorkCarouselCards = pastWorkTopCards
 
 function WorkCardMeta({ project, revealIndex }: { project: Project; revealIndex: number }) {
   const metaRef = useRef<HTMLParagraphElement>(null)
@@ -490,7 +493,7 @@ function AboutSection() {
 }
 
 function PastWorksSection() {
-  const carouselCards = [...pastWorkTopCards, ...pastWorkTopCards]
+  const carouselCards = pastWorkTopCards
   const cardAngle = 360 / carouselCards.length
   const cardDepth = 420
   const rotationValue = useMotionValue(0)
@@ -1306,7 +1309,7 @@ function App() {
     }
   }, [])
 
-  const handleTitlePointerMove = (event: PointerEvent<HTMLElement>) => {
+  const handleTitlePointerMove = (event: ReactPointerEvent<HTMLElement>) => {
     const bounds = event.currentTarget.getBoundingClientRect()
     const x = event.clientX - bounds.left
     const y = event.clientY - bounds.top

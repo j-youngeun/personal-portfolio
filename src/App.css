@@ -1339,9 +1339,9 @@
     radial-gradient(circle at 24% 18%, rgba(255, 255, 255, 0.16), transparent 28%),
     linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.025)),
     #202020;
-  box-shadow: none;
   transform: translate(-50%, -50%) rotateY(var(--card-rotation, 0deg)) translateZ(var(--card-depth, 0px));
-  transition: transform 220ms ease;
+  transition:
+    transform 220ms ease;
   will-change: transform;
 }
 
