@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState, type CSSProperties, type PointerEvent } from 'react'
+import { useEffect, useRef, useState, type CSSProperties } from 'react'
+import { animate, motion, useMotionValue, type PanInfo } from 'framer-motion'
 import CustomCursor from './components/CustomCursor'
 import CountUpNumber from './components/CountUpNumber'
 import { useWorkCardMetaInView } from './hooks/useWorkCardMetaInView'
@@ -160,7 +161,7 @@ const projectDescriptions: Record<string, string[]> = {
   MonoTrip: [
     '1인 여행자를 위한 맞춤형 여행 경험을 제공하는 서비스로',
     '안전하고 효율적인 여행 계획을 지원하는 앱 개발 개인 프로젝트',
-    '현재 개발 진행중입니다.',
+    '(진행중)',
   ],
 }
 const projects = [
@@ -209,7 +210,7 @@ const projects = [
     description: [
       '1인 여행자를 위한 맞춤형 여행 경험을 제공하는 서비스로',
       '안전하고 효율적인 여행 계획을 지원하는 앱 개발 개인 프로젝트',
-      '현재 개발 진행중입니다.',
+      '(진행중)',
     ],
     image: '/assets/work/monotrip/thumb3.png',
     imageAlt: 'MonoTrip project visual',
@@ -219,6 +220,17 @@ const projects = [
 
 type Project = (typeof projects)[number]
 type ToolLogo = (typeof toolLogos)[number]
+type PastWorkCard = {
+  label: string
+  image?: string
+}
+const pastWorkTopCards: PastWorkCard[] = [
+  { label: 'KOTRA past work 01', image: '/assets/past-works/정영은_포트폴리오_2.png' },
+  { label: 'KOTRA past work 02', image: '/assets/past-works/정영은_포트폴리오_3.png' },
+  { label: 'KOTRA past work 03', image: '/assets/past-works/정영은_포트폴리오_5.png' },
+  { label: 'KOTRA past work 04', image: '/assets/past-works/정영은_포트폴리오_6.png' },
+]
+const pastWorkCarouselCards = pastWorkTopCards
 
 function WorkCardMeta({ project, revealIndex }: { project: Project; revealIndex: number }) {
   const metaRef = useRef<HTMLParagraphElement>(null)
@@ -472,6 +484,65 @@ function AboutSection() {
             </ul>
           ))}
         </div>
+      </div>
+    </section>
+  )
+}
+
+function PastWorksSection() {
+  const carouselCards = [...pastWorkTopCards, ...pastWorkTopCards]
+  const cardAngle = 360 / carouselCards.length
+  const cardDepth = 420
+  const rotationValue = useMotionValue(0)
+  const accumulatedDrag = useRef(0)
+
+  useEffect(() => {
+    const animation = animate(rotationValue, 360, {
+      duration: 32,
+      repeat: Infinity,
+      ease: 'linear',
+    })
+
+    return () => animation.stop()
+  }, [rotationValue])
+
+  const handleDrag = (_event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+    accumulatedDrag.current -= info.delta.x * 0.18
+    rotationValue.set(accumulatedDrag.current)
+  }
+
+  return (
+    <section className="past-works-section" aria-labelledby="past-works-title">
+      <div className="past-works-section__header">
+        <h2 id="past-works-title">
+          <SlotTitle text="PAST WORKS" />
+        </h2>
+      </div>
+
+      <div className="past-works-carousel" aria-label="Past works carousel">
+        <motion.div
+          className="past-works-carousel__track"
+          style={{ rotateY: rotationValue }}
+          drag="x"
+          dragConstraints={{ left: 0, right: 0 }}
+          dragElastic={0.12}
+          dragMomentum={false}
+          onDrag={handleDrag}
+        >
+          {carouselCards.map((card, index) => (
+            <article
+              className="past-work-card"
+              aria-label={card.label}
+              key={`top-${card.label}-${index}`}
+              style={{
+                '--card-rotation': `${cardAngle * index}deg`,
+                '--card-depth': `${cardDepth}px`,
+              } as CSSProperties}
+            >
+              {card.image ? <img className="past-work-card__image" src={encodeURI(card.image)} alt="" loading="lazy" decoding="async" /> : null}
+            </article>
+          ))}
+        </motion.div>
       </div>
     </section>
   )
@@ -1358,9 +1429,7 @@ function App() {
                           data-work-reveal
                           style={{ '--work-reveal-index': 3 } as CSSProperties}
                         >
-                          {(projectDescriptions[project.title] ?? project.description).map((line) => (
-                            <span key={line}>{line}</span>
-                          ))}
+                          {(projectDescriptions[project.title] ?? project.description).join(' ')}
                         </p>
                       </div>
 
@@ -1407,6 +1476,8 @@ function App() {
         </section>
 
         <AboutSection />
+
+        <PastWorksSection />
 
         <TimelineSection />
 
