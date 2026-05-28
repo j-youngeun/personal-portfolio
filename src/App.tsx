@@ -225,10 +225,14 @@ type PastWorkCard = {
   image?: string
 }
 const pastWorkTopCards: PastWorkCard[] = [
-  { label: 'KOTRA past work 01', image: '/assets/past-works/정영은_포트폴리오_2.png' },
-  { label: 'KOTRA past work 02', image: '/assets/past-works/정영은_포트폴리오_3.png' },
-  { label: 'KOTRA past work 03', image: '/assets/past-works/정영은_포트폴리오_5.png' },
-  { label: 'KOTRA past work 04', image: '/assets/past-works/정영은_포트폴리오_6.png' },
+  { label: 'Past work 01', image: '/assets/past-works/Group 1917.jpg' },
+  { label: 'Past work 02', image: '/assets/past-works/Group 1919.jpg' },
+  { label: 'Past work 03', image: '/assets/past-works/Group 1921.jpg' },
+  { label: 'Past work 04', image: '/assets/past-works/Group 1922.jpg' },
+  { label: 'Past work 05', image: '/assets/past-works/Group 1924.jpg' },
+  { label: 'Past work 06', image: '/assets/past-works/Group 1926.jpg' },
+  { label: 'Past work 07', image: '/assets/past-works/Group 1930.jpg' },
+  { label: 'Past work 08', image: '/assets/past-works/Group 1933.png' },
 ]
 const pastWorkCarouselCards = pastWorkTopCards
 
@@ -490,9 +494,9 @@ function AboutSection() {
 }
 
 function PastWorksSection() {
-  const carouselCards = [...pastWorkTopCards, ...pastWorkTopCards]
+  const carouselCards = pastWorkTopCards
   const cardAngle = 360 / carouselCards.length
-  const cardDepth = 420
+  const cardDepth = 620
   const rotationValue = useMotionValue(0)
   const accumulatedDrag = useRef(0)
 
