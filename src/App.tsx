@@ -225,14 +225,14 @@ type PastWorkCard = {
   image?: string
 }
 const pastWorkTopCards: PastWorkCard[] = [
-  { label: 'Past work 01', image: '/assets/past-works/Group 1917.jpg' },
-  { label: 'Past work 02', image: '/assets/past-works/Group 1919.jpg' },
-  { label: 'Past work 03', image: '/assets/past-works/Group 1921.jpg' },
-  { label: 'Past work 04', image: '/assets/past-works/Group 1922.jpg' },
-  { label: 'Past work 05', image: '/assets/past-works/Group 1924.jpg' },
-  { label: 'Past work 06', image: '/assets/past-works/Group 1926.jpg' },
-  { label: 'Past work 07', image: '/assets/past-works/Group 1930.jpg' },
-  { label: 'Past work 08', image: '/assets/past-works/Group 1933.png' },
+  { label: 'Past work 01', image: '/assets/past-works/optimized/Group 1917.webp' },
+  { label: 'Past work 02', image: '/assets/past-works/optimized/Group 1919.webp' },
+  { label: 'Past work 03', image: '/assets/past-works/optimized/Group 1921.webp' },
+  { label: 'Past work 04', image: '/assets/past-works/optimized/Group 1922.webp' },
+  { label: 'Past work 05', image: '/assets/past-works/optimized/Group 1924.webp' },
+  { label: 'Past work 06', image: '/assets/past-works/optimized/Group 1926.webp' },
+  { label: 'Past work 07', image: '/assets/past-works/optimized/Group 1930.webp' },
+  { label: 'Past work 08', image: '/assets/past-works/optimized/Group 1933.webp' },
 ]
 const pastWorkCarouselCards = pastWorkTopCards
 
