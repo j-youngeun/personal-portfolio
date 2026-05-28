@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from 'react'
+import { useEffect, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent, type RefObject } from 'react'
 import { animate, motion, useMotionValue, type PanInfo } from 'framer-motion'
 import CustomCursor from './components/CustomCursor'
 import CountUpNumber from './components/CountUpNumber'
@@ -129,24 +129,55 @@ const aboutCards: AboutCardData[] = [
   },
 ]
 const toolLogos = [
-  { label: 'ChatGPT', src: '/assets/about/chatgpt.png', className: 'about-logo__img--xl' },
+  { label: 'ChatGPT', src: '/assets/about/chatgpt.png', className: 'about-logo__img--chatgpt' },
+  { label: 'Gemini', src: '/assets/about/gemini.svg', className: 'about-logo__img--claude' },
+  { label: 'Gemini mark', src: '/assets/about/gemini-circle.svg', full: true },
+  { label: 'Claude', src: '/assets/about/claude.svg', className: 'about-logo__img--claude-logo' },
+  { label: 'Perplexity', src: '/assets/about/perplexity.svg', className: 'about-logo__img--perplexity' },
+  { label: 'Midjourney', src: '/assets/about/midjourney.svg', className: 'about-logo__img--midjourney' },
+  { label: 'Higgsfield AI', src: '/assets/about/higgsfield.svg', className: 'about-logo__img--lg' },
+  { label: 'NotebookLM', src: '/assets/about/notebooklm.svg', className: 'about-logo__img--wide about-logo__img--notebooklm' },
   { label: 'Figma', src: '/assets/about/figma.svg', className: 'about-logo__img--figma' },
-  { label: 'Claude', src: '/assets/about/claude.svg', className: 'about-logo__img--claude' },
-  { label: 'React', src: '/assets/about/react.svg', className: 'about-logo__img--wide' },
-  { label: 'Notion', src: '/assets/about/notion.svg', className: 'about-logo__img--notion' },
-  { label: 'GitHub', src: '/assets/about/github.svg', className: 'about-logo__img--github' },
   { label: 'Framer', src: '/assets/about/framer.svg', className: 'about-logo__img--framer', itemClassName: 'about-logo--framer' },
   { label: 'Motion', src: '/assets/about/motion.svg', className: 'about-logo__img--motion', tone: 'yellow' },
-  { label: 'CSS', src: '/assets/about/css.svg', className: 'about-logo__img--css', itemClassName: 'about-logo--css' },
+  { label: 'GSAP', src: '/assets/about/gsap.svg', className: 'about-logo__img--wide' },
+  { label: 'Canva', src: '/assets/about/canva.svg', className: 'about-logo__img--xl' },
   { label: 'Photoshop', src: '/assets/about/photoshop-bg.svg', className: 'about-logo__img--ps', overlay: '/assets/about/photoshop-ps.svg' },
   { label: 'Illustrator', src: '/assets/about/illustrator.svg', className: 'about-logo__img--illustrator' },
-  { label: 'Perplexity', src: '/assets/about/perplexity.svg', className: 'about-logo__img--perplexity' },
-  { label: 'Gemini', src: '/assets/about/gemini.svg', className: 'about-logo__img--claude' },
+  { label: 'Premiere Pro', src: '/assets/about/premiere-pro.svg', className: 'about-logo__img--xl' },
   { label: 'VS Code', src: '/assets/about/vscode.svg', className: 'about-logo__img--claude' },
-  { label: 'Gemini mark', src: '/assets/about/gemini-circle.svg', full: true },
-  { label: 'Midjourney', src: '/assets/about/midjourney.svg', className: 'about-logo__img--midjourney' },
+  { label: 'GitHub', src: '/assets/about/github.svg', className: 'about-logo__img--github' },
+  { label: 'React', src: '/assets/about/react.svg', className: 'about-logo__img--wide' },
+  { label: 'CSS', src: '/assets/about/css.svg', className: 'about-logo__img--css', itemClassName: 'about-logo--css' },
   { label: 'JavaScript', src: '/assets/about/javascript.svg', className: 'about-logo__img--xl' },
+  { label: 'Antigravity', src: '/assets/about/antigravity.svg', className: 'about-logo__img--antigravity' },
+  { label: 'Cursor', src: '/assets/about/cursor.svg', className: 'about-logo__img--lg' },
   { label: 'Vercel', src: '/assets/about/vercel.svg' },
+  { label: 'Notion', src: '/assets/about/notion.svg', className: 'about-logo__img--notion' },
+  { label: 'Excel', src: '/assets/about/excel.svg', className: 'about-logo__img--xl' },
+  { label: 'PowerPoint', src: '/assets/about/powerpoint.svg', className: 'about-logo__img--xl' },
+]
+const detailSkillRows = [
+  {
+    category: 'PLANNING',
+    color: '#ff7a1a',
+    skills: ['Notion', 'Excel', 'PowerPoint'],
+  },
+  {
+    category: 'AI',
+    color: '#a98cff',
+    skills: ['ChatGPT', 'Gemini', 'Claude', 'Perplexity', 'Midjourney', 'Higgsfield AI', 'NotebookLM'],
+  },
+  {
+    category: 'DESIGN',
+    color: '#6d9cff',
+    skills: ['Figma', 'Framer', 'GSAP', 'Canva', 'Photoshop', 'Illustrator', 'Premiere Pro'],
+  },
+  {
+    category: 'FRONTEND',
+    color: '#37d985',
+    skills: ['VS Code', 'GitHub', 'React', 'HTML/CSS', 'JavaScript', 'Antigravity', 'Cursor', 'Vercel'],
+  },
 ]
 const gunitDescription = [
   '에어소프트 입문자의 정보 탐색 장벽을 낮추고, 팬덤형 커뮤니티를 통해',
@@ -220,6 +251,11 @@ const projects = [
 
 type Project = (typeof projects)[number]
 type ToolLogo = (typeof toolLogos)[number]
+type DetailSkill = {
+  label: string
+  logo?: ToolLogo
+}
+type DetailSkillRow = (typeof detailSkillRows)[number]
 type PastWorkCard = {
   label: string
   image?: string
@@ -326,10 +362,69 @@ function ToolLogoItem({ logo }: { logo: ToolLogo }) {
   )
 }
 
+function SkillDetailIcon({ skill }: { skill: DetailSkill }) {
+  if (skill.logo) {
+    const logo = skill.logo
+
+    return (
+      <span className={`about-logo skills-detail__logo${logo.tone ? ` about-logo--${logo.tone}` : ''}${logo.itemClassName ? ` ${logo.itemClassName}` : ''}`}>
+        {logo.full ? (
+          <img className="about-logo__full" src={logo.src} alt="" loading="lazy" decoding="async" />
+        ) : (
+          <span className="about-logo__inner">
+            <img className={`about-logo__img${logo.className ? ` ${logo.className}` : ''}`} src={logo.src} alt="" loading="lazy" decoding="async" />
+            {logo.overlay ? <img className="about-logo__overlay" src={logo.overlay} alt="" loading="lazy" decoding="async" /> : null}
+          </span>
+        )}
+      </span>
+    )
+  }
+
+  return <span className="about-logo skills-detail__logo skills-detail__logo--empty" aria-hidden="true" />
+}
+
+function SkillsDetailSection({ rows, isOpen, detailRef }: { rows: DetailSkillRow[]; isOpen: boolean; detailRef: RefObject<HTMLDivElement | null> }) {
+  const skills = rows.map((row) => ({
+    ...row,
+    skills: row.skills.map((label) => ({
+      label,
+      logo: toolLogos.find((logo) => logo.label === label || (label === 'HTML/CSS' && logo.label === 'CSS')),
+    })),
+  }))
+
+  return (
+    <div ref={detailRef} className={`skills-detail${isOpen ? ' is-open' : ''}`} id="skills-detail" aria-hidden={!isOpen}>
+      <div className="skills-detail__panel">
+        <h3>SKILLS</h3>
+        <div className="skills-detail__rows">
+          {skills.map((row) => (
+            <div className={`skills-detail__row skills-detail__row--${row.category.toLowerCase()}`} key={row.category}>
+              <strong style={{ '--skill-color': row.color } as CSSProperties}>{row.category}</strong>
+              <ul>
+                {row.skills.map((skill) => (
+                  <li key={skill.label}>
+                    <span className={skill.label === 'HTML/CSS' ? 'skills-detail__logo-offset' : undefined}>
+                      <SkillDetailIcon skill={skill} />
+                    </span>
+                    <span>{skill.label}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function AboutSection() {
   const introRef = useRef<HTMLDivElement>(null)
   const introTextRef = useRef<HTMLDivElement>(null)
   const revealScopeRef = useRef<HTMLElement>(null)
+  const skillsDetailRef = useRef<HTMLDivElement>(null)
+  const skillsMarqueeRef = useRef<HTMLDivElement>(null)
+  const [isSkillsOpen, setIsSkillsOpen] = useState(false)
   const logoGroups = [toolLogos.slice(0, 8), toolLogos.slice(8, 16), toolLogos.slice(16)]
   const marqueeGroups = [...logoGroups, ...logoGroups]
 
@@ -390,6 +485,44 @@ function AboutSection() {
   }, [])
 
   useEffect(() => {
+    if (!isSkillsOpen) {
+      return
+    }
+
+    const centerSkillsPanel = (behavior: ScrollBehavior) => {
+      const detailElement = skillsDetailRef.current
+      const panelElement = detailElement?.querySelector<HTMLElement>('.skills-detail__panel')
+      const marqueeElement = skillsMarqueeRef.current
+
+      if (!detailElement || !panelElement) {
+        return
+      }
+
+      const panelTop = detailElement.getBoundingClientRect().top + window.scrollY
+      const panelHeight = panelElement.scrollHeight
+      const centerTargetTop = panelTop + panelHeight / 2 - window.innerHeight / 2
+      const marqueeClearTop = marqueeElement ? marqueeElement.getBoundingClientRect().bottom + window.scrollY + 16 : 0
+      const maxScrollTop = document.documentElement.scrollHeight - window.innerHeight
+      const targetTop = Math.min(Math.max(centerTargetTop, marqueeClearTop, 0), Math.max(maxScrollTop, 0))
+
+      window.scrollTo({
+        top: targetTop,
+        behavior,
+      })
+    }
+
+    const animationFrame = window.requestAnimationFrame(() => {
+      centerSkillsPanel('smooth')
+    })
+    const settleTimer = window.setTimeout(() => centerSkillsPanel('smooth'), 760)
+
+    return () => {
+      window.cancelAnimationFrame(animationFrame)
+      window.clearTimeout(settleTimer)
+    }
+  }, [isSkillsOpen])
+
+  useEffect(() => {
     const scope = revealScopeRef.current
 
     if (!scope) {
@@ -438,7 +571,7 @@ function AboutSection() {
   }, [])
 
   return (
-    <section ref={revealScopeRef} className="about-section" id="about" aria-labelledby="about-title">
+    <section ref={revealScopeRef} className={`about-section${isSkillsOpen ? ' is-skills-open' : ''}`} id="about" aria-labelledby="about-title">
       <div className="about-section__header">
         <h2 id="about-title">
           <SlotTitle text="ABOUT" />
@@ -477,7 +610,7 @@ function AboutSection() {
         ))}
       </div>
 
-      <div className="about-logo-marquee" aria-label="Tools and skills" data-about-reveal>
+      <div ref={skillsMarqueeRef} className="about-logo-marquee" aria-label="Tools and skills" data-about-reveal>
         <div className="about-logo-track">
           {marqueeGroups.map((group, groupIndex) => (
             <ul className="about-logo-group" key={groupIndex}>
@@ -488,6 +621,23 @@ function AboutSection() {
           ))}
         </div>
       </div>
+
+      <button
+        className="skills-toggle"
+        type="button"
+        aria-expanded={isSkillsOpen}
+        aria-controls="skills-detail"
+        onClick={() => setIsSkillsOpen((current) => !current)}
+        data-about-reveal
+      >
+        <span className="skills-toggle__icon" aria-hidden="true">
+          <img className="skills-toggle__glyph skills-toggle__glyph--plus" src="/assets/icons/skills-plus.svg" alt="" />
+          <img className="skills-toggle__glyph skills-toggle__glyph--minus" src="/assets/icons/skills-minus.svg" alt="" />
+        </span>
+        View All Skills
+      </button>
+
+      <SkillsDetailSection rows={detailSkillRows} isOpen={isSkillsOpen} detailRef={skillsDetailRef} />
     </section>
   )
 }
