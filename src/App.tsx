@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from 'react'
+import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import { animate, motion, useMotionValue, type PanInfo } from 'framer-motion'
 import CustomCursor from './components/CustomCursor'
 import CountUpNumber from './components/CountUpNumber'
@@ -230,6 +230,8 @@ const pastWorkTopCards: PastWorkCard[] = [
   { label: 'KOTRA past work 03', image: '/assets/past-works/정영은_포트폴리오_5.png' },
   { label: 'KOTRA past work 04', image: '/assets/past-works/정영은_포트폴리오_6.png' },
 ]
+const pastWorkCarouselCards = pastWorkTopCards
+
 function WorkCardMeta({ project, revealIndex }: { project: Project; revealIndex: number }) {
   const metaRef = useRef<HTMLParagraphElement>(null)
   const metaInView = useWorkCardMetaInView(metaRef)
@@ -490,7 +492,7 @@ function AboutSection() {
 function PastWorksSection() {
   const carouselCards = [...pastWorkTopCards, ...pastWorkTopCards]
   const cardAngle = 360 / carouselCards.length
-  const cardDepth = 620
+  const cardDepth = 420
   const rotationValue = useMotionValue(0)
   const accumulatedDrag = useRef(0)
 
@@ -1304,7 +1306,7 @@ function App() {
     }
   }, [])
 
-  const handleTitlePointerMove = (event: ReactPointerEvent<HTMLElement>) => {
+  const handleTitlePointerMove = (event: PointerEvent<HTMLElement>) => {
     const bounds = event.currentTarget.getBoundingClientRect()
     const x = event.clientX - bounds.left
     const y = event.clientY - bounds.top
