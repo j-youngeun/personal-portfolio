@@ -1319,12 +1319,6 @@
   cursor: grabbing;
 }
 
-.past-works-carousel__drag {
-  position: relative;
-  width: 100%;
-  height: 100%;
-}
-
 .past-work-card {
   position: absolute;
   top: 50%;

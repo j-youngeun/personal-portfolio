@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type CSSProperties } from 'react'
+import { useEffect, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from 'react'
 import { animate, motion, useMotionValue, type PanInfo } from 'framer-motion'
 import CustomCursor from './components/CustomCursor'
 import CountUpNumber from './components/CountUpNumber'
@@ -234,7 +234,6 @@ const pastWorkTopCards: PastWorkCard[] = [
   { label: 'Past work 07', image: '/assets/past-works/optimized/Group 1930.webp' },
   { label: 'Past work 08', image: '/assets/past-works/optimized/Group 1933.webp' },
 ]
-const pastWorkCarouselCards = pastWorkTopCards
 
 function WorkCardMeta({ project, revealIndex }: { project: Project; revealIndex: number }) {
   const metaRef = useRef<HTMLParagraphElement>(null)
@@ -1310,7 +1309,7 @@ function App() {
     }
   }, [])
 
-  const handleTitlePointerMove = (event: PointerEvent<HTMLElement>) => {
+  const handleTitlePointerMove = (event: ReactPointerEvent<HTMLElement>) => {
     const bounds = event.currentTarget.getBoundingClientRect()
     const x = event.clientX - bounds.left
     const y = event.clientY - bounds.top
