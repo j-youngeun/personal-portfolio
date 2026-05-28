@@ -225,16 +225,11 @@ type PastWorkCard = {
   image?: string
 }
 const pastWorkTopCards: PastWorkCard[] = [
-  { label: 'Group 1917', image: '/assets/past-works/Group 1917.jpg' },
-  { label: 'Group 1919', image: '/assets/past-works/Group 1919.jpg' },
-  { label: 'Group 1921', image: '/assets/past-works/Group 1921.jpg' },
-  { label: 'Group 1922', image: '/assets/past-works/Group 1922.jpg' },
-  { label: 'Group 1924', image: '/assets/past-works/Group 1924.jpg' },
-  { label: 'Group 1926', image: '/assets/past-works/Group 1926.jpg' },
-  { label: 'Group 1930', image: '/assets/past-works/Group 1930.jpg' },
-  { label: 'Group 1933', image: '/assets/past-works/Group 1933.png' },
+  { label: 'KOTRA past work 01', image: '/assets/past-works/정영은_포트폴리오_2.png' },
+  { label: 'KOTRA past work 02', image: '/assets/past-works/정영은_포트폴리오_3.png' },
+  { label: 'KOTRA past work 03', image: '/assets/past-works/정영은_포트폴리오_5.png' },
+  { label: 'KOTRA past work 04', image: '/assets/past-works/정영은_포트폴리오_6.png' },
 ]
-
 function WorkCardMeta({ project, revealIndex }: { project: Project; revealIndex: number }) {
   const metaRef = useRef<HTMLParagraphElement>(null)
   const metaInView = useWorkCardMetaInView(metaRef)
@@ -493,9 +488,9 @@ function AboutSection() {
 }
 
 function PastWorksSection() {
-  const carouselCards = pastWorkTopCards
+  const carouselCards = [...pastWorkTopCards, ...pastWorkTopCards]
   const cardAngle = 360 / carouselCards.length
-  const cardDepth = 420
+  const cardDepth = 620
   const rotationValue = useMotionValue(0)
   const accumulatedDrag = useRef(0)
 

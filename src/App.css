@@ -1289,18 +1289,19 @@
 }
 
 .past-works-carousel {
-  --past-card-width: clamp(320px, 28vw, 520px);
+  --past-card-width: clamp(260px, 22vw, 420px);
   --past-card-radius: clamp(18px, 1.4vw, 26px);
 
   position: relative;
-  width: 100%;
+  width: min(100%, 1120px);
   min-height: clamp(320px, 33vw, 460px);
+  margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  perspective: 1500px;
-  perspective-origin: 50% 50%;
+  perspective: 1800px;
+  perspective-origin: 50% 40%;
   touch-action: pan-y;
   user-select: none;
 }
@@ -1339,14 +1340,20 @@
     radial-gradient(circle at 24% 18%, rgba(255, 255, 255, 0.16), transparent 28%),
     linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.025)),
     #202020;
+  box-shadow:
+    0 14px 36px rgba(0, 0, 0, 0.22);
   transform: translate(-50%, -50%) rotateY(var(--card-rotation, 0deg)) translateZ(var(--card-depth, 0px));
   transition:
+    box-shadow 220ms ease,
     transform 220ms ease;
   will-change: transform;
+  backface-visibility: hidden;
 }
 
 .past-work-card:hover {
-  box-shadow: none;
+  box-shadow:
+    0 34px 82px rgba(0, 0, 0, 0.42),
+    0 10px 30px rgba(0, 0, 0, 0.18);
 }
 
 .past-work-card__image {
