@@ -218,7 +218,7 @@ const projects = [
     ],
     image: '/assets/work/gunit/cover.png',
     imageAlt: 'Gunit project visual',
-    proposalUrl: 'https://drive.google.com/file/d/1pSF6r5A6qwhJNI1KfHGi6M_ZCTvOqqls/view?usp=sharing',
+    proposalUrl: '/assets/work/gunit/proposal.pdf',
     websiteUrl: 'https://airsoft-nine.vercel.app/',
   },
   {
@@ -235,7 +235,7 @@ const projects = [
     ],
     image: '/assets/work/mmca/cover.png',
     imageAlt: 'MMCA project visual',
-    proposalUrl: 'https://drive.google.com/file/d/1o59_qzZYSmNiajSqSAL2pU9f4IRpUK0M/view?usp=sharing',
+    proposalUrl: '/assets/work/mmca/proposal.pdf',
     websiteUrl: 'https://angbaebultti.github.io/mmca/',
   },
   {
@@ -253,7 +253,8 @@ const projects = [
     ],
     image: '/assets/work/monotrip/thumb3.png',
     imageAlt: 'MonoTrip project visual',
-    proposalUrl: 'https://drive.google.com/file/d/1kMOjJEuQHTjxTXG73ANyANYp3tlY0XAF/view?usp=sharing',
+    proposalUrl: '/assets/work/monotrip/proposal.pdf',
+    websiteUrl: 'http://monotrip.vercel.app',
   },
 ]
 
