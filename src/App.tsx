@@ -1,4 +1,12 @@
-import { useEffect, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent, type RefObject } from 'react'
+import {
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type MouseEvent as ReactMouseEvent,
+  type PointerEvent as ReactPointerEvent,
+  type RefObject,
+} from 'react'
 import { animate, motion, useMotionValue, type PanInfo } from 'framer-motion'
 import CustomCursor from './components/CustomCursor'
 import CountUpNumber from './components/CountUpNumber'
@@ -270,7 +278,6 @@ const pastWorkTopCards: PastWorkCard[] = [
   { label: 'Past work 07', image: '/assets/past-works/optimized/Group 1930.webp' },
   { label: 'Past work 08', image: '/assets/past-works/optimized/Group 1933.webp' },
 ]
-
 function WorkCardMeta({ project, revealIndex }: { project: Project; revealIndex: number }) {
   const metaRef = useRef<HTMLParagraphElement>(null)
   const metaInView = useWorkCardMetaInView(metaRef)
@@ -383,7 +390,17 @@ function SkillDetailIcon({ skill }: { skill: DetailSkill }) {
   return <span className="about-logo skills-detail__logo skills-detail__logo--empty" aria-hidden="true" />
 }
 
-function SkillsDetailSection({ rows, isOpen, detailRef }: { rows: DetailSkillRow[]; isOpen: boolean; detailRef: RefObject<HTMLDivElement | null> }) {
+function SkillsDetailSection({
+  rows,
+  isOpen,
+  detailRef,
+  replayKey,
+}: {
+  rows: DetailSkillRow[]
+  isOpen: boolean
+  detailRef: RefObject<HTMLDivElement | null>
+  replayKey: number
+}) {
   const skills = rows.map((row) => ({
     ...row,
     skills: row.skills.map((label) => ({
@@ -394,15 +411,19 @@ function SkillsDetailSection({ rows, isOpen, detailRef }: { rows: DetailSkillRow
 
   return (
     <div ref={detailRef} className={`skills-detail${isOpen ? ' is-open' : ''}`} id="skills-detail" aria-hidden={!isOpen}>
-      <div className="skills-detail__panel">
+      <div className="skills-detail__panel" key={replayKey}>
         <h3>SKILLS</h3>
         <div className="skills-detail__rows">
-          {skills.map((row) => (
-            <div className={`skills-detail__row skills-detail__row--${row.category.toLowerCase()}`} key={row.category}>
+          {skills.map((row, rowIndex) => (
+            <div
+              className={`skills-detail__row skills-detail__row--${row.category.toLowerCase()}`}
+              key={row.category}
+              style={{ '--skill-row-index': rowIndex } as CSSProperties}
+            >
               <strong style={{ '--skill-color': row.color } as CSSProperties}>{row.category}</strong>
               <ul>
-                {row.skills.map((skill) => (
-                  <li key={skill.label}>
+                {row.skills.map((skill, skillIndex) => (
+                  <li key={skill.label} style={{ '--skill-item-index': skillIndex } as CSSProperties}>
                     <span className={skill.label === 'HTML/CSS' ? 'skills-detail__logo-offset' : undefined}>
                       <SkillDetailIcon skill={skill} />
                     </span>
@@ -424,9 +445,27 @@ function AboutSection() {
   const revealScopeRef = useRef<HTMLElement>(null)
   const skillsDetailRef = useRef<HTMLDivElement>(null)
   const skillsMarqueeRef = useRef<HTMLDivElement>(null)
+  const skillsToggleRef = useRef<HTMLButtonElement>(null)
   const [isSkillsOpen, setIsSkillsOpen] = useState(false)
+  const [skillsReplayKey, setSkillsReplayKey] = useState(0)
   const logoGroups = [toolLogos.slice(0, 8), toolLogos.slice(8, 16), toolLogos.slice(16)]
   const marqueeGroups = [...logoGroups, ...logoGroups]
+
+  const centerSkillsToggle = () => {
+    const toggleElement = skillsToggleRef.current
+
+    if (!toggleElement) {
+      return
+    }
+
+    const toggleRect = toggleElement.getBoundingClientRect()
+    const targetTop = toggleRect.top + window.scrollY + toggleRect.height / 2 - window.innerHeight / 2
+
+    window.scrollTo({
+      top: Math.max(0, Math.round(targetTop)),
+      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+    })
+  }
 
   useEffect(() => {
     const introElement = introRef.current
@@ -489,7 +528,9 @@ function AboutSection() {
       return
     }
 
-    const centerSkillsPanel = (behavior: ScrollBehavior) => {
+    document.documentElement.classList.add('is-skills-auto-positioning')
+
+    const centerSkillsPanel = () => {
       const detailElement = skillsDetailRef.current
       const panelElement = detailElement?.querySelector<HTMLElement>('.skills-detail__panel')
       const marqueeElement = skillsMarqueeRef.current
@@ -507,19 +548,54 @@ function AboutSection() {
 
       window.scrollTo({
         top: targetTop,
-        behavior,
+        behavior: 'auto',
       })
     }
 
+    let settleFrame = 0
     const animationFrame = window.requestAnimationFrame(() => {
-      centerSkillsPanel('smooth')
+      settleFrame = window.requestAnimationFrame(() => {
+        centerSkillsPanel()
+        window.setTimeout(() => document.documentElement.classList.remove('is-skills-auto-positioning'), 120)
+      })
     })
-    const settleTimer = window.setTimeout(() => centerSkillsPanel('smooth'), 760)
 
     return () => {
       window.cancelAnimationFrame(animationFrame)
-      window.clearTimeout(settleTimer)
+      window.cancelAnimationFrame(settleFrame)
+      document.documentElement.classList.remove('is-skills-auto-positioning')
     }
+  }, [isSkillsOpen])
+
+  useEffect(() => {
+    if (!isSkillsOpen) {
+      return
+    }
+
+    const detailElement = skillsDetailRef.current
+
+    if (!detailElement) {
+      return
+    }
+
+    let wasVisible = false
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !wasVisible) {
+          setSkillsReplayKey((current) => current + 1)
+          wasVisible = true
+        }
+
+        if (!entry.isIntersecting) {
+          wasVisible = false
+        }
+      },
+      { threshold: 0.38, rootMargin: '-8% 0px -8% 0px' },
+    )
+
+    observer.observe(detailElement)
+
+    return () => observer.disconnect()
   }, [isSkillsOpen])
 
   useEffect(() => {
@@ -623,11 +699,22 @@ function AboutSection() {
       </div>
 
       <button
+        ref={skillsToggleRef}
         className="skills-toggle"
         type="button"
         aria-expanded={isSkillsOpen}
         aria-controls="skills-detail"
-        onClick={() => setIsSkillsOpen((current) => !current)}
+        onClick={() => {
+          const willClose = isSkillsOpen
+
+          setIsSkillsOpen((current) => !current)
+
+          if (willClose) {
+            window.requestAnimationFrame(() => {
+              window.requestAnimationFrame(centerSkillsToggle)
+            })
+          }
+        }}
         data-about-reveal
       >
         <span className="skills-toggle__icon" aria-hidden="true">
@@ -637,7 +724,7 @@ function AboutSection() {
         View All Skills
       </button>
 
-      <SkillsDetailSection rows={detailSkillRows} isOpen={isSkillsOpen} detailRef={skillsDetailRef} />
+      <SkillsDetailSection rows={detailSkillRows} isOpen={isSkillsOpen} detailRef={skillsDetailRef} replayKey={skillsReplayKey} />
     </section>
   )
 }
@@ -1155,6 +1242,7 @@ function ContactSection() {
 
     const observer = new IntersectionObserver(
       ([entry]) => {
+        section.classList.toggle('is-contact-visible', entry.isIntersecting)
         targets.forEach((target) => {
           target.classList.toggle('is-visible', entry.isIntersecting)
         })
@@ -1191,9 +1279,54 @@ function App() {
   const heroRef = useRef<HTMLElement>(null)
   const lensRef = useRef<HTMLImageElement>(null)
   const workRevealRef = useRef<HTMLDivElement>(null)
+  const navPointerHandledRef = useRef(false)
   const [isHeaderVisible, setIsHeaderVisible] = useState(true)
   const [isTopButtonVisible, setIsTopButtonVisible] = useState(false)
   const [scrollProgress, setScrollProgress] = useState(0)
+
+  const scrollToHash = (hash: string, behavior: ScrollBehavior = 'smooth') => {
+    const target = document.querySelector<HTMLElement>(hash)
+
+    if (!target) {
+      return
+    }
+
+    document.querySelector<HTMLElement>('.timeline-section')?.dispatchEvent(new Event('timeline:reset'))
+    document.documentElement.classList.add('is-anchor-scrolling')
+    setIsHeaderVisible(true)
+
+    const targetTop = Math.round(target.getBoundingClientRect().top + window.scrollY)
+
+    window.scrollTo({
+      top: targetTop,
+      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : behavior,
+    })
+    window.history.pushState(null, '', hash)
+    window.setTimeout(() => document.documentElement.classList.remove('is-anchor-scrolling'), behavior === 'smooth' ? 900 : 120)
+  }
+
+  const handleNavClick = (event: ReactMouseEvent<HTMLAnchorElement>, hash: string) => {
+    event.preventDefault()
+    event.stopPropagation()
+
+    if (navPointerHandledRef.current) {
+      navPointerHandledRef.current = false
+      return
+    }
+
+    scrollToHash(hash)
+  }
+
+  const handleNavPointerDown = (event: ReactPointerEvent<HTMLAnchorElement>, hash: string) => {
+    if (event.pointerType === 'mouse' && event.button !== 0) {
+      return
+    }
+
+    event.preventDefault()
+    event.stopPropagation()
+    navPointerHandledRef.current = true
+    scrollToHash(hash)
+  }
 
   useEffect(() => {
     const handleAnchorClick = (event: MouseEvent) => {
@@ -1216,15 +1349,7 @@ function App() {
       }
 
       event.preventDefault()
-      document.querySelector<HTMLElement>('.timeline-section')?.dispatchEvent(new Event('timeline:reset'))
-
-      const targetTop = Math.round(target.getBoundingClientRect().top + window.scrollY)
-
-      window.scrollTo({
-        top: targetTop,
-        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
-      })
-      window.history.pushState(null, '', hash)
+      scrollToHash(hash)
     }
 
     document.addEventListener('click', handleAnchorClick)
@@ -1473,13 +1598,24 @@ function App() {
       <CustomCursor />
       <main className="portfolio-home" aria-label="Youngeun Jeong portfolio home">
         <header className={`site-header${isHeaderVisible ? '' : ' site-header--hidden'}`}>
-          <a className="site-header__brand" href="#top" aria-label="Youngeun Jeong home">
+          <a
+            className="site-header__brand"
+            href="#top"
+            aria-label="Youngeun Jeong home"
+            onPointerDown={(event) => handleNavPointerDown(event, '#top')}
+            onClick={(event) => handleNavClick(event, '#top')}
+          >
             YOUNGEUN JEONG
           </a>
 
           <nav className="site-header__nav" aria-label="Primary navigation">
             {navItems.map((item) => (
-              <a key={item} href={`#${item.toLowerCase()}`}>
+              <a
+                key={item}
+                href={`#${item.toLowerCase()}`}
+                onPointerDown={(event) => handleNavPointerDown(event, `#${item.toLowerCase()}`)}
+                onClick={(event) => handleNavClick(event, `#${item.toLowerCase()}`)}
+              >
                 {item}
               </a>
             ))}

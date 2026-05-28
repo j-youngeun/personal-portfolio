@@ -5,11 +5,19 @@
   scroll-snap-type: y proximity;
 }
 
+:root.is-skills-auto-positioning .portfolio-home {
+  scroll-snap-type: none;
+}
+
+:root.is-anchor-scrolling .portfolio-home {
+  scroll-snap-type: none;
+}
+
 .site-header {
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 20;
+  z-index: 100;
   display: flex;
   width: 100%;
   align-items: center;
@@ -27,9 +35,9 @@
 }
 
 .site-header--hidden {
-  opacity: 0;
-  pointer-events: none;
-  transform: translateY(-24px);
+  opacity: 1;
+  pointer-events: auto;
+  transform: none;
 }
 
 .site-header a {
@@ -1302,6 +1310,10 @@
   transform: translateY(-2px);
 }
 
+.about-section.is-skills-open .skills-toggle {
+  margin-top: clamp(180px, 18vh, 240px);
+}
+
 .skills-toggle__icon {
   position: relative;
   display: inline-grid;
@@ -1365,7 +1377,7 @@
 
 .skills-detail.is-open {
   grid-template-rows: 1fr;
-  margin-top: 34px;
+  margin-top: clamp(54px, 6vh, 88px);
   opacity: 1;
   transform: translateY(0);
 }
@@ -1375,6 +1387,11 @@
   overflow: hidden;
   border-radius: 18px;
   background: #111;
+  transform-origin: top center;
+}
+
+.skills-detail.is-open .skills-detail__panel {
+  animation: skills-panel-slide-in 760ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .skills-detail__panel h3 {
@@ -1386,6 +1403,10 @@
   font-weight: 600;
   line-height: 1;
   letter-spacing: 0.1em;
+}
+
+.skills-detail.is-open .skills-detail__panel h3 {
+  animation: skills-content-rise 620ms 150ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .skills-detail__rows {
@@ -1416,6 +1437,11 @@
   letter-spacing: 0.02em;
 }
 
+.skills-detail.is-open .skills-detail__row strong {
+  animation: skills-content-rise 560ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(230ms + var(--skill-row-index, 0) * 110ms);
+}
+
 .skills-detail__row ul {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(76px, 1fr));
@@ -1438,6 +1464,11 @@
   line-height: 1.15;
   letter-spacing: 0.02em;
   text-align: center;
+}
+
+.skills-detail.is-open .skills-detail__row li {
+  animation: skills-icon-rise 620ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(300ms + var(--skill-row-index, 0) * 110ms + var(--skill-item-index, 0) * 34ms);
 }
 
 .skills-detail__row--planning ul {
@@ -1626,7 +1657,7 @@
   --timeline-orb-shift: var(--timeline-major-step);
   --timeline-text-shift: calc(var(--timeline-major-step) * 0.753);
   --timeline-orb-shift-third: calc(var(--timeline-major-step) * 2);
-  --timeline-text-shift-third: calc(var(--timeline-major-step) * 1.08);
+  --timeline-text-shift-third: calc(var(--timeline-orb-shift-third) - (var(--timeline-orb-size) / 2) + 1px);
   --timeline-orb-shift-fourth: calc(var(--timeline-major-step) * 3);
   --timeline-text-shift-fourth: calc(var(--timeline-major-step) * 1.71);
   --timeline-orb-shift-fifth: calc(var(--timeline-major-step) * 4);
@@ -2532,6 +2563,39 @@
   }
 }
 
+@keyframes skills-panel-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(-34px) scaleY(0.965);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scaleY(1);
+  }
+}
+
+@keyframes skills-content-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes skills-icon-rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 @keyframes timeline-scroll-mouse {
   0%,
   100% {
@@ -3142,8 +3206,12 @@
     font-size: 16px;
   }
 
+  .about-section.is-skills-open .skills-toggle {
+    margin-top: 96px;
+  }
+
   .skills-detail.is-open {
-    margin-top: 18px;
+    margin-top: 36px;
   }
 
   .skills-detail__panel h3 {
@@ -3229,6 +3297,15 @@
     opacity: 1 !important;
     filter: none !important;
     clip-path: none !important;
+    transform: none !important;
+  }
+
+  .skills-detail__panel,
+  .skills-detail__panel h3,
+  .skills-detail__row strong,
+  .skills-detail__row li {
+    animation: none !important;
+    opacity: 1 !important;
     transform: none !important;
   }
 
