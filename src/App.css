@@ -1390,7 +1390,7 @@
   transform-origin: top center;
 }
 
-.skills-detail.is-open .skills-detail__panel {
+.skills-detail.is-open:not(.has-played) .skills-detail__panel {
   animation: skills-panel-slide-in 760ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
@@ -1405,7 +1405,7 @@
   letter-spacing: 0.1em;
 }
 
-.skills-detail.is-open .skills-detail__panel h3 {
+.skills-detail.is-open:not(.has-played) .skills-detail__panel h3 {
   animation: skills-content-rise 620ms 150ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
@@ -1437,7 +1437,7 @@
   letter-spacing: 0.02em;
 }
 
-.skills-detail.is-open .skills-detail__row strong {
+.skills-detail.is-open:not(.has-played) .skills-detail__row strong {
   animation: skills-content-rise 560ms cubic-bezier(0.22, 1, 0.36, 1) both;
   animation-delay: calc(230ms + var(--skill-row-index, 0) * 110ms);
 }
@@ -1466,7 +1466,7 @@
   text-align: center;
 }
 
-.skills-detail.is-open .skills-detail__row li {
+.skills-detail.is-open:not(.has-played) .skills-detail__row li {
   animation: skills-icon-rise 620ms cubic-bezier(0.22, 1, 0.36, 1) both;
   animation-delay: calc(300ms + var(--skill-row-index, 0) * 110ms + var(--skill-item-index, 0) * 34ms);
 }
@@ -1593,12 +1593,14 @@
   overflow: hidden;
   border: none;
   border-radius: var(--past-card-radius);
+  clip-path: inset(0 round var(--past-card-radius));
   background:
     radial-gradient(circle at 24% 18%, rgba(255, 255, 255, 0.16), transparent 28%),
     linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.025)),
     #202020;
   transform: translate(-50%, -50%) rotateY(var(--card-rotation, 0deg)) translateZ(var(--card-depth, 0px));
   transition: transform 220ms ease;
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
   will-change: transform;
 }
 
@@ -1611,6 +1613,7 @@
   inset: 0;
   width: 100%;
   height: 100%;
+  border-radius: inherit;
   object-fit: cover;
   object-position: center;
   background: #000;
@@ -1631,8 +1634,9 @@
   }
 
   .past-work-card {
+    --past-card-radius: clamp(14px, 2vw, 20px);
+
     width: clamp(260px, 42vw, 380px);
-    border-radius: clamp(14px, 2vw, 20px);
   }
 }
 

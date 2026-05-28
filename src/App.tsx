@@ -395,12 +395,12 @@ function SkillsDetailSection({
   rows,
   isOpen,
   detailRef,
-  replayKey,
+  hasPlayed,
 }: {
   rows: DetailSkillRow[]
   isOpen: boolean
   detailRef: RefObject<HTMLDivElement | null>
-  replayKey: number
+  hasPlayed: boolean
 }) {
   const skills = rows.map((row) => ({
     ...row,
@@ -411,8 +411,8 @@ function SkillsDetailSection({
   }))
 
   return (
-    <div ref={detailRef} className={`skills-detail${isOpen ? ' is-open' : ''}`} id="skills-detail" aria-hidden={!isOpen}>
-      <div className="skills-detail__panel" key={replayKey}>
+    <div ref={detailRef} className={`skills-detail${isOpen ? ' is-open' : ''}${hasPlayed ? ' has-played' : ''}`} id="skills-detail" aria-hidden={!isOpen}>
+      <div className="skills-detail__panel">
         <h3>SKILLS</h3>
         <div className="skills-detail__rows">
           {skills.map((row, rowIndex) => (
@@ -448,7 +448,7 @@ function AboutSection() {
   const skillsMarqueeRef = useRef<HTMLDivElement>(null)
   const skillsToggleRef = useRef<HTMLButtonElement>(null)
   const [isSkillsOpen, setIsSkillsOpen] = useState(false)
-  const [skillsReplayKey, setSkillsReplayKey] = useState(0)
+  const [hasSkillsPlayed, setHasSkillsPlayed] = useState(false)
   const logoGroups = [toolLogos.slice(0, 8), toolLogos.slice(8, 16), toolLogos.slice(16)]
   const marqueeGroups = [...logoGroups, ...logoGroups]
 
@@ -569,35 +569,16 @@ function AboutSection() {
   }, [isSkillsOpen])
 
   useEffect(() => {
-    if (!isSkillsOpen) {
+    if (!isSkillsOpen || hasSkillsPlayed) {
       return
     }
 
-    const detailElement = skillsDetailRef.current
+    const timeoutId = window.setTimeout(() => {
+      setHasSkillsPlayed(true)
+    }, 900)
 
-    if (!detailElement) {
-      return
-    }
-
-    let wasVisible = false
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !wasVisible) {
-          setSkillsReplayKey((current) => current + 1)
-          wasVisible = true
-        }
-
-        if (!entry.isIntersecting) {
-          wasVisible = false
-        }
-      },
-      { threshold: 0.38, rootMargin: '-8% 0px -8% 0px' },
-    )
-
-    observer.observe(detailElement)
-
-    return () => observer.disconnect()
-  }, [isSkillsOpen])
+    return () => window.clearTimeout(timeoutId)
+  }, [hasSkillsPlayed, isSkillsOpen])
 
   useEffect(() => {
     const scope = revealScopeRef.current
@@ -725,7 +706,7 @@ function AboutSection() {
         View All Skills
       </button>
 
-      <SkillsDetailSection rows={detailSkillRows} isOpen={isSkillsOpen} detailRef={skillsDetailRef} replayKey={skillsReplayKey} />
+      <SkillsDetailSection rows={detailSkillRows} isOpen={isSkillsOpen} detailRef={skillsDetailRef} hasPlayed={hasSkillsPlayed} />
     </section>
   )
 }
