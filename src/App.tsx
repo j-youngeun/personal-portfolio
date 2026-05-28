@@ -160,6 +160,7 @@ const projectDescriptions: Record<string, string[]> = {
   MonoTrip: [
     '1인 여행자를 위한 맞춤형 여행 경험을 제공하는 서비스로',
     '안전하고 효율적인 여행 계획을 지원하는 앱 개발 개인 프로젝트',
+    '현재 개발 진행중입니다.',
   ],
 }
 const projects = [
@@ -208,6 +209,7 @@ const projects = [
     description: [
       '1인 여행자를 위한 맞춤형 여행 경험을 제공하는 서비스로',
       '안전하고 효율적인 여행 계획을 지원하는 앱 개발 개인 프로젝트',
+      '현재 개발 진행중입니다.',
     ],
     image: '/assets/work/monotrip/thumb3.png',
     imageAlt: 'MonoTrip project visual',
@@ -1381,7 +1383,7 @@ function App() {
                           data-work-reveal
                           style={{ '--work-reveal-index': 5 } as CSSProperties}
                         >
-                          <span>Website</span>
+                          <span>Project</span>
                           <img src="/assets/icons/work-arrow.svg" alt="" aria-hidden="true" />
                         </a>
                       </div>

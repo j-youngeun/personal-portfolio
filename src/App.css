@@ -362,15 +362,15 @@
 
 .scroll-cue {
   position: absolute;
-  bottom: 50px;
+  bottom: clamp(28px, 4.6svh, 50px);
   left: 50%;
   z-index: 8;
   display: flex;
-  gap: 34px;
+  gap: clamp(14px, 2.1vw, 34px);
   align-items: center;
   color: rgba(248, 248, 248, 0.72);
   font-family: var(--mono);
-  font-size: 14px;
+  font-size: clamp(11px, 0.73vw, 14px);
   line-height: 110%;
   letter-spacing: -0.04em;
   text-decoration: none;
@@ -382,8 +382,8 @@
 
 .scroll-cue img {
   display: block;
-  width: 15px;
-  height: 15px;
+  width: clamp(12px, 0.78vw, 15px);
+  height: clamp(12px, 0.78vw, 15px);
   animation: arrow-bounce 1700ms ease-in-out infinite;
 }
 
@@ -407,9 +407,10 @@
   --work-btn-size: clamp(18px, 0.94vw, 24px);
   --work-btn-py: clamp(10px, 0.62vw, 16px);
   --work-btn-pl: clamp(20px, 1.15vw, 30px);
-  --work-btn-pr: clamp(14px, 0.84vw, 22px);
+  --work-btn-pr: clamp(10px, 0.58vw, 14px);
   --work-btn-icon-size: clamp(33.941px, 1.72vw, 48px);
   --work-btn-radius: 10px;
+  --work-btn-width: clamp(148px, 9.45vw, 182px);
 
   position: relative;
   z-index: 2;
@@ -669,7 +670,9 @@
 .work-card__actions a {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 10px;
+  width: var(--work-btn-width);
   padding: var(--work-btn-py) var(--work-btn-pr) var(--work-btn-py) var(--work-btn-pl);
   border-radius: var(--work-btn-radius);
   background: #fff;
@@ -2380,10 +2383,7 @@
 
 @media (max-width: 1280px), (max-height: 720px) {
   .scroll-cue {
-    left: calc(50% + clamp(72px, 8vw, 112px));
     bottom: clamp(20px, 4vh, 34px);
-    gap: 14px;
-    font-size: 12px;
   }
 }
 
@@ -2530,8 +2530,6 @@
 
   .scroll-cue {
     bottom: 34px;
-    gap: 20px;
-    font-size: 12px;
   }
 
   .work-section {
@@ -2611,10 +2609,7 @@
   }
 
   .scroll-cue {
-    left: calc(50% + 54px);
     bottom: 28px;
-    gap: 10px;
-    font-size: 11px;
   }
 
   .work-section {
@@ -2627,8 +2622,9 @@
     --work-btn-size: 16px;
     --work-btn-py: 9px;
     --work-btn-pl: 16px;
-    --work-btn-pr: 12px;
+    --work-btn-pr: 8px;
     --work-btn-icon-size: 32px;
+    --work-btn-width: 124px;
 
     padding: 0;
   }
