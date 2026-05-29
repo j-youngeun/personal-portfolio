@@ -7,7 +7,12 @@ import {
   type PointerEvent as ReactPointerEvent,
   type RefObject,
 } from 'react'
-import { animate, motion, useMotionValue, type PanInfo } from 'framer-motion'
+import {
+  animate,
+  motion,
+  useMotionValue,
+  type PanInfo,
+} from 'framer-motion'
 import CustomCursor from './components/CustomCursor'
 import CountUpNumber from './components/CountUpNumber'
 import { useWorkCardMetaInView } from './hooks/useWorkCardMetaInView'
@@ -210,11 +215,9 @@ const strengthTabs = [
     description: [
       [
         { text: '사진을 전공', highlight: true },
-        { text: '하며 익힌 구도와 시선,' },
-      ],
-      [
-        { text: '디자인 업무', highlight: true },
-        { text: '에서 쌓은 화면 구성 경험은' },
+        { text: '하며 익힌 구도와 시선, ' },
+        { text: '디자인 업무 경험', highlight: true },
+        { text: '은' },
       ],
       [{ text: '사용자의 흐름을 고려한 비주얼 설계에 강점이 되었습니다' }],
     ],
@@ -258,8 +261,8 @@ const strengthTabs = [
     title: 'People',
     description: [
       [
-        { text: '팀원들과의 ' },
-        { text: '원활한 소통과 협업', highlight: true },
+        { text: '팀원과의 ' },
+        { text: '원활한 소통과 협업 능력', highlight: true },
         { text: '은' },
       ],
       [{ text: '프로젝트를 완성하는 중요한 강점 중 하나였습니다' }],
