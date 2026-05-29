@@ -258,6 +258,7 @@ const strengthTabs = [
     title: 'People',
     description: [
       [
+        { text: '팀원들과의 ' },
         { text: '원활한 소통과 협업', highlight: true },
         { text: '은' },
       ],
