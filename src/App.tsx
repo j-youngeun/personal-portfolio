@@ -13,7 +13,20 @@ import CountUpNumber from './components/CountUpNumber'
 import { useWorkCardMetaInView } from './hooks/useWorkCardMetaInView'
 import './App.css'
 
-const navItems = ['WORK', 'ABOUT', 'CONTACT']
+type NavItem = {
+  label: string
+  hash: `#${string}`
+  hideOnMobile?: boolean
+}
+
+const navItems: NavItem[] = [
+  { label: 'WORK', hash: '#work' },
+  { label: 'ABOUT', hash: '#about' },
+  { label: 'SKILLS', hash: '#skills' },
+  { label: 'TIMELINE', hash: '#timeline', hideOnMobile: true },
+  { label: 'STRENGTH', hash: '#strength' },
+  { label: 'CONTACT', hash: '#contact' },
+]
 const titleLead = 'Create with'
 const titleAccent = 'focus'
 type AboutItem = {
@@ -336,6 +349,7 @@ type PastWorkCard = {
   label: string
   image?: string
 }
+
 const pastWorkTopCards: PastWorkCard[] = [
   { label: 'Past work 01', image: '/assets/past-works/optimized/Group 1917.webp' },
   { label: 'Past work 02', image: '/assets/past-works/optimized/Group 1919.webp' },
@@ -346,6 +360,7 @@ const pastWorkTopCards: PastWorkCard[] = [
   { label: 'Past work 07', image: '/assets/past-works/optimized/Group 1930.webp' },
   { label: 'Past work 08', image: '/assets/past-works/optimized/Group 1933.webp' },
 ]
+
 function WorkCardMeta({ project, revealIndex }: { project: Project; revealIndex: number }) {
   const metaRef = useRef<HTMLParagraphElement>(null)
   const metaInView = useWorkCardMetaInView(metaRef)
@@ -540,6 +555,23 @@ function AboutSection() {
   useEffect(() => {
     isSkillsOpenRef.current = isSkillsOpen
   }, [isSkillsOpen])
+
+  useEffect(() => {
+    const openSkillsFromNav = () => {
+      if (isSkillsOpenRef.current) {
+        return
+      }
+
+      hasAutoOpenedSkillsRef.current = true
+      setIsSkillsOpen(true)
+    }
+
+    window.addEventListener('skills:open', openSkillsFromNav)
+
+    return () => {
+      window.removeEventListener('skills:open', openSkillsFromNav)
+    }
+  }, [])
 
   useEffect(() => {
     const toggleElement = skillsToggleRef.current
@@ -811,7 +843,7 @@ function AboutSection() {
         ))}
       </div>
 
-      <div ref={skillsMarqueeRef} className="about-logo-marquee" aria-label="Tools and skills" data-about-reveal>
+      <div ref={skillsMarqueeRef} className="about-logo-marquee" id="skills" aria-label="Tools and skills" data-about-reveal>
         <div className="about-logo-track">
           {marqueeGroups.map((group, groupIndex) => (
             <ul className="about-logo-group" key={groupIndex}>
@@ -877,7 +909,7 @@ function PastWorksSection() {
   }
 
   return (
-    <section className="past-works-section" aria-labelledby="past-works-title">
+    <section className="past-works-section" id="past-works" aria-labelledby="past-works-title">
       <div className="past-works-section__header">
         <h2 id="past-works-title">
           <SlotTitle text="PAST WORKS" />
@@ -1207,7 +1239,12 @@ function TimelineSection() {
   }, [])
 
   return (
-    <section ref={timelineRef} className={`timeline-section${isTimelineIntroVisible ? ' is-intro-visible' : ''}`} aria-labelledby="timeline-title">
+    <section
+      ref={timelineRef}
+      id="timeline"
+      className={`timeline-section${isTimelineIntroVisible ? ' is-intro-visible' : ''}`}
+      aria-labelledby="timeline-title"
+    >
       <div className="timeline-sticky">
         <div className="timeline-section__header">
           <h2 id="timeline-title">
@@ -1647,6 +1684,11 @@ function App() {
       behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : behavior,
     })
     window.history.pushState(null, '', hash)
+
+    if (hash === '#skills') {
+      window.dispatchEvent(new Event('skills:open'))
+    }
+
     window.setTimeout(() => document.documentElement.classList.remove('is-anchor-scrolling'), behavior === 'smooth' ? 900 : 120)
   }
 
@@ -1956,12 +1998,13 @@ function App() {
           <nav className="site-header__nav" aria-label="Primary navigation">
             {navItems.map((item) => (
               <a
-                key={item}
-                href={`#${item.toLowerCase()}`}
-                onPointerDown={(event) => handleNavPointerDown(event, `#${item.toLowerCase()}`)}
-                onClick={(event) => handleNavClick(event, `#${item.toLowerCase()}`)}
+                key={item.label}
+                className={item.hideOnMobile ? 'site-header__nav-link site-header__nav-link--hide-mobile' : 'site-header__nav-link'}
+                href={item.hash}
+                onPointerDown={(event) => handleNavPointerDown(event, item.hash)}
+                onClick={(event) => handleNavClick(event, item.hash)}
               >
-                {item}
+                {item.label}
               </a>
             ))}
           </nav>
