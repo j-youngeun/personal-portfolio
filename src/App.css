@@ -2299,6 +2299,10 @@
   object-fit: cover;
 }
 
+.strength-showcase__image--people img {
+  object-fit: contain;
+}
+
 .strength-showcase__copy {
   position: relative;
   display: flex;
@@ -2320,28 +2324,31 @@
   margin-inline: auto;
   overflow: hidden;
   white-space: nowrap;
+}
+
+.strength-section.is-visible .strength-showcase__line {
   animation: strength-type-line 1200ms steps(42, end) both;
   animation-delay: 420ms;
 }
 
-.strength-showcase__line:nth-child(2) {
+.strength-section.is-visible .strength-showcase__line:nth-child(2) {
   animation-delay: 600ms;
 }
 
-.strength-showcase__line:nth-child(3) {
+.strength-section.is-visible .strength-showcase__line:nth-child(3) {
   animation-delay: 780ms;
 }
 
-.strength-section.has-intro-played .strength-showcase__line {
+.strength-section.is-visible.has-intro-played .strength-showcase__line {
   animation-duration: 900ms;
   animation-delay: 80ms;
 }
 
-.strength-section.has-intro-played .strength-showcase__line:nth-child(2) {
+.strength-section.is-visible.has-intro-played .strength-showcase__line:nth-child(2) {
   animation-delay: 180ms;
 }
 
-.strength-section.has-intro-played .strength-showcase__line:nth-child(3) {
+.strength-section.is-visible.has-intro-played .strength-showcase__line:nth-child(3) {
   animation-delay: 280ms;
 }
 
@@ -3630,7 +3637,7 @@
 
   .strength-showcase__copy p {
     font-size: clamp(14px, 3.8cqi, 18px);
-    line-height: 1.5;
+    line-height: clamp(1.28, 3.6cqi, 1.42);
   }
 
   .strength-tabs {

@@ -218,7 +218,7 @@ const strengthTabs = [
       ],
       [{ text: '사용자의 흐름을 고려한 비주얼 설계에 강점이 되었습니다' }],
     ],
-    image: '/assets/about/strength-visual.png',
+    image: '/assets/about/strength-visual-photo.png',
     accent: '#ff5100',
   },
   {
@@ -535,6 +535,7 @@ function AboutSection() {
   const [hasSkillsPlayed, setHasSkillsPlayed] = useState(false)
   const logoGroups = [toolLogos.slice(0, 8), toolLogos.slice(8, 16), toolLogos.slice(16)]
   const marqueeGroups = [...logoGroups, ...logoGroups]
+  const isNavigatingPastSkills = () => document.documentElement.classList.contains('is-anchor-scrolling') && window.location.hash !== '#skills'
 
   const centerSkillsToggle = () => {
     const toggleElement = skillsToggleRef.current
@@ -598,6 +599,11 @@ function AboutSection() {
         return
       }
 
+      if (isNavigatingPastSkills()) {
+        cancelPendingOpen()
+        return
+      }
+
       const rect = toggleElement.getBoundingClientRect()
       const viewportHeight = window.innerHeight || document.documentElement.clientHeight
       const toggleCenter = rect.top + rect.height / 2
@@ -612,6 +618,11 @@ function AboutSection() {
 
       hasQueuedAutoOpen = true
       autoOpenTimer = window.setTimeout(() => {
+        if (isNavigatingPastSkills()) {
+          cancelPendingOpen()
+          return
+        }
+
         hasAutoOpenedSkillsRef.current = true
         setIsSkillsOpen(true)
         autoOpenTimer = 0
@@ -703,6 +714,10 @@ function AboutSection() {
     document.documentElement.classList.add('is-skills-auto-positioning')
 
     const centerSkillsPanel = () => {
+      if (isNavigatingPastSkills()) {
+        return
+      }
+
       const detailElement = skillsDetailRef.current
       const panelElement = detailElement?.querySelector<HTMLElement>('.skills-detail__panel')
       const marqueeElement = skillsMarqueeRef.current
@@ -1556,7 +1571,7 @@ function StrengthSection() {
             aria-labelledby={`strength-tab-${activeStrength.key}`}
             aria-live="polite"
           >
-            <div className="strength-showcase__image" key={activeStrength.key}>
+            <div className={`strength-showcase__image strength-showcase__image--${activeStrength.key}`} key={activeStrength.key}>
               <img src={activeStrength.image} alt="" loading="lazy" decoding="async" />
             </div>
             <div className="strength-showcase__copy" key={`${activeStrength.key}-copy`}>
