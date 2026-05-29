@@ -187,6 +187,73 @@ const detailSkillRows = [
     skills: ['VS Code', 'GitHub', 'React', 'HTML/CSS', 'JavaScript', 'Antigravity', 'Cursor', 'Vercel'],
   },
 ]
+
+const strengthTabs = [
+  {
+    key: 'visual',
+    label: 'Visual',
+    kicker: '01 / Visual Direction',
+    title: 'Visual',
+    description: [
+      [
+        { text: '사진을 전공', highlight: true },
+        { text: '하며 익힌 구도와 시선,' },
+      ],
+      [
+        { text: '디자인 업무', highlight: true },
+        { text: '에서 쌓은 화면 구성 경험은' },
+      ],
+      [{ text: '사용자의 흐름을 고려한 비주얼 설계에 강점이 되었습니다' }],
+    ],
+    image: '/assets/about/strength-visual.png',
+    accent: '#ff5100',
+  },
+  {
+    key: 'planning',
+    label: 'Planning',
+    kicker: '02 / Structure',
+    title: 'Planning',
+    description: [
+      [
+        { text: '계획적으로 정리하는 습관', highlight: true },
+        { text: '은' },
+      ],
+      [{ text: '프로젝트의 기획과 구조를 잡는 과정에서 강점으로 작용했습니다' }],
+    ],
+    image: '/assets/about/strength-planning.png',
+    accent: '#57c7ff',
+  },
+  {
+    key: 'tools',
+    label: 'Tools',
+    kicker: '03 / Expanding Range',
+    title: 'Tools',
+    description: [
+      [
+        { text: '새로운 툴에 대한 호기심과 추진력', highlight: true },
+        { text: '은' },
+      ],
+      [{ text: '디자인을 넘어 프론트엔드까지 직접 구현해보는 원동력이 되었습니다' }],
+    ],
+    image: '/assets/about/strength-tools.png',
+    accent: '#b4ff52',
+  },
+  {
+    key: 'people',
+    label: 'People',
+    kicker: '04 / Team Energy',
+    title: 'People',
+    description: [
+      [
+        { text: '원활한 소통과 협업', highlight: true },
+        { text: '은' },
+      ],
+      [{ text: '프로젝트를 완성하는 중요한 강점 중 하나였습니다' }],
+    ],
+    image: '/assets/about/strength-people.png',
+    accent: '#ffcf4d',
+  },
+]
 const gunitDescription = [
   '에어소프트 입문자의 정보 탐색 장벽을 낮추고, 팬덤형 커뮤니티를 통해',
   '지속적인 참여를 유도하는 AI 챗봇 기반 커뮤니티 앱 개발 팀 프로젝트',
@@ -447,6 +514,8 @@ function AboutSection() {
   const skillsDetailRef = useRef<HTMLDivElement>(null)
   const skillsMarqueeRef = useRef<HTMLDivElement>(null)
   const skillsToggleRef = useRef<HTMLButtonElement>(null)
+  const isSkillsOpenRef = useRef(false)
+  const hasAutoOpenedSkillsRef = useRef(false)
   const [isSkillsOpen, setIsSkillsOpen] = useState(false)
   const [hasSkillsPlayed, setHasSkillsPlayed] = useState(false)
   const logoGroups = [toolLogos.slice(0, 8), toolLogos.slice(8, 16), toolLogos.slice(16)]
@@ -467,6 +536,76 @@ function AboutSection() {
       behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
     })
   }
+
+  useEffect(() => {
+    isSkillsOpenRef.current = isSkillsOpen
+  }, [isSkillsOpen])
+
+  useEffect(() => {
+    const toggleElement = skillsToggleRef.current
+
+    if (!toggleElement) {
+      return
+    }
+
+    let animationFrame = 0
+    let autoOpenTimer = 0
+    let hasQueuedAutoOpen = false
+
+    const cancelPendingOpen = () => {
+      window.clearTimeout(autoOpenTimer)
+      autoOpenTimer = 0
+      hasQueuedAutoOpen = false
+    }
+
+    const checkAutoOpen = () => {
+      animationFrame = 0
+
+      if (hasAutoOpenedSkillsRef.current || isSkillsOpenRef.current) {
+        cancelPendingOpen()
+        return
+      }
+
+      const rect = toggleElement.getBoundingClientRect()
+      const viewportHeight = window.innerHeight || document.documentElement.clientHeight
+      const toggleCenter = rect.top + rect.height / 2
+      const viewportCenter = viewportHeight / 2
+      const centerDistance = Math.abs(toggleCenter - viewportCenter)
+      const isVisible = rect.bottom > 0 && rect.top < viewportHeight
+      const isNearCenter = isVisible && centerDistance < Math.min(260, viewportHeight * 0.28)
+
+      if (!isNearCenter || hasQueuedAutoOpen) {
+        return
+      }
+
+      hasQueuedAutoOpen = true
+      autoOpenTimer = window.setTimeout(() => {
+        hasAutoOpenedSkillsRef.current = true
+        setIsSkillsOpen(true)
+        autoOpenTimer = 0
+      }, 380)
+    }
+
+    const requestCheck = () => {
+      if (!animationFrame) {
+        animationFrame = window.requestAnimationFrame(checkAutoOpen)
+      }
+    }
+
+    requestCheck()
+    window.addEventListener('scroll', requestCheck, { passive: true })
+    window.addEventListener('resize', requestCheck)
+
+    return () => {
+      if (animationFrame) {
+        window.cancelAnimationFrame(animationFrame)
+      }
+
+      cancelPendingOpen()
+      window.removeEventListener('scroll', requestCheck)
+      window.removeEventListener('resize', requestCheck)
+    }
+  }, [])
 
   useEffect(() => {
     const introElement = introRef.current
@@ -549,21 +688,25 @@ function AboutSection() {
 
       window.scrollTo({
         top: targetTop,
-        behavior: 'auto',
+        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
       })
     }
 
     let settleFrame = 0
+    let recenterTimer = 0
+    let unlockTimer = 0
     const animationFrame = window.requestAnimationFrame(() => {
       settleFrame = window.requestAnimationFrame(() => {
-        centerSkillsPanel()
-        window.setTimeout(() => document.documentElement.classList.remove('is-skills-auto-positioning'), 120)
+        recenterTimer = window.setTimeout(centerSkillsPanel, 560)
+        unlockTimer = window.setTimeout(() => document.documentElement.classList.remove('is-skills-auto-positioning'), 1300)
       })
     })
 
     return () => {
       window.cancelAnimationFrame(animationFrame)
       window.cancelAnimationFrame(settleFrame)
+      window.clearTimeout(recenterTimer)
+      window.clearTimeout(unlockTimer)
       document.documentElement.classList.remove('is-skills-auto-positioning')
     }
   }, [isSkillsOpen])
@@ -831,15 +974,15 @@ function TimelineSection() {
       document.documentElement.style.scrollBehavior = 'auto'
     }
 
-    const scrollToContact = () => {
-      const contactSection = document.getElementById('contact')
+    const scrollToNextSection = () => {
+      const nextSection = document.getElementById('strength') ?? document.getElementById('contact')
 
-      if (!contactSection) {
+      if (!nextSection) {
         return
       }
 
       const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-      const targetTop = Math.round(contactSection.getBoundingClientRect().top + window.scrollY)
+      const targetTop = Math.round(nextSection.getBoundingClientRect().top + window.scrollY)
       const startTop = window.scrollY
       const distance = targetTop - startTop
 
@@ -882,7 +1025,7 @@ function TimelineSection() {
       timelineExitLocked = false
       window.clearTimeout(timelineExitTimer)
       requestSync()
-      scrollToContact()
+      scrollToNextSection()
     }
 
     const resetTimeline = () => {
@@ -914,7 +1057,7 @@ function TimelineSection() {
         timelineExitWheelCount = 0
         timelineExitLocked = false
         window.clearTimeout(timelineExitTimer)
-        scrollToContact()
+        scrollToNextSection()
       }
     }
 
@@ -1196,6 +1339,226 @@ function TimelineSection() {
           skip
         </button>
 
+      </div>
+    </section>
+  )
+}
+
+function StrengthSection() {
+  const sectionRef = useRef<HTMLElement>(null)
+  const [isStrengthVisible, setIsStrengthVisible] = useState(false)
+  const [hasStrengthIntroPlayed, setHasStrengthIntroPlayed] = useState(false)
+  const [activeTab, setActiveTab] = useState(0)
+  const activeStrength = strengthTabs[activeTab]
+  const activeTabRef = useRef(activeTab)
+
+  useEffect(() => {
+    activeTabRef.current = activeTab
+  }, [activeTab])
+
+  useEffect(() => {
+    if (!isStrengthVisible || hasStrengthIntroPlayed) {
+      return
+    }
+
+    const timer = window.setTimeout(() => {
+      setHasStrengthIntroPlayed(true)
+    }, 1900)
+
+    return () => {
+      window.clearTimeout(timer)
+    }
+  }, [hasStrengthIntroPlayed, isStrengthVisible])
+
+  useEffect(() => {
+    const section = sectionRef.current
+
+    if (!section) {
+      return
+    }
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      const frame = window.requestAnimationFrame(() => setIsStrengthVisible(true))
+
+      return () => {
+        window.cancelAnimationFrame(frame)
+      }
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsStrengthVisible(true)
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.28, rootMargin: '0px 0px -12% 0px' },
+    )
+
+    observer.observe(section)
+
+    return () => {
+      observer.disconnect()
+    }
+  }, [])
+
+  useEffect(() => {
+    const section = sectionRef.current
+
+    if (!section) {
+      return
+    }
+
+    let wheelLocked = false
+    let wheelTimer = 0
+
+    const isSectionActive = () => {
+      const rect = section.getBoundingClientRect()
+      const viewportHeight = window.innerHeight || document.documentElement.clientHeight
+      const visibleTop = Math.max(rect.top, 0)
+      const visibleBottom = Math.min(rect.bottom, viewportHeight)
+      const visibleHeight = Math.max(visibleBottom - visibleTop, 0)
+      const activeThreshold = Math.min(rect.height, viewportHeight) * 0.45
+
+      return visibleHeight >= activeThreshold
+    }
+
+    const moveTab = (direction: 1 | -1) => {
+      const current = activeTabRef.current
+      const next = Math.min(Math.max(current + direction, 0), strengthTabs.length - 1)
+
+      if (next === current) {
+        return false
+      }
+
+      activeTabRef.current = next
+      setActiveTab(next)
+      return true
+    }
+
+    const handleWheel = (event: WheelEvent) => {
+      if (!isSectionActive() || Math.abs(event.deltaY) < 4) {
+        return
+      }
+
+      const direction = event.deltaY > 0 ? 1 : -1
+      const current = activeTabRef.current
+      const isLeavingSection = (direction < 0 && current === 0) || (direction > 0 && current === strengthTabs.length - 1)
+
+      if (isLeavingSection) {
+        return
+      }
+
+      event.preventDefault()
+
+      if (wheelLocked) {
+        return
+      }
+
+      if (moveTab(direction)) {
+        wheelLocked = true
+        window.clearTimeout(wheelTimer)
+        wheelTimer = window.setTimeout(() => {
+          wheelLocked = false
+        }, 360)
+      }
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (!isSectionActive()) {
+        return
+      }
+
+      if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') {
+        return
+      }
+
+      const direction = event.key === 'ArrowDown' ? 1 : -1
+      const current = activeTabRef.current
+      const isLeavingSection = (direction < 0 && current === 0) || (direction > 0 && current === strengthTabs.length - 1)
+
+      if (isLeavingSection) {
+        return
+      }
+
+      event.preventDefault()
+      moveTab(direction)
+    }
+
+    const wheelOptions: AddEventListenerOptions = { passive: false, capture: true }
+
+    window.addEventListener('wheel', handleWheel, wheelOptions)
+    window.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      window.removeEventListener('wheel', handleWheel, wheelOptions)
+      window.removeEventListener('keydown', handleKeyDown)
+      window.clearTimeout(wheelTimer)
+    }
+  }, [])
+
+  return (
+    <section
+      ref={sectionRef}
+      id="strength"
+      className={`strength-section${isStrengthVisible ? ' is-visible' : ''}${hasStrengthIntroPlayed ? ' has-intro-played' : ''}`}
+      aria-labelledby="strength-title"
+    >
+      <div className="strength-section__inner">
+        <div className="strength-section__headline">
+          <h2 id="strength-title">
+            <SlotTitle text="STRENGTH" />
+          </h2>
+        </div>
+
+        <article className="strength-showcase" style={{ '--strength-accent': activeStrength.accent } as CSSProperties}>
+          <div
+            id="strength-panel"
+            className="strength-showcase__media"
+            role="tabpanel"
+            aria-labelledby={`strength-tab-${activeStrength.key}`}
+            aria-live="polite"
+          >
+            <div className="strength-showcase__image" key={activeStrength.key}>
+              <img src={activeStrength.image} alt="" loading="lazy" decoding="async" />
+            </div>
+            <div className="strength-showcase__copy" key={`${activeStrength.key}-copy`}>
+              <p>
+                {activeStrength.description.map((line, lineIndex) => (
+                  <span className="strength-showcase__line" key={lineIndex}>
+                    {line.map((part) => (
+                      <span className={part.highlight ? 'strength-showcase__highlight' : undefined} key={part.text}>
+                        {part.text}
+                      </span>
+                    ))}
+                  </span>
+                ))}
+              </p>
+            </div>
+          </div>
+
+          <div className="strength-tabs" role="tablist" aria-label="My strength categories">
+            {strengthTabs.map((tab, index) => {
+              const isActive = index === activeTab
+
+              return (
+                <button
+                  className={`strength-tabs__item${isActive ? ' is-active' : ''}`}
+                  id={`strength-tab-${tab.key}`}
+                  type="button"
+                  role="tab"
+                  aria-selected={isActive}
+                  aria-controls="strength-panel"
+                  onClick={() => setActiveTab(index)}
+                  key={tab.key}
+                >
+                  <span>{tab.label}</span>
+                  <i aria-hidden="true" />
+                </button>
+              )
+            })}
+          </div>
+        </article>
       </div>
     </section>
   )
@@ -1751,6 +2114,8 @@ function App() {
         <PastWorksSection />
 
         <TimelineSection />
+
+        <StrengthSection />
 
         <ContactSection />
       </main>
