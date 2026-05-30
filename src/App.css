@@ -3639,6 +3639,7 @@
 
   .strength-showcase__copy {
     flex: 0 0 auto;
+    min-height: clamp(72px, 19cqi, 94px);
     padding: clamp(6px, 2.1cqi, 10px) clamp(2px, 1.4cqi, 6px) clamp(8px, 2.6cqi, 12px);
     animation: none;
   }
@@ -3654,6 +3655,7 @@
   .strength-section.is-visible.has-intro-played .strength-showcase__line,
   .strength-section.is-visible.has-intro-played .strength-showcase__line:nth-child(2),
   .strength-section.is-visible.has-intro-played .strength-showcase__line:nth-child(3) {
+    display: inline;
     width: auto;
     max-width: 100%;
     overflow: visible;

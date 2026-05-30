@@ -217,7 +217,7 @@ const strengthTabs = [
         { text: '사진을 전공', highlight: true },
         { text: '하며 익힌 구도와 시선, ' },
         { text: '디자인 업무 경험', highlight: true },
-        { text: '은' },
+        { text: '은 ' },
       ],
       [{ text: '사용자의 흐름을 고려한 비주얼 설계에 강점이 되었습니다' }],
     ],
@@ -232,7 +232,7 @@ const strengthTabs = [
     description: [
       [
         { text: '계획적으로 정리하는 습관', highlight: true },
-        { text: '은' },
+        { text: '은 ' },
       ],
       [{ text: '프로젝트의 기획과 구조를 잡는 과정에서 강점으로 작용했습니다' }],
     ],
@@ -247,7 +247,7 @@ const strengthTabs = [
     description: [
       [
         { text: '새로운 툴에 대한 호기심과 추진력', highlight: true },
-        { text: '은' },
+        { text: '은 ' },
       ],
       [{ text: '디자인을 넘어 프론트엔드까지 직접 구현해보는 원동력이 되었습니다' }],
     ],
@@ -263,7 +263,7 @@ const strengthTabs = [
       [
         { text: '팀원과의 ' },
         { text: '원활한 소통과 협업 능력', highlight: true },
-        { text: '은' },
+        { text: '은 ' },
       ],
       [{ text: '프로젝트를 완성하는 중요한 강점 중 하나였습니다' }],
     ],
