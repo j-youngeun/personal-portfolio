@@ -28,6 +28,7 @@ const navItems: NavItem[] = [
   { label: 'PROJECT', hash: '#work' },
   { label: 'ABOUT', hash: '#about' },
   { label: 'SKILLS', hash: '#skills' },
+  { label: 'AI WORKFLOW', hash: '#ai-workflow' },
   { label: 'PAST WORKS', hash: '#past-works' },
   { label: 'STRENGTH', hash: '#strength' },
   { label: 'CONTACT', hash: '#contact' },
@@ -206,6 +207,54 @@ const detailSkillRows = [
   },
 ]
 
+const aiWorkflowSteps = [
+  {
+    number: '01',
+    title: '와이어프레임 설계',
+    tool: 'ChatGPT + Stitch',
+    toolIcons: [
+      { label: 'ChatGPT', src: '/assets/about/chatgpt.png' },
+      { label: 'Stitch', src: '/assets/ai-workflow/google-stitch-logo.jpg' },
+    ],
+    image: '/assets/ai-workflow/stitch-wireframe-optimized.webp',
+    description: 'ChatGPT와 Stitch를 활용해 아이디어를 구조화하고 서비스 흐름의 첫 뼈대를 설계합니다.',
+  },
+  {
+    number: '02',
+    title: '인터페이스 구현',
+    tool: 'Figma AI',
+    toolIcons: [{ label: 'Figma', src: '/assets/about/figma.svg' }],
+    image: '/assets/ai-workflow/step-02-optimized.webp',
+    description: 'Figma로 프로토타입 화면을 구현합니다.',
+  },
+  {
+    number: '03',
+    title: '디자인 시스템 구축',
+    tool: 'Claude Design',
+    toolIcons: [{ label: 'Claude', src: '/assets/about/claude.svg' }],
+    image: '/assets/ai-workflow/step-05-optimized.webp',
+    description: 'Claude Design을 활용해 컬러, 타이포그래피, 컴포넌트 기준을 빠르게 정리하고 프로젝트 디자인 시스템을 구축합니다.',
+  },
+  {
+    number: '04',
+    title: '캐릭터 브랜딩',
+    tool: 'ChatGPT + Nano Banana',
+    toolIcons: [
+      { label: 'ChatGPT', src: '/assets/about/chatgpt.png' },
+      { label: 'Gemini', src: '/assets/about/gemini.svg' },
+    ],
+    image: '/assets/ai-workflow/step-03-optimized.webp',
+    description: 'ChatGPT와 Nano Banana를 활용해 캐릭터 콘셉트를 구체화하고 일관된 스타일의 다양한 버전을 제작합니다.',
+  },
+  {
+    number: '05',
+    title: '모션 콘텐츠 제작',
+    tool: 'Midjourney',
+    toolIcons: [{ label: 'Midjourney', src: '/assets/about/midjourney.svg' }],
+    image: '/assets/ai-workflow/step-05-motion-optimized.webp',
+    description: 'Midjourney를 활용해 서비스 분위기에 맞는 온보딩 영상과 모션 에셋을 제작합니다.',
+  },
+]
 const strengthTabs = [
   {
     key: 'visual',
@@ -952,6 +1001,295 @@ function AboutSection() {
   )
 }
 
+function AiWorkflowSection() {
+  const [activeStepIndex, setActiveStepIndex] = useState(0)
+  const [previewDirection, setPreviewDirection] = useState<'down' | 'up'>('down')
+  const [isWorkflowVisible, setIsWorkflowVisible] = useState(false)
+  const sectionRef = useRef<HTMLElement | null>(null)
+  const stepRefs = useRef<Array<HTMLElement | null>>([])
+  const activeStepIndexRef = useRef(0)
+  const activeStepStartedAtRef = useRef(0)
+  const isStepScrollingRef = useRef(false)
+  const stepScrollTimeoutRef = useRef<number | null>(null)
+  const touchStartYRef = useRef<number | null>(null)
+  const activeStep = aiWorkflowSteps[activeStepIndex] ?? aiWorkflowSteps[0]
+
+  useEffect(() => {
+    aiWorkflowSteps.forEach((step) => {
+      if (!step.image) return
+
+      const image = new Image()
+      image.decoding = 'async'
+      image.src = step.image
+    })
+  }, [])
+
+  useEffect(() => {
+    const section = sectionRef.current
+
+    if (!section) return
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsWorkflowVisible(entry.isIntersecting)
+      },
+      { threshold: 0.18, rootMargin: '-8% 0px -8% 0px' },
+    )
+
+    observer.observe(section)
+
+    return () => observer.disconnect()
+  }, [])
+
+  useEffect(() => {
+    activeStepIndexRef.current = activeStepIndex
+    activeStepStartedAtRef.current = window.performance.now()
+  }, [activeStepIndex])
+
+  const syncActiveStep = (nextStepIndex: number) => {
+    const currentStepIndex = activeStepIndexRef.current
+
+    if (nextStepIndex === currentStepIndex) return
+
+    setPreviewDirection(nextStepIndex > currentStepIndex ? 'down' : 'up')
+    activeStepIndexRef.current = nextStepIndex
+    setActiveStepIndex(nextStepIndex)
+  }
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const bestEntry = entries.sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0]
+
+        if (bestEntry && bestEntry.intersectionRatio > 0) {
+          syncActiveStep(Number((bestEntry.target as HTMLElement).dataset.stepIndex ?? 0))
+        }
+      },
+      {
+        rootMargin: '-42% 0px -42% 0px',
+        threshold: [0, 0.25, 0.5, 0.75, 1],
+      },
+    )
+
+    stepRefs.current.forEach((step) => {
+      if (step) observer.observe(step)
+    })
+
+    return () => observer.disconnect()
+  }, [])
+
+  useEffect(() => {
+    const section = sectionRef.current
+
+    if (!section) return
+
+    const lastStepIndex = aiWorkflowSteps.length - 1
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const isTypingTarget = (target: EventTarget | null) => {
+      if (!(target instanceof HTMLElement)) return false
+
+      return Boolean(target.closest('input, textarea, select, button, a, [contenteditable="true"]'))
+    }
+    const isCurrentStepCentered = () => {
+      const currentStep = stepRefs.current[activeStepIndexRef.current]
+
+      if (!currentStep) return false
+
+      const rect = currentStep.getBoundingClientRect()
+      const viewportAnchor = window.innerHeight * 0.5
+      const stepCenter = rect.top + rect.height * 0.5
+      const centerTolerance = Math.min(window.innerHeight * 0.18, 140)
+
+      return Math.abs(stepCenter - viewportAnchor) <= centerTolerance
+    }
+    const releaseStepScroll = () => {
+      if (stepScrollTimeoutRef.current) {
+        window.clearTimeout(stepScrollTimeoutRef.current)
+      }
+
+      stepScrollTimeoutRef.current = window.setTimeout(() => {
+        isStepScrollingRef.current = false
+      }, prefersReducedMotion ? 120 : 820)
+    }
+    const moveToStep = (direction: 1 | -1) => {
+      const currentStepIndex = activeStepIndexRef.current
+      const nextStepIndex = Math.min(Math.max(currentStepIndex + direction, 0), lastStepIndex)
+
+      if (nextStepIndex === currentStepIndex) return false
+
+      const nextStep = stepRefs.current[nextStepIndex]
+
+      if (!nextStep) return false
+
+      isStepScrollingRef.current = true
+      syncActiveStep(nextStepIndex)
+      nextStep.scrollIntoView({
+        block: 'center',
+        behavior: prefersReducedMotion ? 'auto' : 'smooth',
+      })
+      releaseStepScroll()
+
+      return true
+    }
+    const canCaptureStepScroll = (direction: 1 | -1) => {
+      const currentStepIndex = activeStepIndexRef.current
+      const activeStepElapsed = window.performance.now() - activeStepStartedAtRef.current
+
+      if (!isCurrentStepCentered()) return false
+      if (direction > 0 && currentStepIndex === 0 && activeStepElapsed < 780) return false
+      if (direction > 0 && currentStepIndex >= lastStepIndex) return false
+      if (direction < 0 && currentStepIndex <= 0) return false
+
+      return true
+    }
+    const handleWheel = (event: WheelEvent) => {
+      if (isTypingTarget(event.target) || Math.abs(event.deltaY) < 18) return
+
+      const direction = event.deltaY > 0 ? 1 : -1
+
+      if (!canCaptureStepScroll(direction)) return
+
+      event.preventDefault()
+
+      if (isStepScrollingRef.current) return
+
+      moveToStep(direction)
+    }
+    const handleTouchStart = (event: TouchEvent) => {
+      if (!isCurrentStepCentered()) return
+
+      touchStartYRef.current = event.touches[0]?.clientY ?? null
+    }
+    const handleTouchMove = (event: TouchEvent) => {
+      if (isTypingTarget(event.target) || touchStartYRef.current === null) return
+
+      const deltaY = touchStartYRef.current - (event.touches[0]?.clientY ?? touchStartYRef.current)
+
+      if (Math.abs(deltaY) < 42) return
+
+      const direction = deltaY > 0 ? 1 : -1
+
+      if (!canCaptureStepScroll(direction)) return
+
+      event.preventDefault()
+
+      if (!isStepScrollingRef.current && moveToStep(direction)) {
+        touchStartYRef.current = null
+      }
+    }
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (isTypingTarget(event.target)) return
+
+      const nextKeys = ['ArrowDown', 'PageDown', ' ']
+      const previousKeys = ['ArrowUp', 'PageUp']
+      const direction = nextKeys.includes(event.key) ? 1 : previousKeys.includes(event.key) ? -1 : null
+
+      if (!direction || !canCaptureStepScroll(direction)) return
+
+      event.preventDefault()
+
+      if (isStepScrollingRef.current) return
+
+      moveToStep(direction)
+    }
+
+    window.addEventListener('wheel', handleWheel, { passive: false })
+    window.addEventListener('touchstart', handleTouchStart, { passive: true })
+    window.addEventListener('touchmove', handleTouchMove, { passive: false })
+    window.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      window.removeEventListener('wheel', handleWheel)
+      window.removeEventListener('touchstart', handleTouchStart)
+      window.removeEventListener('touchmove', handleTouchMove)
+      window.removeEventListener('keydown', handleKeyDown)
+
+      if (stepScrollTimeoutRef.current) {
+        window.clearTimeout(stepScrollTimeoutRef.current)
+      }
+    }
+  }, [])
+
+  return (
+    <section
+      className={`ai-workflow-section${isWorkflowVisible ? ' is-visible' : ''}`}
+      id="ai-workflow"
+      aria-labelledby="ai-workflow-title"
+      ref={sectionRef}
+    >
+      <div className="ai-workflow-section__inner">
+        <div className="ai-workflow-section__header" data-ai-workflow-reveal>
+          <h2 id="ai-workflow-title">
+            <SlotTitle text="AI WORKFLOW" />
+          </h2>
+          <strong>
+            AI를 도구만이 아닌 <span className="ai-workflow-section__highlight">협업 파트너</span>로 활용해
+            <br />
+            더 효율적인 디자인 프로세스를 구축합니다
+          </strong>
+        </div>
+
+        <div className="ai-workflow-scroll" aria-label="AI workflow steps">
+          <aside className="ai-workflow-preview" aria-live="polite" data-ai-workflow-reveal>
+            <div className={`ai-workflow-preview__media ai-workflow-preview__media--${previewDirection}`} key={activeStep.number}>
+              {activeStep.image ? (
+                <img
+                  className="ai-workflow-preview__image"
+                  src={activeStep.image}
+                  alt=""
+                  loading="eager"
+                  decoding="async"
+                />
+              ) : (
+                <span className="ai-workflow-preview__placeholder" aria-hidden="true" />
+              )}
+            </div>
+          </aside>
+
+          <div className="ai-workflow-timeline" data-ai-workflow-reveal>
+            {aiWorkflowSteps.map((step, index) => (
+              <article
+                className={`ai-workflow-step${index === activeStepIndex ? ' is-active' : ''}`}
+                data-step-index={index}
+                key={step.number}
+                ref={(node) => {
+                  stepRefs.current[index] = node
+                }}
+              >
+                <span className="ai-workflow-step__marker" aria-hidden="true" />
+                <div className="ai-workflow-step__content">
+                  <span className="ai-workflow-step__eyebrow">STEP {index + 1}</span>
+                  <div className="ai-workflow-step__heading">
+                    <h3>{step.title}</h3>
+                  </div>
+                  <p>{step.description}</p>
+                  {step.toolIcons.length ? (
+                    <div className="ai-workflow-step__tools" aria-label={`${step.tool} 사용 도구`}>
+                      {step.toolIcons.map((icon) => (
+                        <span
+                          className={`ai-workflow-step__tool ai-workflow-step__tool--${icon.label.toLowerCase().replaceAll(' ', '-')}`}
+                          style={{ '--tool-icon': `url(${icon.src})` } as CSSProperties}
+                          title={icon.label}
+                          key={`${step.number}-${icon.label}`}
+                        >
+                          <span
+                            className={`ai-workflow-step__tool-mark ai-workflow-step__tool-mark--${icon.label.toLowerCase().replaceAll(' ', '-')}`}
+                            aria-hidden="true"
+                          />
+                        </span>
+                      ))}
+                    </div>
+                  ) : null}
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
 function PastWorksCarousel({ showcase, index: showcaseIndex }: { showcase: PastWorkShowcase; index: number }) {
   const cardAngle = 360 / showcase.cards.length
   const cardDepth = 620
@@ -1062,7 +1400,7 @@ function PastWorksSection() {
         direction > 0
           ? targetPositions.find((target) => target.top > scrollY + 28)?.element
           : [...targetPositions].reverse().find((target) => target.top < scrollY - 28)?.element
-      const nextTarget = internalTarget ?? (direction > 0 ? document.getElementById('strength') : document.getElementById('about'))
+      const nextTarget = internalTarget ?? (direction > 0 ? document.getElementById('strength') : null)
 
       if (!nextTarget) {
         return
@@ -1078,7 +1416,7 @@ function PastWorksSection() {
         return
       }
 
-      scrollToTarget(nextTarget, nextTarget.id === 'about' || nextTarget.id === 'strength' ? 0 : getScrollOffset())
+      scrollToTarget(nextTarget, nextTarget.id === 'strength' ? 0 : getScrollOffset())
     }
 
     window.addEventListener('wheel', handleWheel, { passive: false })
@@ -1967,6 +2305,8 @@ function App() {
         </section>
 
         <AboutSection />
+
+        <AiWorkflowSection />
 
         <PastWorksSection />
 
