@@ -28,7 +28,6 @@ const navItems: NavItem[] = [
   { label: 'WORK', hash: '#work' },
   { label: 'ABOUT', hash: '#about' },
   { label: 'SKILLS', hash: '#skills' },
-  { label: 'TIMELINE', hash: '#timeline', hideOnMobile: true },
   { label: 'STRENGTH', hash: '#strength' },
   { label: 'CONTACT', hash: '#contact' },
 ]
@@ -339,6 +338,7 @@ const projects = [
     imageAlt: 'MonoTrip project visual',
     proposalUrl: '/assets/work/monotrip/proposal.pdf',
     websiteUrl: 'http://monotrip.vercel.app',
+    websiteDisabled: true,
   },
 ]
 
@@ -906,6 +906,7 @@ function AboutSection() {
 }
 
 function PastWorksSection() {
+  const sectionRef = useRef<HTMLElement>(null)
   const carouselCards = pastWorkTopCards
   const cardAngle = 360 / carouselCards.length
   const cardDepth = 620
@@ -922,13 +923,70 @@ function PastWorksSection() {
     return () => animation.stop()
   }, [rotationValue])
 
+  useEffect(() => {
+    const section = sectionRef.current
+
+    if (!section) {
+      return
+    }
+
+    let snapLocked = false
+    let snapTimer = 0
+
+    const getSectionTop = (target: HTMLElement) => Math.round(target.getBoundingClientRect().top + window.scrollY)
+
+    const scrollToSection = (target: HTMLElement) => {
+      snapLocked = true
+      window.scrollTo({
+        top: getSectionTop(target),
+        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+      })
+      window.clearTimeout(snapTimer)
+      snapTimer = window.setTimeout(() => {
+        snapLocked = false
+      }, 720)
+    }
+
+    const handleWheel = (event: WheelEvent) => {
+      const direction = event.deltaY > 0 ? 1 : -1
+      const targetSection = direction > 0 ? document.getElementById('strength') : document.getElementById('about')
+
+      if (!targetSection || Math.abs(event.deltaY) <= 8) {
+        return
+      }
+
+      const rect = section.getBoundingClientRect()
+      const viewportHeight = window.innerHeight || document.documentElement.clientHeight
+      const isPastWorksFramed = Math.abs(rect.top) <= 8 && rect.bottom > viewportHeight * 0.72
+
+      if (!isPastWorksFramed) {
+        return
+      }
+
+      event.preventDefault()
+
+      if (snapLocked) {
+        return
+      }
+
+      scrollToSection(targetSection)
+    }
+
+    window.addEventListener('wheel', handleWheel, { passive: false })
+
+    return () => {
+      window.removeEventListener('wheel', handleWheel)
+      window.clearTimeout(snapTimer)
+    }
+  }, [])
+
   const handleDrag = (_event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
     accumulatedDrag.current -= info.delta.x * 0.18
     rotationValue.set(accumulatedDrag.current)
   }
 
   return (
-    <section className="past-works-section" id="past-works" aria-labelledby="past-works-title">
+    <section ref={sectionRef} className="past-works-section" id="past-works" aria-labelledby="past-works-title">
       <div className="past-works-section__header">
         <h2 id="past-works-title">
           <SlotTitle text="PAST WORKS" />
@@ -959,442 +1017,6 @@ function PastWorksSection() {
             </article>
           ))}
         </motion.div>
-      </div>
-    </section>
-  )
-}
-
-function TimelineSection() {
-  const timelineRef = useRef<HTMLElement>(null)
-  const timelineTicks = Array.from({ length: 97 }, (_, index) => index)
-  const [isTimelineIntroVisible, setIsTimelineIntroVisible] = useState(false)
-
-  useEffect(() => {
-    const section = timelineRef.current
-
-    if (!section) {
-      return
-    }
-
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      section.style.setProperty('--timeline-progress', '0')
-      return
-    }
-
-    let timelineProgress = 0
-    let animationFrame = 0
-    let snapLocked = false
-    let snapTimer = 0
-    let alignLocked = false
-    let alignTimer = 0
-    let contactScrollFrame = 0
-    let previousRootScrollBehavior: string | null = null
-    let timelineExitWheelCount = 0
-    let timelineExitLocked = false
-    let timelineExitTimer = 0
-    const timelineExitWheelThreshold = 3
-
-    const applyTimelineProgress = () => {
-      section.style.setProperty('--timeline-progress', timelineProgress.toFixed(4))
-      animationFrame = 0
-    }
-
-    const requestSync = () => {
-      if (!animationFrame) {
-        animationFrame = window.requestAnimationFrame(applyTimelineProgress)
-      }
-    }
-
-    const stopContactScroll = () => {
-      if (contactScrollFrame) {
-        window.cancelAnimationFrame(contactScrollFrame)
-        contactScrollFrame = 0
-      }
-
-      if (previousRootScrollBehavior !== null) {
-        document.documentElement.style.scrollBehavior = previousRootScrollBehavior
-        previousRootScrollBehavior = null
-      }
-    }
-
-    const setDirectScrollBehavior = () => {
-      if (previousRootScrollBehavior === null) {
-        previousRootScrollBehavior = document.documentElement.style.scrollBehavior
-      }
-
-      document.documentElement.style.scrollBehavior = 'auto'
-    }
-
-    const scrollToNextSection = () => {
-      const nextSection = document.getElementById('strength') ?? document.getElementById('contact')
-
-      if (!nextSection) {
-        return
-      }
-
-      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-      const targetTop = Math.round(nextSection.getBoundingClientRect().top + window.scrollY)
-      const startTop = window.scrollY
-      const distance = targetTop - startTop
-
-      stopContactScroll()
-      setDirectScrollBehavior()
-
-      if (prefersReducedMotion || Math.abs(distance) <= 1) {
-        window.scrollTo({ top: targetTop, behavior: 'auto' })
-        stopContactScroll()
-        return
-      }
-
-      const startTime = performance.now()
-      const duration = 620
-
-      const animateContactScroll = (now: number) => {
-        const progress = Math.min((now - startTime) / duration, 1)
-        const easedProgress = 1 - Math.pow(1 - progress, 3)
-
-        window.scrollTo({
-          top: Math.round(startTop + distance * easedProgress),
-          behavior: 'auto',
-        })
-
-        if (progress < 1) {
-          contactScrollFrame = window.requestAnimationFrame(animateContactScroll)
-          return
-        }
-
-        window.scrollTo({ top: targetTop, behavior: 'auto' })
-        stopContactScroll()
-      }
-
-      contactScrollFrame = window.requestAnimationFrame(animateContactScroll)
-    }
-
-    const skipTimeline = () => {
-      timelineProgress = 8
-      timelineExitWheelCount = 0
-      timelineExitLocked = false
-      window.clearTimeout(timelineExitTimer)
-      requestSync()
-      scrollToNextSection()
-    }
-
-    const resetTimeline = () => {
-      timelineProgress = 0
-      timelineExitWheelCount = 0
-      timelineExitLocked = false
-      snapLocked = false
-      alignLocked = false
-      stopContactScroll()
-      window.clearTimeout(snapTimer)
-      window.clearTimeout(alignTimer)
-      window.clearTimeout(timelineExitTimer)
-      requestSync()
-    }
-
-    const requestTimelineExit = () => {
-      if (timelineExitLocked) {
-        return
-      }
-
-      timelineExitWheelCount += 1
-      timelineExitLocked = true
-      window.clearTimeout(timelineExitTimer)
-      timelineExitTimer = window.setTimeout(() => {
-        timelineExitLocked = false
-      }, 320)
-
-      if (timelineExitWheelCount >= timelineExitWheelThreshold) {
-        timelineExitWheelCount = 0
-        timelineExitLocked = false
-        window.clearTimeout(timelineExitTimer)
-        scrollToNextSection()
-      }
-    }
-
-    const isTimelineFramed = () => {
-      const rect = section.getBoundingClientRect()
-      const viewportHeight = window.innerHeight || document.documentElement.clientHeight
-
-      return Math.abs(rect.top) <= 2 && Math.abs(rect.bottom - viewportHeight) <= 2
-    }
-
-    const alignTimeline = () => {
-      if (alignLocked) {
-        return
-      }
-
-      alignLocked = true
-      window.scrollTo({
-        top: section.offsetTop,
-        behavior: 'smooth',
-      })
-      window.clearTimeout(alignTimer)
-      alignTimer = window.setTimeout(() => {
-        alignLocked = false
-      }, 560)
-    }
-
-    const handleWheel = (event: WheelEvent) => {
-      const rect = section.getBoundingClientRect()
-      const viewportHeight = window.innerHeight || document.documentElement.clientHeight
-      const isTimelineVisible = rect.top < viewportHeight && rect.bottom > 0
-      const isTimelineActive = isTimelineVisible
-      const isTimelineFullyFramed = isTimelineFramed()
-
-      if (event.deltaY < 0 || timelineProgress < 8) {
-        timelineExitWheelCount = 0
-        timelineExitLocked = false
-        window.clearTimeout(timelineExitTimer)
-      }
-
-      if (!isTimelineActive) {
-        return
-      }
-
-      if (timelineProgress === 0 && event.deltaY < 0) {
-        return
-      }
-
-      if (timelineProgress === 8 && event.deltaY > 0) {
-        if (isTimelineVisible) {
-          event.preventDefault()
-          requestTimelineExit()
-        }
-
-        return
-      }
-
-      if (!isTimelineFullyFramed) {
-        if (isTimelineVisible || timelineProgress > 0) {
-          event.preventDefault()
-          alignTimeline()
-        }
-
-        return
-      }
-
-      // timelineProgress가 0이고 위로 스크롤: About으로 이동 허용
-      if (timelineProgress === 0 && event.deltaY < 0) {
-        return
-      }
-
-      // timelineProgress가 8이고 아래로 스크롤: Contact로 이동 허용
-      if (timelineProgress === 8 && event.deltaY > 0) {
-        event.preventDefault()
-        requestTimelineExit()
-        return
-      }
-
-      // 타임라인 내에서의 스크롤: 기본 동작 방지
-      event.preventDefault()
-
-      if (snapLocked) {
-        return
-      }
-
-      const shouldRewindTimeline = event.deltaY < 0 && timelineProgress > 0
-      const shouldAdvanceTimeline = event.deltaY > 0 && timelineProgress < 8
-
-      if (shouldRewindTimeline || shouldAdvanceTimeline) {
-        const direction = event.deltaY > 0 ? 1 : -1
-        const nextProgress = Math.min(Math.max(timelineProgress + direction, 0), 8)
-
-        if (nextProgress !== timelineProgress) {
-          timelineProgress = nextProgress
-          timelineExitWheelCount = 0
-          timelineExitLocked = false
-          window.clearTimeout(timelineExitTimer)
-          requestSync()
-          snapLocked = true
-          window.clearTimeout(snapTimer)
-          snapTimer = window.setTimeout(() => {
-            snapLocked = false
-          }, 240)
-        }
-      }
-    }
-
-    applyTimelineProgress()
-    section.addEventListener('timeline:skip', skipTimeline)
-    section.addEventListener('timeline:reset', resetTimeline)
-    window.addEventListener('wheel', handleWheel, { passive: false })
-
-    return () => {
-      section.removeEventListener('timeline:skip', skipTimeline)
-      section.removeEventListener('timeline:reset', resetTimeline)
-      window.removeEventListener('wheel', handleWheel)
-
-      if (animationFrame) {
-        window.cancelAnimationFrame(animationFrame)
-      }
-
-      window.clearTimeout(snapTimer)
-      window.clearTimeout(alignTimer)
-      window.clearTimeout(timelineExitTimer)
-      stopContactScroll()
-    }
-  }, [])
-
-  useEffect(() => {
-    const section = timelineRef.current
-
-    if (!section) {
-      return
-    }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setIsTimelineIntroVisible(entry.intersectionRatio >= 0.98)
-      },
-      { threshold: [0, 0.98, 1] },
-    )
-
-    observer.observe(section)
-
-    return () => {
-      observer.disconnect()
-    }
-  }, [])
-
-  return (
-    <section
-      ref={timelineRef}
-      id="timeline"
-      className={`timeline-section${isTimelineIntroVisible ? ' is-intro-visible' : ''}`}
-      aria-labelledby="timeline-title"
-    >
-      <div className="timeline-sticky">
-        <div className="timeline-section__header">
-          <h2 id="timeline-title">
-            <SlotTitle text="TIMELINE" />
-          </h2>
-          <p>AT EZEN ACADEMY</p>
-        </div>
-
-        <div className="timeline-stage" aria-label="Ezen academy learning timeline">
-          <div className="timeline-orb timeline-orb--one" aria-hidden="true">
-            <img className="timeline-orb__shadow" src="/assets/about/timeline-ellipse-shadow.svg" alt="" />
-            <img className="timeline-orb__image" src="/assets/about/timeline-ellipse.png" alt="" />
-            <img className="timeline-orb__pointer" src="/assets/about/timeline-pointer.svg" alt="" />
-          </div>
-          <div className="timeline-scroll-hint" aria-hidden="true">
-            <span className="timeline-scroll-hint__mouse">
-              <span className="timeline-scroll-hint__wheel" />
-            </span>
-            <span className="timeline-scroll-hint__chevron" />
-          </div>
-          <div className="timeline-orb timeline-orb--two" aria-hidden="true">
-            <img className="timeline-orb__shadow" src="/assets/about/timeline-ellipse-2-shadow.svg" alt="" />
-            <img className="timeline-orb__image" src="/assets/about/timeline-ellipse-2.png" alt="" />
-            <img className="timeline-orb__pointer" src="/assets/about/timeline-pointer.svg" alt="" />
-          </div>
-          <div className="timeline-orb timeline-orb--three" aria-hidden="true">
-            <img className="timeline-orb__shadow" src="/assets/about/timeline-ellipse-3-shadow.svg" alt="" />
-            <img className="timeline-orb__image" src="/assets/about/timeline-ellipse-3.png" alt="" />
-            <img className="timeline-orb__pointer" src="/assets/about/timeline-pointer.svg" alt="" />
-          </div>
-          <div className="timeline-orb timeline-orb--four" aria-hidden="true">
-            <img className="timeline-orb__shadow" src="/assets/about/timeline-ellipse-4.png" alt="" />
-            <img className="timeline-orb__image" src="/assets/about/timeline-ellipse-4.png" alt="" />
-            <img className="timeline-orb__pointer" src="/assets/about/timeline-pointer.svg" alt="" />
-          </div>
-          <div className="timeline-orb timeline-orb--five" aria-hidden="true">
-            <img className="timeline-orb__shadow" src="/assets/about/timeline-ellipse-5-shadow.png" alt="" />
-            <img className="timeline-orb__image" src="/assets/about/timeline-ellipse-5.png" alt="" />
-            <img className="timeline-orb__pointer" src="/assets/about/timeline-pointer.svg" alt="" />
-          </div>
-          <div className="timeline-orb timeline-orb--six" aria-hidden="true">
-            <img className="timeline-orb__shadow" src="/assets/about/timeline-ellipse-6-shadow.png" alt="" />
-            <img className="timeline-orb__image" src="/assets/about/timeline-ellipse-6.png" alt="" />
-            <img className="timeline-orb__pointer" src="/assets/about/timeline-pointer.svg" alt="" />
-          </div>
-          <div className="timeline-orb timeline-orb--seven" aria-hidden="true">
-            <img className="timeline-orb__shadow" src="/assets/about/timeline-ellipse-7-shadow.png" alt="" />
-            <img className="timeline-orb__image" src="/assets/about/timeline-ellipse-7.png" alt="" />
-            <img className="timeline-orb__pointer" src="/assets/about/timeline-pointer.svg" alt="" />
-          </div>
-          <div className="timeline-orb timeline-orb--eight timeline-orb--empty" aria-hidden="true">
-            <img className="timeline-orb__pointer" src="/assets/about/timeline-pointer.svg" alt="" />
-          </div>
-          <div className="timeline-orb timeline-orb--nine timeline-orb--empty" aria-hidden="true">
-            <img className="timeline-orb__pointer" src="/assets/about/timeline-pointer.svg" alt="" />
-          </div>
-
-          <div className="timeline-rail" aria-hidden="true">
-            {timelineTicks.map((tick) => (
-              <span className={tick % 12 === 0 ? 'timeline-rail__tick timeline-rail__tick--major' : 'timeline-rail__tick'} key={tick} />
-            ))}
-          </div>
-
-          <p className="timeline-event timeline-event--one">
-            <time dateTime="2025-12-18">2025.12.18</time>
-            <span>
-              Web/Mobile UX/UI 프론트엔드 Level1 (HTML/CSS)
-              <br />
-              UI 퍼블리싱 및 웹 기초 학습 시작
-            </span>
-          </p>
-          <p className="timeline-event timeline-event--two">
-            <time dateTime="2025-12-30">2025.12.30</time>
-            <span>
-              Web/Mobile UX/UI 프론트엔드 Level2 (JavaScript)
-              <br />
-              인터랙션 및 동적 웹 구현 학습
-            </span>
-          </p>
-          <p className="timeline-event timeline-event--three">
-            <time dateTime="2026-02-09">2026.02.09</time>
-            <span>
-              미니프로젝트1 / Web/Mobile UX/UI 클론코딩
-              <br />
-              PAWINHAND 웹 리뉴얼 개인 프로젝트 진행
-            </span>
-          </p>
-          <p className="timeline-event timeline-event--four">
-            <time dateTime="2026-02-24">2026.02.24</time>
-            <span>
-              Web/Mobile UX/UI 프론트엔드 Level3 (TypeScript)
-              <br />
-              타입 기반 프론트엔드 개발 학습 및 MonoTrip 개인 앱 개발 진행
-            </span>
-          </p>
-          <p className="timeline-event timeline-event--five">
-            <time dateTime="2026-02-24">2026.02.24</time>
-            <span>K-Brand Contents Web/Mobile UX/UI 팀 프로젝트</span>
-          </p>
-          <p className="timeline-event timeline-event--six">
-            <time dateTime="2026-04-07">2026.04.07</time>
-            <span>
-              Web/Mobile UX/UI 프론트엔드 Level4 (React / AWS 배포)
-              <br />
-              React 기반 프론트엔드 및 배포 프로세스 학습
-            </span>
-          </p>
-          <p className="timeline-event timeline-event--seven">
-            <time dateTime="2026-04-22">2026.04.22</time>
-            <span>AI챗봇 지원 팬덤 커뮤니티 Mobile UX/UI 팀 프로젝트</span>
-          </p>
-          <p className="timeline-event timeline-event--eight">
-            <time dateTime="2026-06-01">2026.06.01</time>
-            <span>개인 앱 및 포트폴리오 발표</span>
-          </p>
-          <p className="timeline-event timeline-event--nine">
-            <time dateTime="2026-06-04">2026.06.04</time>
-            <span>종강 및 수료</span>
-          </p>
-        </div>
-
-        <button
-          className="timeline-skip"
-          type="button"
-          onClick={() => {
-            timelineRef.current?.dispatchEvent(new Event('timeline:skip'))
-          }}
-        >
-          skip
-        </button>
-
       </div>
     </section>
   )
@@ -1448,7 +1070,7 @@ function StrengthSection() {
           observer.disconnect()
         }
       },
-      { threshold: 0.28, rootMargin: '0px 0px -12% 0px' },
+      { threshold: 0.92 },
     )
 
     observer.observe(section)
@@ -1467,16 +1089,64 @@ function StrengthSection() {
 
     let wheelLocked = false
     let wheelTimer = 0
+    let alignLocked = false
+    let alignTimer = 0
+    let exitLocked = false
+    let exitTimer = 0
 
-    const isSectionActive = () => {
+    const getSectionTop = () => Math.round(section.getBoundingClientRect().top + window.scrollY)
+    const getDocumentTop = (target: HTMLElement) => Math.round(target.getBoundingClientRect().top + window.scrollY)
+
+    const isSectionVisible = () => {
       const rect = section.getBoundingClientRect()
       const viewportHeight = window.innerHeight || document.documentElement.clientHeight
-      const visibleTop = Math.max(rect.top, 0)
-      const visibleBottom = Math.min(rect.bottom, viewportHeight)
-      const visibleHeight = Math.max(visibleBottom - visibleTop, 0)
-      const activeThreshold = Math.min(rect.height, viewportHeight) * 0.45
 
-      return visibleHeight >= activeThreshold
+      return rect.top < viewportHeight && rect.bottom > 0
+    }
+
+    const isSectionFramed = () => {
+      const rect = section.getBoundingClientRect()
+      const viewportHeight = window.innerHeight || document.documentElement.clientHeight
+
+      return Math.abs(rect.top) <= 2 && Math.abs(rect.bottom - viewportHeight) <= 2
+    }
+
+    const alignSection = () => {
+      if (alignLocked) {
+        return
+      }
+
+      alignLocked = true
+      window.scrollTo({
+        top: getSectionTop(),
+        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+      })
+      window.clearTimeout(alignTimer)
+      alignTimer = window.setTimeout(() => {
+        alignLocked = false
+      }, 620)
+    }
+
+    const scrollToAdjacentSection = (direction: 1 | -1) => {
+      if (exitLocked) {
+        return
+      }
+
+      const target = direction > 0 ? document.getElementById('contact') : document.getElementById('past-works')
+
+      if (!target) {
+        return
+      }
+
+      exitLocked = true
+      window.scrollTo({
+        top: getDocumentTop(target),
+        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+      })
+      window.clearTimeout(exitTimer)
+      exitTimer = window.setTimeout(() => {
+        exitLocked = false
+      }, 720)
     }
 
     const moveTab = (direction: 1 | -1) => {
@@ -1493,7 +1163,7 @@ function StrengthSection() {
     }
 
     const handleWheel = (event: WheelEvent) => {
-      if (!isSectionActive() || Math.abs(event.deltaY) < 4) {
+      if (!isSectionVisible() || Math.abs(event.deltaY) < 4) {
         return
       }
 
@@ -1501,7 +1171,21 @@ function StrengthSection() {
       const current = activeTabRef.current
       const isLeavingSection = (direction < 0 && current === 0) || (direction > 0 && current === strengthTabs.length - 1)
 
+      if (!isSectionFramed()) {
+        if (isLeavingSection) {
+          event.preventDefault()
+          scrollToAdjacentSection(direction)
+          return
+        }
+
+        event.preventDefault()
+        alignSection()
+        return
+      }
+
       if (isLeavingSection) {
+        event.preventDefault()
+        scrollToAdjacentSection(direction)
         return
       }
 
@@ -1521,7 +1205,7 @@ function StrengthSection() {
     }
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (!isSectionActive()) {
+      if (!isSectionVisible()) {
         return
       }
 
@@ -1533,7 +1217,20 @@ function StrengthSection() {
       const current = activeTabRef.current
       const isLeavingSection = (direction < 0 && current === 0) || (direction > 0 && current === strengthTabs.length - 1)
 
+      if (!isSectionFramed()) {
+        event.preventDefault()
+        if (isLeavingSection) {
+          scrollToAdjacentSection(direction)
+          return
+        }
+
+        alignSection()
+        return
+      }
+
       if (isLeavingSection) {
+        event.preventDefault()
+        scrollToAdjacentSection(direction)
         return
       }
 
@@ -1550,6 +1247,8 @@ function StrengthSection() {
       window.removeEventListener('wheel', handleWheel, wheelOptions)
       window.removeEventListener('keydown', handleKeyDown)
       window.clearTimeout(wheelTimer)
+      window.clearTimeout(alignTimer)
+      window.clearTimeout(exitTimer)
     }
   }, [])
 
@@ -1692,7 +1391,6 @@ function App() {
       return
     }
 
-    document.querySelector<HTMLElement>('.timeline-section')?.dispatchEvent(new Event('timeline:reset'))
     document.documentElement.classList.add('is-anchor-scrolling')
     setIsHeaderVisible(true)
 
@@ -2037,7 +1735,6 @@ function App() {
           tabIndex={isTopButtonVisible ? 0 : -1}
           style={{ '--scroll-progress': scrollProgress } as CSSProperties}
           onClick={() => {
-            document.querySelector<HTMLElement>('.timeline-section')?.dispatchEvent(new Event('timeline:reset'))
             window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' })
           }}
         >
@@ -2140,17 +1837,31 @@ function App() {
                           <span>Proposal</span>
                           <img src="/assets/icons/work-arrow.svg" alt="" aria-hidden="true" />
                         </a>
-                        <a
-                          className="is-primary"
-                          href={project.websiteUrl ?? '#work'}
-                          target={project.websiteUrl ? '_blank' : undefined}
-                          rel={project.websiteUrl ? 'noreferrer' : undefined}
-                          data-work-reveal
-                          style={{ '--work-reveal-index': 5 } as CSSProperties}
-                        >
-                          <span>Project</span>
-                          <img src="/assets/icons/work-arrow.svg" alt="" aria-hidden="true" />
-                        </a>
+                        {project.websiteDisabled ? (
+                          <button
+                            className="is-primary is-disabled"
+                            type="button"
+                            disabled
+                            aria-label={`${project.title} project is not available yet`}
+                            data-work-reveal
+                            style={{ '--work-reveal-index': 5 } as CSSProperties}
+                          >
+                            <span>Project</span>
+                            <img src="/assets/icons/work-arrow.svg" alt="" aria-hidden="true" />
+                          </button>
+                        ) : (
+                          <a
+                            className="is-primary"
+                            href={project.websiteUrl ?? '#work'}
+                            target={project.websiteUrl ? '_blank' : undefined}
+                            rel={project.websiteUrl ? 'noreferrer' : undefined}
+                            data-work-reveal
+                            style={{ '--work-reveal-index': 5 } as CSSProperties}
+                          >
+                            <span>Project</span>
+                            <img src="/assets/icons/work-arrow.svg" alt="" aria-hidden="true" />
+                          </a>
+                        )}
                       </div>
                     </div>
 
@@ -2174,8 +1885,6 @@ function App() {
         <AboutSection />
 
         <PastWorksSection />
-
-        <TimelineSection />
 
         <StrengthSection />
 
