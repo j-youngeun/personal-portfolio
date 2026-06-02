@@ -25,7 +25,7 @@ type NavItem = {
 }
 
 const navItems: NavItem[] = [
-  { label: 'WORK', hash: '#work' },
+  { label: 'PROJECT', hash: '#work' },
   { label: 'ABOUT', hash: '#about' },
   { label: 'SKILLS', hash: '#skills' },
   { label: 'PAST WORKS', hash: '#past-works' },
@@ -356,7 +356,7 @@ type PastWorkCard = {
 }
 type PastWorkShowcase = {
   title: string
-  subtitle: string
+  subtitle?: string
   cards: PastWorkCard[]
   variant?: 'portrait'
 }
@@ -398,18 +398,15 @@ const pastWorkPhotographyCards: PastWorkCard[] = [
 
 const pastWorkShowcases: PastWorkShowcase[] = [
   {
-    title: 'KOTRA',
-    subtitle: '그래픽 디자인',
+    title: 'Graphic Design',
     cards: pastWorkTopCards,
   },
   {
-    title: 'TBS FM',
-    subtitle: '영상 촬영편집 · 썸네일 제작',
+    title: 'Video',
     cards: pastWorkTbsCards,
   },
   {
     title: 'Photography',
-    subtitle: '사진',
     cards: pastWorkPhotographyCards,
     variant: 'portrait',
   },
@@ -960,7 +957,7 @@ function PastWorksCarousel({ showcase, index: showcaseIndex }: { showcase: PastW
   const cardDepth = 620
   const rotationValue = useMotionValue(0)
   const accumulatedDrag = useRef(0)
-  const rotationDirection = showcase.title === 'TBS FM' ? 360 : showcaseIndex % 2 === 0 ? 360 : -360
+  const rotationDirection = showcase.title === 'Video' ? 360 : showcaseIndex % 2 === 0 ? 360 : -360
 
   useEffect(() => {
     const animation = animate(rotationValue, rotationDirection, {
@@ -981,7 +978,7 @@ function PastWorksCarousel({ showcase, index: showcaseIndex }: { showcase: PastW
     <div className={`past-works-showcase${showcase.variant ? ` past-works-showcase--${showcase.variant}` : ''}`}>
       <div className="past-works-showcase__title">
         <h3>{showcase.title}</h3>
-        {showcase.title !== 'Photography' ? <p>{showcase.subtitle}</p> : null}
+        {showcase.subtitle ? <p>{showcase.subtitle}</p> : null}
       </div>
 
       <div className="past-works-carousel" aria-label={`${showcase.title} past works carousel`}>
@@ -1878,7 +1875,7 @@ function App() {
             <img ref={lensRef} className="lens" src="/assets/graphics/lens.svg" alt="" />
           </div>
 
-          <a className="scroll-cue" href="#work" aria-label="Scroll down to work">
+          <a className="scroll-cue" href="#work" aria-label="Scroll down to project">
             <span>SCROLL&nbsp;&nbsp;DOWN</span>
             <img src="/assets/icons/arrow_down.svg" alt="" aria-hidden="true" />
           </a>
@@ -1887,7 +1884,7 @@ function App() {
         <section className="work-section" id="work" aria-labelledby="work-title">
           <div className="work-section__header">
             <h2 id="work-title">
-              <SlotTitle text="WORK" />
+              <SlotTitle text="PROJECT" />
             </h2>
           </div>
 
