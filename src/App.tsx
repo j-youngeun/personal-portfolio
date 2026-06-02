@@ -842,13 +842,13 @@ function AboutSection() {
         <div className="about-intro__copy" data-about-reveal>
           <div ref={introTextRef} className="about-intro__text">
             <span className="about-intro__line" style={{ '--line-index': 0 } as CSSProperties}>
-              AI와 UX 빌드 프로세스를 기반으로
+              사용자 문제를 정의하고
             </span>
             <span className="about-intro__line" style={{ '--line-index': 1 } as CSSProperties}>
-              디자인과 프론트엔드 개발을 넘나들며
+              기획·디자인·프론트엔드를 연결하며
             </span>
             <span className="about-intro__line" style={{ '--line-index': 2 } as CSSProperties}>
-              몰입감 있는 디지털 경험을 만듭니다.
+              AI를 활용해 더 빠르게 검증합니다.
             </span>
           </div>
         </div>
