@@ -1029,16 +1029,31 @@ function AiWorkflowSection() {
 
     if (!section) return
 
+    // Make the observer a bit more permissive on large viewports
     const observer = new IntersectionObserver(
       ([entry]) => {
         setIsWorkflowVisible(entry.isIntersecting)
       },
-      { threshold: 0.18, rootMargin: '-8% 0px -8% 0px' },
+      { threshold: 0.08, rootMargin: '0px 0px -20% 0px' },
     )
 
     observer.observe(section)
 
-    return () => observer.disconnect()
+    // Fallback: on desktop, if the observer doesn't trigger quickly, enable visibility
+    const fallbackTimer = window.setTimeout(() => {
+      const rect = section.getBoundingClientRect()
+      const inViewport = rect.top < window.innerHeight && rect.bottom > 0
+
+      if (inViewport || window.innerWidth >= 1200) {
+        setIsWorkflowVisible(true)
+        observer.disconnect()
+      }
+    }, 700)
+
+    return () => {
+      observer.disconnect()
+      window.clearTimeout(fallbackTimer)
+    }
   }, [])
 
   useEffect(() => {

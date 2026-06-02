@@ -1722,6 +1722,16 @@
   mix-blend-mode: multiply;
 }
 
+/* iPad / small screens: ensure AI workflow content is visible
+   even if IntersectionObserver-based reveal doesn't trigger */
+@media (max-width: 1024px) {
+  .ai-workflow-section [data-ai-workflow-reveal] {
+    opacity: 1 !important;
+    filter: none !important;
+    transform: none !important;
+  }
+}
+
 .ai-workflow-timeline {
   position: relative;
   display: grid;
@@ -2266,7 +2276,8 @@
   box-sizing: border-box;
   height: 100svh;
   min-height: 100svh;
-  padding: clamp(96px, 8vw, 140px) clamp(32px, 4.8vw, 92px);
+  /* increase vertical breathing room on larger and tablet screens */
+  padding: clamp(120px, 10vw, 200px) clamp(32px, 4.8vw, 92px);
   overflow: hidden;
   background: #000;
   color: #fff;
