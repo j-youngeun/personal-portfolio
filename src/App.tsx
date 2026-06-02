@@ -28,6 +28,7 @@ const navItems: NavItem[] = [
   { label: 'WORK', hash: '#work' },
   { label: 'ABOUT', hash: '#about' },
   { label: 'SKILLS', hash: '#skills' },
+  { label: 'PAST WORKS', hash: '#past-works' },
   { label: 'STRENGTH', hash: '#strength' },
   { label: 'CONTACT', hash: '#contact' },
 ]
@@ -353,6 +354,12 @@ type PastWorkCard = {
   label: string
   image?: string
 }
+type PastWorkShowcase = {
+  title: string
+  subtitle: string
+  cards: PastWorkCard[]
+  variant?: 'portrait'
+}
 
 const pastWorkTopCards: PastWorkCard[] = [
   { label: 'Past work 01', image: '/assets/past-works/optimized/Group 1917.webp' },
@@ -363,6 +370,45 @@ const pastWorkTopCards: PastWorkCard[] = [
   { label: 'Past work 06', image: '/assets/past-works/optimized/Group 1926.webp' },
   { label: 'Past work 07', image: '/assets/past-works/optimized/Group 1930.webp' },
   { label: 'Past work 08', image: '/assets/past-works/optimized/Group 1933.webp' },
+]
+
+const pastWorkTbsCards: PastWorkCard[] = [
+  { label: 'TBS FM work 01', image: '/assets/past-works/tbs/tbs-01.jpg' },
+  { label: 'TBS FM work 02', image: '/assets/past-works/tbs/tbs-02.jpg' },
+  { label: 'TBS FM work 03', image: '/assets/past-works/tbs/tbs-03.png' },
+  { label: 'TBS FM work 04', image: '/assets/past-works/tbs/tbs-04.jpg' },
+  { label: 'TBS FM work 05', image: '/assets/past-works/tbs/tbs-05.jpg' },
+  { label: 'TBS FM work 06', image: '/assets/past-works/tbs/tbs-06.jpg' },
+  { label: 'TBS FM work 07', image: '/assets/past-works/tbs/tbs-07.png' },
+]
+
+const pastWorkPhotographyCards: PastWorkCard[] = [
+  { label: 'Photography work 01', image: '/assets/past-works/photography/photography-01.png' },
+  { label: 'Photography work 02', image: '/assets/past-works/photography/photography-02.png' },
+  { label: 'Photography work 03', image: '/assets/past-works/photography/photography-03.png' },
+  { label: 'Photography work 04', image: '/assets/past-works/photography/photography-04.png' },
+  { label: 'Photography work 05', image: '/assets/past-works/photography/photography-05.png' },
+  { label: 'Photography work 06', image: '/assets/past-works/photography/photography-06.png' },
+  { label: 'Photography work 07', image: '/assets/past-works/photography/photography-07.png' },
+]
+
+const pastWorkShowcases: PastWorkShowcase[] = [
+  {
+    title: 'KOTRA',
+    subtitle: '그래픽 디자인',
+    cards: pastWorkTopCards,
+  },
+  {
+    title: 'TBS FM',
+    subtitle: '영상 촬영편집 · 썸네일 제작',
+    cards: pastWorkTbsCards,
+  },
+  {
+    title: 'Photography',
+    subtitle: '사진',
+    cards: pastWorkPhotographyCards,
+    variant: 'portrait',
+  },
 ]
 
 function WorkCardMeta({ project, revealIndex }: { project: Project; revealIndex: number }) {
@@ -842,13 +888,13 @@ function AboutSection() {
         <div className="about-intro__copy" data-about-reveal>
           <div ref={introTextRef} className="about-intro__text">
             <span className="about-intro__line" style={{ '--line-index': 0 } as CSSProperties}>
-              사용자 문제를 정의하고
-            </span>
-            <span className="about-intro__line" style={{ '--line-index': 1 } as CSSProperties}>
               기획·디자인·프론트엔드를 연결하며
             </span>
+            <span className="about-intro__line" style={{ '--line-index': 1 } as CSSProperties}>
+              AI를 활용해 더 빠르게 검증하는
+            </span>
             <span className="about-intro__line" style={{ '--line-index': 2 } as CSSProperties}>
-              AI를 활용해 더 빠르게 검증합니다.
+              디자이너 정영은입니다
             </span>
           </div>
         </div>
@@ -905,23 +951,66 @@ function AboutSection() {
   )
 }
 
-function PastWorksSection() {
-  const sectionRef = useRef<HTMLElement>(null)
-  const carouselCards = pastWorkTopCards
-  const cardAngle = 360 / carouselCards.length
+function PastWorksCarousel({ showcase, index: showcaseIndex }: { showcase: PastWorkShowcase; index: number }) {
+  const cardAngle = 360 / showcase.cards.length
   const cardDepth = 620
   const rotationValue = useMotionValue(0)
   const accumulatedDrag = useRef(0)
+  const rotationDirection = showcase.title === 'TBS FM' ? 360 : showcaseIndex % 2 === 0 ? 360 : -360
 
   useEffect(() => {
-    const animation = animate(rotationValue, 360, {
+    const animation = animate(rotationValue, rotationDirection, {
       duration: 32,
       repeat: Infinity,
       ease: 'linear',
     })
 
     return () => animation.stop()
-  }, [rotationValue])
+  }, [rotationValue, rotationDirection, showcaseIndex])
+
+  const handleDrag = (_event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+    accumulatedDrag.current -= info.delta.x * 0.18
+    rotationValue.set(accumulatedDrag.current)
+  }
+
+  return (
+    <div className={`past-works-showcase${showcase.variant ? ` past-works-showcase--${showcase.variant}` : ''}`}>
+      <div className="past-works-showcase__title">
+        <h3>{showcase.title}</h3>
+        {showcase.title !== 'Photography' ? <p>{showcase.subtitle}</p> : null}
+      </div>
+
+      <div className="past-works-carousel" aria-label={`${showcase.title} past works carousel`}>
+        <motion.div
+          className="past-works-carousel__track"
+          style={{ rotateY: rotationValue }}
+          drag="x"
+          dragConstraints={{ left: 0, right: 0 }}
+          dragElastic={0.12}
+          dragMomentum={false}
+          onDrag={handleDrag}
+        >
+          {showcase.cards.map((card, cardIndex) => (
+            <article
+              className="past-work-card"
+              aria-label={card.label}
+              key={`${showcase.title}-${card.label}-${cardIndex}`}
+              style={{
+                '--card-rotation': `${cardAngle * cardIndex}deg`,
+                '--card-depth': `${cardDepth}px`,
+              } as CSSProperties}
+            >
+              {card.image ? <img className="past-work-card__image" src={encodeURI(card.image)} alt="" loading="lazy" decoding="async" /> : null}
+            </article>
+          ))}
+        </motion.div>
+      </div>
+    </div>
+  )
+}
+
+function PastWorksSection() {
+  const sectionRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
     const section = sectionRef.current
@@ -933,33 +1022,52 @@ function PastWorksSection() {
     let snapLocked = false
     let snapTimer = 0
 
-    const getSectionTop = (target: HTMLElement) => Math.round(target.getBoundingClientRect().top + window.scrollY)
+    const getDocumentTop = (target: HTMLElement) => Math.round(target.getBoundingClientRect().top + window.scrollY)
+    const getScrollOffset = () => Math.min(Math.max(window.innerHeight * 0.1, 72), 128)
 
-    const scrollToSection = (target: HTMLElement) => {
+    const scrollToTarget = (target: HTMLElement, offset = getScrollOffset()) => {
       snapLocked = true
       window.scrollTo({
-        top: getSectionTop(target),
+        top: Math.max(0, getDocumentTop(target) - offset),
         behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
       })
       window.clearTimeout(snapTimer)
       snapTimer = window.setTimeout(() => {
         snapLocked = false
-      }, 720)
+      }, 760)
     }
 
     const handleWheel = (event: WheelEvent) => {
-      const direction = event.deltaY > 0 ? 1 : -1
-      const targetSection = direction > 0 ? document.getElementById('strength') : document.getElementById('about')
-
-      if (!targetSection || Math.abs(event.deltaY) <= 8) {
+      if (Math.abs(event.deltaY) <= 8) {
         return
       }
 
-      const rect = section.getBoundingClientRect()
-      const viewportHeight = window.innerHeight || document.documentElement.clientHeight
-      const isPastWorksFramed = Math.abs(rect.top) <= 8 && rect.bottom > viewportHeight * 0.72
+      const sectionTop = getDocumentTop(section)
+      const sectionBottom = sectionTop + section.offsetHeight
+      const scrollY = window.scrollY
 
-      if (!isPastWorksFramed) {
+      if (scrollY < sectionTop - 24 || scrollY > sectionBottom - 24) {
+        return
+      }
+
+      const direction = event.deltaY > 0 ? 1 : -1
+      const snapTargets = Array.from(section.querySelectorAll<HTMLElement>('.past-works-section__header, .past-works-showcase'))
+      const targetPositions = snapTargets.map((target) => ({
+        element: target,
+        top: getDocumentTop(target) - getScrollOffset(),
+      }))
+
+      const internalTarget =
+        direction > 0
+          ? targetPositions.find((target) => target.top > scrollY + 28)?.element
+          : [...targetPositions].reverse().find((target) => target.top < scrollY - 28)?.element
+      const nextTarget = internalTarget ?? (direction > 0 ? document.getElementById('strength') : document.getElementById('about'))
+
+      if (!nextTarget) {
+        return
+      }
+
+      if (!internalTarget && direction > 0 && scrollY < targetPositions[targetPositions.length - 1].top - 28) {
         return
       }
 
@@ -969,7 +1077,7 @@ function PastWorksSection() {
         return
       }
 
-      scrollToSection(targetSection)
+      scrollToTarget(nextTarget, nextTarget.id === 'about' || nextTarget.id === 'strength' ? 0 : getScrollOffset())
     }
 
     window.addEventListener('wheel', handleWheel, { passive: false })
@@ -980,11 +1088,6 @@ function PastWorksSection() {
     }
   }, [])
 
-  const handleDrag = (_event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
-    accumulatedDrag.current -= info.delta.x * 0.18
-    rotationValue.set(accumulatedDrag.current)
-  }
-
   return (
     <section ref={sectionRef} className="past-works-section" id="past-works" aria-labelledby="past-works-title">
       <div className="past-works-section__header">
@@ -993,30 +1096,10 @@ function PastWorksSection() {
         </h2>
       </div>
 
-      <div className="past-works-carousel" aria-label="Past works carousel">
-        <motion.div
-          className="past-works-carousel__track"
-          style={{ rotateY: rotationValue }}
-          drag="x"
-          dragConstraints={{ left: 0, right: 0 }}
-          dragElastic={0.12}
-          dragMomentum={false}
-          onDrag={handleDrag}
-        >
-          {carouselCards.map((card, index) => (
-            <article
-              className="past-work-card"
-              aria-label={card.label}
-              key={`top-${card.label}-${index}`}
-              style={{
-                '--card-rotation': `${cardAngle * index}deg`,
-                '--card-depth': `${cardDepth}px`,
-              } as CSSProperties}
-            >
-              {card.image ? <img className="past-work-card__image" src={encodeURI(card.image)} alt="" loading="lazy" decoding="async" /> : null}
-            </article>
-          ))}
-        </motion.div>
+      <div className="past-works-showcases">
+        {pastWorkShowcases.map((showcase, index) => (
+          <PastWorksCarousel showcase={showcase} index={index} key={showcase.title} />
+        ))}
       </div>
     </section>
   )

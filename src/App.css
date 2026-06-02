@@ -469,6 +469,7 @@
   display: inline-flex;
   align-items: baseline;
   justify-content: center;
+  padding: 0.12em 0 0.16em;
   perspective: 2.4em;
   transform-style: preserve-3d;
 }
@@ -477,6 +478,7 @@
   display: inline-flex;
   align-items: baseline;
   justify-content: center;
+  padding: 0.04em 0 0.08em;
   transform-style: preserve-3d;
 }
 
@@ -484,9 +486,9 @@
   position: relative;
   display: inline-block;
   min-width: 0;
-  height: 1.06em;
+  height: 1.18em;
   overflow: hidden;
-  line-height: 1;
+  line-height: 1.08;
   transform-style: preserve-3d;
   vertical-align: top;
 }
@@ -1554,9 +1556,9 @@
   z-index: 3;
   display: flex;
   flex-direction: column;
-  gap: clamp(104px, 8.8vw, 176px);
+  gap: clamp(112px, 9vw, 180px);
   min-height: 100svh;
-  padding: clamp(120px, 11vw, 190px) 0 clamp(132px, 12vw, 210px);
+  padding: clamp(128px, 11vw, 210px) 0 clamp(156px, 14vw, 260px);
   overflow: hidden;
   background: #1a1a1a;
   color: #fff;
@@ -1567,6 +1569,9 @@
 .past-works-section__header {
   width: 100%;
   padding: 0 clamp(16px, 4vw, 56px);
+  scroll-margin-top: clamp(72px, 10svh, 128px);
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
 }
 
 .past-works-section__header h2 {
@@ -1575,9 +1580,67 @@
   font-family: var(--english);
   font-size: clamp(56px, 6.8vw, 132px);
   font-weight: 500;
-  line-height: 0.95;
+  line-height: 1.08;
   letter-spacing: -0.04em;
   text-align: center;
+}
+
+.past-works-showcases {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(140px, 12vw, 240px);
+  width: 100%;
+}
+
+.past-works-showcase {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: clamp(48px, 5vw, 96px);
+  width: 100%;
+  min-height: clamp(640px, 92svh, 920px);
+  padding: clamp(32px, 4vw, 72px) 0;
+  scroll-margin-top: clamp(72px, 10svh, 128px);
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+.past-works-showcase--portrait .past-works-carousel {
+  --past-card-width: clamp(150px, min(13vw, 28svh), 230px);
+  --past-card-radius: clamp(16px, 1.2vw, 22px);
+
+  min-height: clamp(360px, 72svh, 560px);
+}
+
+.past-works-showcase--portrait .past-work-card {
+  aspect-ratio: 3 / 4.28;
+}
+
+.past-works-showcase__title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(8px, 0.7vw, 14px);
+  width: 100%;
+  padding: 0 clamp(20px, 4vw, 64px);
+  text-align: center;
+}
+
+.past-works-showcase__title h3 {
+  margin: 0;
+  font-family: var(--english);
+  font-size: clamp(28px, 3.2vw, 58px);
+  font-weight: 600;
+  line-height: 1;
+}
+
+.past-works-showcase__title p {
+  margin: 0;
+  font-family: var(--korean);
+  font-size: clamp(18px, 1.6vw, 28px);
+  font-weight: 500;
+  line-height: 1.35;
+  color: rgba(255, 255, 255, 0.72);
 }
 
 .past-works-carousel {
@@ -1586,7 +1649,7 @@
 
   position: relative;
   width: 100%;
-  min-height: clamp(320px, 33vw, 460px);
+  min-height: clamp(380px, 38vw, 560px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1604,6 +1667,7 @@
   transform-style: preserve-3d;
   transform-origin: center center;
   cursor: grab;
+  transition: filter 360ms ease;
 }
 
 .past-works-carousel__track:active {
@@ -1643,8 +1707,17 @@
 }
 
 @media (max-width: 1000px) {
+  .past-works-showcases {
+    gap: clamp(112px, 12vw, 180px);
+  }
+
+  .past-works-showcase {
+    min-height: clamp(560px, 86svh, 780px);
+    gap: clamp(40px, 5vw, 72px);
+  }
+
   .past-works-carousel {
-    min-height: clamp(260px, 28vw, 360px);
+    min-height: clamp(320px, 42vw, 460px);
   }
 
   .past-work-card {
@@ -1652,15 +1725,42 @@
 
     width: clamp(260px, 42vw, 380px);
   }
+
+  .past-works-showcase--portrait .past-works-carousel {
+    --past-card-width: clamp(145px, min(28vw, 26svh), 210px);
+
+    min-height: clamp(330px, 68svh, 480px);
+  }
 }
 
 @media (max-width: 680px) {
+  .past-works-section {
+    gap: 80px;
+    padding: 104px 0 144px;
+  }
+
+  .past-works-showcases {
+    gap: 104px;
+  }
+
+  .past-works-showcase {
+    min-height: clamp(500px, 78svh, 680px);
+    gap: 36px;
+    padding: 28px 0;
+  }
+
   .past-works-carousel {
-    min-height: clamp(220px, 40vw, 300px);
+    min-height: clamp(280px, 58vw, 360px);
   }
 
   .past-work-card {
     width: clamp(220px, 70vw, 300px);
+  }
+
+  .past-works-showcase--portrait .past-works-carousel {
+    --past-card-width: clamp(140px, min(52vw, 24svh), 200px);
+
+    min-height: clamp(300px, 64svh, 420px);
   }
 }
 
@@ -2584,6 +2684,9 @@
 
   .strength-section__headline {
     width: min(880px, 100%);
+    margin-inline: auto;
+    align-items: center;
+    text-align: center;
   }
 
   .strength-showcase {
