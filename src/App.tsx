@@ -390,6 +390,10 @@ const pastWorkPhotographyCards: PastWorkCard[] = [
   { label: 'Photography work 05', image: '/assets/past-works/photography/photography-05.png' },
   { label: 'Photography work 06', image: '/assets/past-works/photography/photography-06.png' },
   { label: 'Photography work 07', image: '/assets/past-works/photography/photography-07.png' },
+  { label: 'Photography work 08', image: '/assets/past-works/photography/photography-08.png' },
+  { label: 'Photography work 09', image: '/assets/past-works/photography/photography-09.png' },
+  { label: 'Photography work 10', image: '/assets/past-works/photography/photography-10.png' },
+  { label: 'Photography work 11', image: '/assets/past-works/photography/photography-11.png' },
 ]
 
 const pastWorkShowcases: PastWorkShowcase[] = [
