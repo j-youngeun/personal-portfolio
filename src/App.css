@@ -170,7 +170,7 @@
   z-index: -1;
   padding: 0;
   border: 0;
-  background: rgba(0, 0, 0, 0.18);
+  background: transparent;
   cursor: pointer;
 }
 
