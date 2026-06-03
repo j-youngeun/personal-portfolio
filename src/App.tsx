@@ -423,27 +423,27 @@ const pastWorkTopCards: PastWorkCard[] = [
 ]
 
 const pastWorkTbsCards: PastWorkCard[] = [
-  { label: 'TBS FM work 01', image: '/assets/past-works/tbs/tbs-01.jpg' },
-  { label: 'TBS FM work 02', image: '/assets/past-works/tbs/tbs-02.jpg' },
-  { label: 'TBS FM work 03', image: '/assets/past-works/tbs/tbs-03.png' },
-  { label: 'TBS FM work 04', image: '/assets/past-works/tbs/tbs-04.jpg' },
-  { label: 'TBS FM work 05', image: '/assets/past-works/tbs/tbs-05.jpg' },
-  { label: 'TBS FM work 06', image: '/assets/past-works/tbs/tbs-06.jpg' },
-  { label: 'TBS FM work 07', image: '/assets/past-works/tbs/tbs-07.png' },
+  { label: 'TBS FM work 01', image: '/assets/past-works/optimized/tbs/tbs-01.webp' },
+  { label: 'TBS FM work 02', image: '/assets/past-works/optimized/tbs/tbs-02.webp' },
+  { label: 'TBS FM work 03', image: '/assets/past-works/optimized/tbs/tbs-03.webp' },
+  { label: 'TBS FM work 04', image: '/assets/past-works/optimized/tbs/tbs-04.webp' },
+  { label: 'TBS FM work 05', image: '/assets/past-works/optimized/tbs/tbs-05.webp' },
+  { label: 'TBS FM work 06', image: '/assets/past-works/optimized/tbs/tbs-06.webp' },
+  { label: 'TBS FM work 07', image: '/assets/past-works/optimized/tbs/tbs-07.webp' },
 ]
 
 const pastWorkPhotographyCards: PastWorkCard[] = [
-  { label: 'Photography work 01', image: '/assets/past-works/photography/photography-01.png' },
-  { label: 'Photography work 02', image: '/assets/past-works/photography/photography-02.png' },
-  { label: 'Photography work 03', image: '/assets/past-works/photography/photography-03.png' },
-  { label: 'Photography work 04', image: '/assets/past-works/photography/photography-04.png' },
-  { label: 'Photography work 05', image: '/assets/past-works/photography/photography-05.png' },
-  { label: 'Photography work 06', image: '/assets/past-works/photography/photography-06.png' },
-  { label: 'Photography work 07', image: '/assets/past-works/photography/photography-07.png' },
-  { label: 'Photography work 08', image: '/assets/past-works/photography/photography-08.png' },
-  { label: 'Photography work 09', image: '/assets/past-works/photography/photography-09.png' },
-  { label: 'Photography work 10', image: '/assets/past-works/photography/photography-10.png' },
-  { label: 'Photography work 11', image: '/assets/past-works/photography/photography-11.png' },
+  { label: 'Photography work 01', image: '/assets/past-works/optimized/photography/photography-01.webp' },
+  { label: 'Photography work 02', image: '/assets/past-works/optimized/photography/photography-02.webp' },
+  { label: 'Photography work 03', image: '/assets/past-works/optimized/photography/photography-03.webp' },
+  { label: 'Photography work 04', image: '/assets/past-works/optimized/photography/photography-04.webp' },
+  { label: 'Photography work 05', image: '/assets/past-works/optimized/photography/photography-05.webp' },
+  { label: 'Photography work 06', image: '/assets/past-works/optimized/photography/photography-06.webp' },
+  { label: 'Photography work 07', image: '/assets/past-works/optimized/photography/photography-07.webp' },
+  { label: 'Photography work 08', image: '/assets/past-works/optimized/photography/photography-08.webp' },
+  { label: 'Photography work 09', image: '/assets/past-works/optimized/photography/photography-09.webp' },
+  { label: 'Photography work 10', image: '/assets/past-works/optimized/photography/photography-10.webp' },
+  { label: 'Photography work 11', image: '/assets/past-works/optimized/photography/photography-11.webp' },
 ]
 
 const pastWorkShowcases: PastWorkShowcase[] = [
@@ -1011,7 +1011,6 @@ function AiWorkflowSection() {
   const activeStepStartedAtRef = useRef(0)
   const isStepScrollingRef = useRef(false)
   const stepScrollTimeoutRef = useRef<number | null>(null)
-  const touchStartYRef = useRef<number | null>(null)
   const activeStep = aiWorkflowSteps[activeStepIndex] ?? aiWorkflowSteps[0]
 
   useEffect(() => {
@@ -1096,7 +1095,12 @@ function AiWorkflowSection() {
     const section = sectionRef.current
 
     if (!section) return
-    if (!window.matchMedia('(min-width: 1025px)').matches) return
+    const canUseDesktopStepScroll =
+      window.matchMedia('(min-width: 1025px)').matches &&
+      window.matchMedia('(hover: hover)').matches &&
+      window.matchMedia('(pointer: fine)').matches
+
+    if (!canUseDesktopStepScroll) return
 
     const lastStepIndex = aiWorkflowSteps.length - 1
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -1179,28 +1183,6 @@ function AiWorkflowSection() {
 
       moveToStep(direction)
     }
-    const handleTouchStart = (event: TouchEvent) => {
-      if (!isCurrentStepCentered()) return
-
-      touchStartYRef.current = event.touches[0]?.clientY ?? null
-    }
-    const handleTouchMove = (event: TouchEvent) => {
-      if (isTypingTarget(event.target) || touchStartYRef.current === null) return
-
-      const deltaY = touchStartYRef.current - (event.touches[0]?.clientY ?? touchStartYRef.current)
-
-      if (Math.abs(deltaY) < 42) return
-
-      const direction = deltaY > 0 ? 1 : -1
-
-      if (!canCaptureStepScroll(direction)) return
-
-      event.preventDefault()
-
-      if (!isStepScrollingRef.current && moveToStep(direction)) {
-        touchStartYRef.current = null
-      }
-    }
     const handleKeyDown = (event: KeyboardEvent) => {
       if (isTypingTarget(event.target)) return
 
@@ -1218,14 +1200,10 @@ function AiWorkflowSection() {
     }
 
     window.addEventListener('wheel', handleWheel, { passive: false })
-    window.addEventListener('touchstart', handleTouchStart, { passive: true })
-    window.addEventListener('touchmove', handleTouchMove, { passive: false })
     window.addEventListener('keydown', handleKeyDown)
 
     return () => {
       window.removeEventListener('wheel', handleWheel)
-      window.removeEventListener('touchstart', handleTouchStart)
-      window.removeEventListener('touchmove', handleTouchMove)
       window.removeEventListener('keydown', handleKeyDown)
 
       if (stepScrollTimeoutRef.current) {

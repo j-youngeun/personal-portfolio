@@ -3656,6 +3656,14 @@ body.mobile-menu-is-open {
   }
 }
 
+@media (hover: none), (pointer: coarse) {
+  .ai-workflow-section,
+  .ai-workflow-step {
+    scroll-snap-align: none;
+    scroll-snap-stop: normal;
+  }
+}
+
 @media (max-width: 900px) {
   .site-header {
     padding: 30px 24px 0;
