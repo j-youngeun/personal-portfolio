@@ -271,7 +271,7 @@ const strengthTabs = [
       ],
       [{ text: '사용자의 흐름을 고려한 비주얼 설계에 강점이 되었습니다' }],
     ],
-    image: '/assets/about/strength-visual-photo.png',
+    image: '/assets/about/optimized/strength-visual-photo-optimized.webp',
     accent: '#ff5100',
   },
   {
@@ -286,7 +286,7 @@ const strengthTabs = [
       ],
       [{ text: '프로젝트의 기획과 구조를 잡는 과정에서 강점으로 작용했습니다' }],
     ],
-    image: '/assets/about/strength-planning.png',
+    image: '/assets/about/optimized/strength-planning-optimized.webp',
     accent: '#57c7ff',
   },
   {
@@ -301,7 +301,7 @@ const strengthTabs = [
       ],
       [{ text: '디자인을 넘어 프론트엔드까지 직접 구현해보는 원동력이 되었습니다' }],
     ],
-    image: '/assets/about/strength-tools.png',
+    image: '/assets/about/optimized/strength-tools-optimized.webp',
     accent: '#b4ff52',
   },
   {
@@ -317,7 +317,7 @@ const strengthTabs = [
       ],
       [{ text: '프로젝트를 완성하는 중요한 강점 중 하나였습니다' }],
     ],
-    image: '/assets/about/strength-people.png',
+    image: '/assets/about/optimized/strength-people-optimized.webp',
     accent: '#ffcf4d',
   },
 ]
@@ -1110,12 +1110,21 @@ function AiWorkflowSection() {
 
       if (!currentStep) return false
 
-      const rect = currentStep.getBoundingClientRect()
+      const marker = currentStep.querySelector<HTMLElement>('.ai-workflow-step__marker')
+      const rect = (marker ?? currentStep).getBoundingClientRect()
       const viewportAnchor = window.innerHeight * 0.5
       const stepCenter = rect.top + rect.height * 0.5
-      const centerTolerance = Math.min(window.innerHeight * 0.18, 140)
+      const centerTolerance = Math.min(window.innerHeight * 0.34, 260)
 
       return Math.abs(stepCenter - viewportAnchor) <= centerTolerance
+    }
+    const getStepScrollTop = (step: HTMLElement) => {
+      const marker = step.querySelector<HTMLElement>('.ai-workflow-step__marker')
+      const rect = (marker ?? step).getBoundingClientRect()
+      const markerCenter = rect.top + rect.height * 0.5
+      const viewportAnchor = window.innerHeight * 0.5
+
+      return Math.max(0, Math.round(window.scrollY + markerCenter - viewportAnchor))
     }
     const releaseStepScroll = () => {
       if (stepScrollTimeoutRef.current) {
@@ -1138,8 +1147,8 @@ function AiWorkflowSection() {
 
       isStepScrollingRef.current = true
       syncActiveStep(nextStepIndex)
-      nextStep.scrollIntoView({
-        block: 'center',
+      window.scrollTo({
+        top: getStepScrollTop(nextStep),
         behavior: prefersReducedMotion ? 'auto' : 'smooth',
       })
       releaseStepScroll()
@@ -1470,6 +1479,14 @@ function StrengthSection() {
   useEffect(() => {
     activeTabRef.current = activeTab
   }, [activeTab])
+
+  useEffect(() => {
+    strengthTabs.forEach((tab) => {
+      const image = new Image()
+      image.decoding = 'async'
+      image.src = tab.image
+    })
+  }, [])
 
   useEffect(() => {
     if (!isStrengthVisible || hasStrengthIntroPlayed) {
