@@ -15,6 +15,7 @@ import {
 } from 'framer-motion'
 import CustomCursor from './components/CustomCursor'
 import CountUpNumber from './components/CountUpNumber'
+import HamburgerMenu from './components/HamburgerMenu'
 import { useWorkCardMetaInView } from './hooks/useWorkCardMetaInView'
 import './App.css'
 
@@ -1003,7 +1004,6 @@ function AboutSection() {
 
 function AiWorkflowSection() {
   const [activeStepIndex, setActiveStepIndex] = useState(0)
-  const [previewDirection, setPreviewDirection] = useState<'down' | 'up'>('down')
   const [isWorkflowVisible, setIsWorkflowVisible] = useState(false)
   const sectionRef = useRef<HTMLElement | null>(null)
   const stepRefs = useRef<Array<HTMLElement | null>>([])
@@ -1066,7 +1066,6 @@ function AiWorkflowSection() {
 
     if (nextStepIndex === currentStepIndex) return
 
-    setPreviewDirection(nextStepIndex > currentStepIndex ? 'down' : 'up')
     activeStepIndexRef.current = nextStepIndex
     setActiveStepIndex(nextStepIndex)
   }
@@ -1097,6 +1096,7 @@ function AiWorkflowSection() {
     const section = sectionRef.current
 
     if (!section) return
+    if (!window.matchMedia('(min-width: 1025px)').matches) return
 
     const lastStepIndex = aiWorkflowSteps.length - 1
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -1246,7 +1246,7 @@ function AiWorkflowSection() {
 
         <div className="ai-workflow-scroll" aria-label="AI workflow steps">
           <aside className="ai-workflow-preview" aria-live="polite" data-ai-workflow-reveal>
-            <div className={`ai-workflow-preview__media ai-workflow-preview__media--${previewDirection}`} key={activeStep.number}>
+            <div className="ai-workflow-preview__media">
               {activeStep.image ? (
                 <img
                   className="ai-workflow-preview__image"
@@ -1351,7 +1351,7 @@ function PastWorksCarousel({ showcase, index: showcaseIndex }: { showcase: PastW
               key={`${showcase.title}-${card.label}-${cardIndex}`}
               style={{
                 '--card-rotation': `${cardAngle * cardIndex}deg`,
-                '--card-depth': `${cardDepth}px`,
+                '--card-depth': `var(--past-card-depth, ${cardDepth}px)`,
               } as CSSProperties}
             >
               {card.image ? <img className="past-work-card__image" src={encodeURI(card.image)} alt="" loading="lazy" decoding="async" /> : null}
@@ -1541,6 +1541,21 @@ function StrengthSection() {
       return rect.top < viewportHeight && rect.bottom > 0
     }
 
+    const canCaptureSectionWheel = (direction: 1 | -1) => {
+      const rect = section.getBoundingClientRect()
+      const viewportHeight = window.innerHeight || document.documentElement.clientHeight
+
+      if (direction < 0 && rect.bottom < viewportHeight * 0.72) {
+        return false
+      }
+
+      if (direction > 0 && rect.top > viewportHeight * 0.28) {
+        return false
+      }
+
+      return true
+    }
+
     const isSectionFramed = () => {
       const rect = section.getBoundingClientRect()
       const viewportHeight = window.innerHeight || document.documentElement.clientHeight
@@ -1569,7 +1584,9 @@ function StrengthSection() {
         return
       }
 
-      const target = direction > 0 ? document.getElementById('contact') : document.getElementById('past-works')
+      const pastWorksShowcases = Array.from(document.querySelectorAll<HTMLElement>('.past-works-showcase'))
+      const previousTarget = pastWorksShowcases[pastWorksShowcases.length - 1] ?? document.getElementById('past-works')
+      const target = direction > 0 ? document.getElementById('contact') : previousTarget
 
       if (!target) {
         return
@@ -1605,6 +1622,11 @@ function StrengthSection() {
       }
 
       const direction = event.deltaY > 0 ? 1 : -1
+
+      if (!canCaptureSectionWheel(direction)) {
+        return
+      }
+
       const current = activeTabRef.current
       const isLeavingSection = (direction < 0 && current === 0) || (direction > 0 && current === strengthTabs.length - 1)
 
@@ -2162,6 +2184,8 @@ function App() {
               </a>
             ))}
           </nav>
+
+          <HamburgerMenu items={navItems} onNavigate={scrollToHash} />
         </header>
 
         <button

@@ -84,6 +84,163 @@
   display: inline;
 }
 
+.mobile-menu {
+  --mobile-menu-size: clamp(38px, 5.4vw, 46px);
+  --mobile-menu-line-width: calc(var(--mobile-menu-size) * 0.43);
+  --mobile-menu-line-height: clamp(1.5px, 0.23vw, 2px);
+  --mobile-menu-panel-gap: clamp(10px, 1.6vw, 12px);
+  --mobile-menu-panel-width: clamp(260px, 42vw, 340px);
+
+  position: fixed;
+  top: clamp(20px, 3.2vw, 28px);
+  right: clamp(18px, 3vw, 24px);
+  z-index: 140;
+  display: none;
+  font-family: var(--mono);
+  letter-spacing: 0;
+}
+
+.mobile-menu__button {
+  position: relative;
+  display: inline-grid;
+  width: var(--mobile-menu-size);
+  height: var(--mobile-menu-size);
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+  backdrop-filter: none;
+  box-shadow: none;
+  transition:
+    opacity 180ms ease,
+    transform 180ms ease;
+}
+
+.mobile-menu__button:hover {
+  background: transparent;
+  opacity: 0.72;
+}
+
+.mobile-menu__button span {
+  position: absolute;
+  left: 50%;
+  width: var(--mobile-menu-line-width);
+  height: var(--mobile-menu-line-height);
+  border-radius: 999px;
+  background: currentColor;
+  transform: translateX(-50%);
+  transition:
+    transform 200ms ease,
+    opacity 160ms ease,
+    top 200ms ease;
+}
+
+.mobile-menu__button span:nth-child(1) {
+  top: 34%;
+}
+
+.mobile-menu__button span:nth-child(2) {
+  top: 50%;
+}
+
+.mobile-menu__button span:nth-child(3) {
+  top: 66%;
+}
+
+.mobile-menu__button.is-open span:nth-child(1) {
+  top: 50%;
+  transform: translateX(-50%) rotate(45deg);
+}
+
+.mobile-menu__button.is-open span:nth-child(2) {
+  opacity: 0;
+}
+
+.mobile-menu__button.is-open span:nth-child(3) {
+  top: 50%;
+  transform: translateX(-50%) rotate(-45deg);
+}
+
+.mobile-menu__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  padding: 0;
+  border: 0;
+  background: rgba(0, 0, 0, 0.18);
+  cursor: pointer;
+}
+
+.mobile-menu__panel {
+  position: absolute;
+  top: calc(var(--mobile-menu-size) + var(--mobile-menu-panel-gap));
+  right: 0;
+  display: flex;
+  width: min(var(--mobile-menu-panel-width), calc(100vw - 36px));
+  flex-direction: column;
+  gap: 2px;
+  padding: clamp(10px, 1.6vw, 14px);
+  border-radius: clamp(14px, 2vw, 18px);
+  background: rgba(10, 10, 10, 0.94);
+  box-shadow:
+    0 20px 56px rgba(0, 0, 0, 0.34),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(16px);
+}
+
+.mobile-menu__title {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.mobile-menu__link {
+  display: flex;
+  min-height: clamp(46px, 5.8vw, 54px);
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 clamp(12px, 1.8vw, 16px);
+  border: 0;
+  border-radius: clamp(8px, 1.2vw, 10px);
+  background: transparent;
+  color: #fff;
+  font: clamp(15px, 1.9vw, 18px)/1.1 var(--mono);
+  letter-spacing: -0.03em;
+  text-align: right;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color 160ms ease,
+    color 160ms ease;
+}
+
+.mobile-menu__link:hover {
+  background: rgba(255, 255, 255, 0.09);
+}
+
+.mobile-menu__link--contact {
+  color: #ff5100;
+}
+
+.mobile-menu__link:focus-visible,
+.mobile-menu__button:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 4px;
+}
+
+body.mobile-menu-is-open {
+  overflow: hidden;
+}
+
 .floating-top {
   --scroll-progress: 0;
   --floating-circle: 131.95;
@@ -1663,7 +1820,7 @@
   overflow: hidden;
   place-items: center;
   border: 1px solid rgba(255, 255, 255, 0.075);
-  border-radius: 8px;
+  border-radius: clamp(22px, 2.4vw, 34px);
   background:
     radial-gradient(circle at 50% 46%, rgba(255, 81, 0, 0.09), transparent 58%),
     #181818;
@@ -1671,19 +1828,12 @@
   will-change: opacity, filter, transform;
 }
 
-.ai-workflow-preview__media--down {
-  animation: ai-workflow-card-enter-up 760ms cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
-.ai-workflow-preview__media--up {
-  animation: ai-workflow-card-enter-down 760ms cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
 .ai-workflow-preview__media img {
   position: relative;
   z-index: 1;
   width: 100%;
   height: 100%;
+  border-radius: inherit;
   object-fit: contain;
   object-position: center;
   background: #f5f5f2;
@@ -1836,12 +1986,13 @@
   position: relative;
   top: calc(var(--ai-workflow-content-lift) * -1);
   max-width: 680px;
-  transform: translateY(4px);
-  transition: transform 280ms ease;
+  opacity: 0;
+  transform: translateY(42px);
+  will-change: opacity, transform;
 }
 
 .ai-workflow-step.is-active .ai-workflow-step__content {
-  transform: translateY(0);
+  animation: ai-workflow-content-rise 720ms 80ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .ai-workflow-step__eyebrow {
@@ -1928,13 +2079,11 @@
   gap: clamp(10px, 0.8vw, 14px);
   align-items: center;
   margin-top: clamp(26px, 2vw, 38px);
-  opacity: 0;
-  transform: translateY(34px);
   pointer-events: none;
 }
 
 .ai-workflow-step.is-active .ai-workflow-step__tools {
-  animation: ai-workflow-tool-fly-in 760ms 120ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  pointer-events: auto;
 }
 
 .ai-workflow-step__tool {
@@ -2152,6 +2301,7 @@
 .past-works-carousel {
   --past-card-width: clamp(300px, 22vw, 380px);
   --past-card-radius: clamp(18px, 1.4vw, 26px);
+  --past-card-depth: 620px;
 
   position: relative;
   width: 100%;
@@ -2233,9 +2383,15 @@
   }
 
   .past-works-showcase--portrait .past-works-carousel {
-    --past-card-width: clamp(145px, min(28vw, 26svh), 210px);
+    --past-card-width: clamp(130px, min(24vw, 24svh), 190px);
+    --past-card-depth: clamp(520px, 64vw, 680px);
 
-    min-height: clamp(330px, 68svh, 480px);
+    min-height: clamp(340px, 64svh, 500px);
+  }
+
+  .past-works-showcase--portrait .past-work-card {
+    width: var(--past-card-width);
+    aspect-ratio: 3 / 4.28;
   }
 }
 
@@ -2264,9 +2420,15 @@
   }
 
   .past-works-showcase--portrait .past-works-carousel {
-    --past-card-width: clamp(140px, min(52vw, 24svh), 200px);
+    --past-card-width: clamp(118px, min(40vw, 23svh), 168px);
+    --past-card-depth: clamp(420px, 108vw, 560px);
 
-    min-height: clamp(300px, 64svh, 420px);
+    min-height: clamp(320px, 62svh, 430px);
+  }
+
+  .past-works-showcase--portrait .past-work-card {
+    width: var(--past-card-width);
+    aspect-ratio: 3 / 4.28;
   }
 }
 
@@ -2407,37 +2569,38 @@
 
 .strength-showcase__line {
   display: block;
-  width: 0;
   max-width: 100%;
   margin-inline: auto;
-  overflow: hidden;
-  white-space: nowrap;
+  opacity: 0;
+  transform: translateY(18px);
+  white-space: normal;
+  will-change: opacity, transform;
 }
 
 .strength-section.is-visible .strength-showcase__line {
-  animation: strength-type-line 1200ms steps(42, end) both;
-  animation-delay: 420ms;
+  animation: strength-line-rise 680ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: 260ms;
 }
 
 .strength-section.is-visible .strength-showcase__line:nth-child(2) {
-  animation-delay: 600ms;
+  animation-delay: 380ms;
 }
 
 .strength-section.is-visible .strength-showcase__line:nth-child(3) {
-  animation-delay: 780ms;
+  animation-delay: 500ms;
 }
 
 .strength-section.is-visible.has-intro-played .strength-showcase__line {
-  animation-duration: 900ms;
-  animation-delay: 80ms;
+  animation-duration: 560ms;
+  animation-delay: 40ms;
 }
 
 .strength-section.is-visible.has-intro-played .strength-showcase__line:nth-child(2) {
-  animation-delay: 180ms;
+  animation-delay: 120ms;
 }
 
 .strength-section.is-visible.has-intro-played .strength-showcase__line:nth-child(3) {
-  animation-delay: 280ms;
+  animation-delay: 200ms;
 }
 
 .strength-showcase__highlight {
@@ -2981,54 +3144,20 @@
   }
 }
 
-@keyframes ai-workflow-card-enter-up {
-  from {
-    opacity: 0;
-    filter: blur(10px);
-    transform: translateY(28px) scale(0.965);
-  }
-  62% {
-    opacity: 1;
-    filter: blur(1px);
-  }
-  to {
-    opacity: 1;
-    filter: blur(0);
-    transform: translateY(0) scale(1);
-  }
-}
-
-@keyframes ai-workflow-card-enter-down {
-  from {
-    opacity: 0;
-    filter: blur(10px);
-    transform: translateY(-28px) scale(0.965);
-  }
-  62% {
-    opacity: 1;
-    filter: blur(1px);
-  }
-  to {
-    opacity: 1;
-    filter: blur(0);
-    transform: translateY(0) scale(1);
-  }
-}
-
-@keyframes ai-workflow-tool-fly-in {
+@keyframes ai-workflow-content-rise {
   from {
     opacity: 0;
     filter: blur(8px);
-    transform: translateY(34px) scale(0.9);
+    transform: translateY(42px);
   }
-  64% {
+  68% {
     opacity: 1;
     filter: blur(1px);
   }
   to {
     opacity: 1;
     filter: blur(0);
-    transform: translateY(0) scale(1);
+    transform: translateY(0);
   }
 }
 
@@ -3106,12 +3235,14 @@
   }
 }
 
-@keyframes strength-type-line {
+@keyframes strength-line-rise {
   from {
-    width: 0;
+    opacity: 0;
+    transform: translateY(18px);
   }
   to {
-    width: 100%;
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -3307,8 +3438,18 @@
 }
 
 @media (max-width: 1024px) {
-  .site-header__nav-link--hide-mobile {
+  .site-header__nav {
     display: none;
+  }
+
+  .mobile-menu {
+    display: block;
+  }
+
+  .ai-workflow-section,
+  .ai-workflow-step {
+    scroll-snap-align: none;
+    scroll-snap-stop: normal;
   }
 
   .work-section {
@@ -3457,11 +3598,8 @@
   .strength-section.has-intro-played .strength-showcase__line,
   .strength-section.has-intro-played .strength-showcase__line:nth-child(2),
   .strength-section.has-intro-played .strength-showcase__line:nth-child(3) {
-    width: auto;
     max-width: 100%;
-    overflow: visible;
     white-space: normal;
-    animation: none;
   }
 
   .strength-tabs {
@@ -3598,6 +3736,10 @@
 @media (max-width: 560px) {
   .site-header {
     align-items: flex-start;
+  }
+
+  .mobile-menu__panel {
+    width: min(320px, calc(100vw - 36px));
   }
 
   .site-header__nav {
@@ -3803,12 +3945,9 @@
   .strength-section.is-visible.has-intro-played .strength-showcase__line,
   .strength-section.is-visible.has-intro-played .strength-showcase__line:nth-child(2),
   .strength-section.is-visible.has-intro-played .strength-showcase__line:nth-child(3) {
-    display: inline;
-    width: auto;
+    display: inline-block;
     max-width: 100%;
-    overflow: visible;
     white-space: normal;
-    animation: none;
   }
 
   .strength-tabs {
@@ -3884,7 +4023,7 @@
   .ai-workflow-preview__media,
   .ai-workflow-preview__image,
   .ai-workflow-section [data-ai-workflow-reveal],
-  .ai-workflow-step__tools,
+  .ai-workflow-step__content,
   .work-card h3,
   .work-card__meta,
   .work-card__description,
