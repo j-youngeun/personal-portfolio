@@ -1260,6 +1260,15 @@ function AiWorkflowSection() {
               >
                 <span className="ai-workflow-step__marker" aria-hidden="true" />
                 <div className="ai-workflow-step__content">
+                  {step.image ? (
+                    <img
+                      className="ai-workflow-step__image"
+                      src={step.image}
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  ) : null}
                   <span className="ai-workflow-step__eyebrow">STEP {index + 1}</span>
                   <div className="ai-workflow-step__heading">
                     <h3>{step.title}</h3>
