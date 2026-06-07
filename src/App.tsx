@@ -118,13 +118,13 @@ const aboutCards: AboutCardData[] = [
     title: 'WORK HISTORY',
     items: [
       {
-        name: '대한무역투자진흥공사(KOTRA)',
-        date: '2024.03~2025.03',
+        name: '대한무역투자진흥공사',
+        date: '2024-2025',
         description: '그래픽 디자인 · 공사 행정 업무',
       },
       {
         name: '서울특별시미디어재단 TBS',
-        date: '2021.06~2023.01',
+        date: '2021-2023',
         description: '영상 촬영편집 · 유튜브 업로드',
       },
     ],
@@ -132,10 +132,10 @@ const aboutCards: AboutCardData[] = [
   {
     title: 'CERTIFICATION',
     items: [
-      { name: '한국사능력검정시험1급', date: '2023.08' },
-      { name: '컴퓨터그래픽스운용기능사', date: '2022.04' },
-      { name: 'GTQ(그래픽기술자격) 1급', date: '2021.08' },
-      { name: '컴퓨터활용능력 2급', date: '2020.08' },
+      { name: '한국사능력검정시험1급', date: '2023' },
+      { name: '컴퓨터그래픽스운용기능사', date: '2022' },
+      { name: 'GTQ(그래픽기술자격) 1급', date: '2021' },
+      { name: '컴퓨터활용능력 2급', date: '2020' },
     ],
   },
   {
@@ -143,17 +143,17 @@ const aboutCards: AboutCardData[] = [
     items: [
       {
         name: '이젠아카데미DX교육센터 수료',
-        date: '2025.12~2026.06',
+        date: '2026',
         description: 'UXUI디자인&웹기획 프론트엔드',
       },
       {
         name: '중앙대학교(안성) 졸업',
-        date: '2016.03~2021.08',
+        date: '2021',
         description: '사진학과',
       },
     ],
     subTitle: 'EXPERIENCE',
-    subItems: [{ name: '호주 워킹홀리데이', date: '2025.03~2025.12' }],
+    subItems: [{ name: '호주 워킹홀리데이', date: '2025' }],
   },
 ]
 const toolLogos = [
@@ -939,13 +939,13 @@ function AboutSection() {
         <div className="about-intro__copy" data-about-reveal>
           <div ref={introTextRef} className="about-intro__text">
             <span className="about-intro__line" style={{ '--line-index': 0 } as CSSProperties}>
-              기획·디자인·프론트엔드를 연결하며
+              기획·개발·디자인을 연결하며
             </span>
             <span className="about-intro__line" style={{ '--line-index': 1 } as CSSProperties}>
-              AI를 활용해 더 빠르게 검증하는
+              AI로 더 빠르게 검증하는
             </span>
-            <span className="about-intro__line" style={{ '--line-index': 2 } as CSSProperties}>
-              디자이너 정영은입니다
+            <span className="about-intro__line about-intro__line--name" style={{ '--line-index': 2 } as CSSProperties}>
+              정영은입니다
             </span>
           </div>
         </div>

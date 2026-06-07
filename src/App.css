@@ -1095,6 +1095,10 @@ body.mobile-menu-is-open {
   --line-fill: calc(var(--about-line-2) * 100%);
 }
 
+.about-intro__line--name {
+  font-size: 1.22em;
+}
+
 .about-person {
   position: relative;
   flex: 0 0 473px;
