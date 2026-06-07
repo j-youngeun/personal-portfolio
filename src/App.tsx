@@ -139,7 +139,7 @@ const aboutCards: AboutCardData[] = [
     ],
   },
   {
-    title: 'EDUCATION',
+    title: 'EDUCATION & EXPERIENCE',
     items: [
       {
         name: '이젠아카데미DX교육센터 수료',
@@ -147,13 +147,15 @@ const aboutCards: AboutCardData[] = [
         description: 'UXUI디자인&웹기획 프론트엔드',
       },
       {
+        name: '호주 워킹홀리데이',
+        date: '2025',
+      },
+      {
         name: '중앙대학교(안성) 졸업',
         date: '2021',
         description: '사진학과',
       },
     ],
-    subTitle: 'EXPERIENCE',
-    subItems: [{ name: '호주 워킹홀리데이', date: '2025' }],
   },
 ]
 const toolLogos = [
