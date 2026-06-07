@@ -1095,7 +1095,7 @@ body.mobile-menu-is-open {
   --line-fill: calc(var(--about-line-2) * 100%);
 }
 
-.about-intro__name {
+.about-intro__line--name {
   font-size: 1.22em;
 }
 
@@ -1185,6 +1185,8 @@ body.mobile-menu-is-open {
   display: flex;
   width: 100%;
   min-width: 0;
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .about-card-grid > [data-about-reveal]:nth-child(2) {

@@ -946,8 +946,8 @@ function AboutSection() {
             <span className="about-intro__line" style={{ '--line-index': 1 } as CSSProperties}>
               AI로 더 빠르게 검증하는
             </span>
-            <span className="about-intro__line" style={{ '--line-index': 2 } as CSSProperties}>
-              <span className="about-intro__name">정영은</span>입니다
+            <span className="about-intro__line about-intro__line--name" style={{ '--line-index': 2 } as CSSProperties}>
+              정영은입니다
             </span>
           </div>
         </div>
