@@ -257,7 +257,7 @@ const aiWorkflowSteps: AiWorkflowStep[] = [
   },
   {
     number: '03',
-    title: '브랜드 캐릭터 제작',
+    title: '캐릭터 제작',
     tool: 'ChatGPT + Midjourney',
     image: '/assets/ai-workflow/step-03-optimized.webp',
     description: 'ChatGPT와 Midjourney를 활용해 다음과 같은 기준으로 마스코트 캐릭터를 생성합니다. 친근감과 신뢰감, 서비스 확장성, 브랜드 일관성을 기준으로 정리합니다.',
