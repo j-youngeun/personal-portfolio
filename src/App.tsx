@@ -123,14 +123,14 @@ const aboutCards: AboutCardData[] = [
         description: '그래픽 디자인 · 공사 행정 업무',
       },
       {
-        name: '서울특별시미디어재단 TBS',
+        name: '서울특별시미디어재단티비에스',
         date: '2021-2023',
         description: '영상 촬영편집 · 유튜브 업로드',
       },
     ],
   },
   {
-    title: 'CERTIFICATION',
+    title: 'CERTIFICATE',
     items: [
       { name: '한국사능력검정시험1급', date: '2023' },
       { name: '컴퓨터그래픽스운용기능사', date: '2022' },
@@ -632,9 +632,9 @@ function AboutSection() {
   const skillsDetailRef = useRef<HTMLDivElement>(null)
   const skillsMarqueeRef = useRef<HTMLDivElement>(null)
   const skillsToggleRef = useRef<HTMLButtonElement>(null)
-  const isSkillsOpenRef = useRef(false)
-  const hasAutoOpenedSkillsRef = useRef(false)
-  const [isSkillsOpen, setIsSkillsOpen] = useState(false)
+  const isSkillsOpenRef = useRef(true)
+  const hasAutoOpenedSkillsRef = useRef(true)
+  const [isSkillsOpen, setIsSkillsOpen] = useState(true)
   const [hasSkillsPlayed, setHasSkillsPlayed] = useState(false)
   const logoGroups = [toolLogos.slice(0, 8), toolLogos.slice(8, 16), toolLogos.slice(16)]
   const marqueeGroups = [...logoGroups, ...logoGroups]
@@ -1800,14 +1800,46 @@ function ContactSection() {
       return
     }
 
+    let animationFrame = 0
+
+    const syncContactState = (isVisible: boolean) => {
+      document.documentElement.classList.toggle('is-contact-active', isVisible)
+      section.classList.toggle('is-contact-visible', isVisible)
+    }
+
+    const syncContactStateFromScroll = () => {
+      const rect = section.getBoundingClientRect()
+      const viewportHeight = window.innerHeight || document.documentElement.clientHeight
+      const isContactActive = rect.top <= viewportHeight * 0.45 && rect.bottom >= viewportHeight * 0.25
+
+      syncContactState(isContactActive)
+      animationFrame = 0
+    }
+
+    const requestContactStateSync = () => {
+      if (!animationFrame) {
+        animationFrame = window.requestAnimationFrame(syncContactStateFromScroll)
+      }
+    }
+
+    syncContactStateFromScroll()
+    window.addEventListener('scroll', requestContactStateSync, { passive: true })
+    window.addEventListener('resize', requestContactStateSync)
+
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       targets.forEach((target) => target.classList.add('is-visible'))
-      return
+      return () => {
+        window.removeEventListener('scroll', requestContactStateSync)
+        window.removeEventListener('resize', requestContactStateSync)
+        if (animationFrame) {
+          window.cancelAnimationFrame(animationFrame)
+        }
+        syncContactState(false)
+      }
     }
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        section.classList.toggle('is-contact-visible', entry.isIntersecting)
         targets.forEach((target) => {
           target.classList.toggle('is-visible', entry.isIntersecting)
         })
@@ -1818,7 +1850,13 @@ function ContactSection() {
     observer.observe(section)
 
     return () => {
+      window.removeEventListener('scroll', requestContactStateSync)
+      window.removeEventListener('resize', requestContactStateSync)
+      if (animationFrame) {
+        window.cancelAnimationFrame(animationFrame)
+      }
       observer.disconnect()
+      syncContactState(false)
     }
   }, [])
 
@@ -1847,6 +1885,7 @@ function App() {
   const navPointerHandledRef = useRef(false)
   const [isHeaderVisible, setIsHeaderVisible] = useState(true)
   const [isTopButtonVisible, setIsTopButtonVisible] = useState(false)
+  const [isContactButtonHidden, setIsContactButtonHidden] = useState(false)
   const [scrollProgress, setScrollProgress] = useState(0)
 
   const scrollToHash = (hash: string, behavior: ScrollBehavior = 'smooth') => {
@@ -2001,9 +2040,14 @@ function App() {
       const nextProgress = scrollableHeight > 0 ? Math.min(Math.max(scrollTop / scrollableHeight, 0), 1) : 0
       const workSection = document.getElementById('work')
       const workStart = workSection ? workSection.offsetTop - 1 : window.innerHeight
+      const contactSection = document.getElementById('contact')
+      const contactRect = contactSection?.getBoundingClientRect()
+      const viewportHeight = window.innerHeight || document.documentElement.clientHeight
+      const isContactActive = contactRect ? contactRect.top <= viewportHeight * 0.45 && contactRect.bottom >= viewportHeight * 0.25 : false
 
       setScrollProgress(nextProgress)
       setIsTopButtonVisible(scrollTop >= workStart)
+      setIsContactButtonHidden(isContactActive)
       animationFrame = 0
     }
 
@@ -2190,6 +2234,17 @@ function App() {
               </a>
             ))}
           </nav>
+
+          <a
+            className={`site-header__contact-link${isContactButtonHidden ? ' site-header__contact-link--hidden' : ''}`}
+            href="#contact"
+            aria-hidden={isContactButtonHidden}
+            tabIndex={isContactButtonHidden ? -1 : undefined}
+            onPointerDown={(event) => handleNavPointerDown(event, '#contact')}
+            onClick={(event) => handleNavClick(event, '#contact')}
+          >
+            CONTACT
+          </a>
 
           <HamburgerMenu items={navItems} onNavigate={scrollToHash} />
         </header>

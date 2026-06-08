@@ -80,6 +80,51 @@
   max-width: min(72vw, 980px);
 }
 
+.site-header__contact-link {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  padding: 1px 16px 0;
+  border: 1px solid rgba(255, 81, 0, 0.7);
+  border-radius: 999px;
+  background: #ff5100;
+  color: #1a1a1a;
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0;
+  text-decoration: none;
+  box-shadow: none;
+  transition:
+    background-color 180ms ease,
+    color 180ms ease,
+    opacity 180ms ease,
+    transform 180ms ease;
+}
+
+.site-header__contact-link--hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-6px);
+}
+
+.site-header__contact-link:hover {
+  background: #ff6a20;
+  color: #111;
+  transform: translateY(-1px);
+}
+
+.site-header__contact-link--hidden:hover {
+  transform: translateY(-6px);
+}
+
+.site-header__contact-link:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 4px;
+}
+
 .site-header__nav-link--hide-mobile {
   display: inline;
 }
@@ -3466,11 +3511,28 @@ body.mobile-menu-is-open {
 }
 
 @media (max-width: 1024px) {
+  .site-header {
+    --header-action-top: clamp(20px, 3.2vw, 28px);
+    --header-action-size: clamp(38px, 5.4vw, 46px);
+  }
+
   .site-header__nav {
     display: none;
   }
 
+  .site-header__contact-link {
+    position: fixed;
+    top: var(--header-action-top);
+    right: clamp(72px, 9vw, 86px);
+    display: inline-flex;
+    height: var(--header-action-size);
+    min-height: 0;
+  }
+
   .mobile-menu {
+    --mobile-menu-size: var(--header-action-size);
+
+    top: var(--header-action-top);
     display: block;
   }
 
@@ -3772,6 +3834,14 @@ body.mobile-menu-is-open {
 @media (max-width: 560px) {
   .site-header {
     align-items: flex-start;
+    --header-action-top: 20px;
+    --header-action-size: 38px;
+  }
+
+  .site-header__contact-link {
+    right: 68px;
+    padding-inline: 14px;
+    font-size: 11px;
   }
 
   .mobile-menu__panel {
@@ -3864,9 +3934,16 @@ body.mobile-menu-is-open {
   }
 
   .about-intro__text {
-    font-size: 23px;
+    width: 100%;
+    font-size: clamp(26px, 7.2vw, 30px);
+    line-height: 1.24;
+    text-align: left;
     white-space: normal;
     word-break: keep-all;
+  }
+
+  .about-intro__line {
+    width: 100%;
   }
 
   .about-person {
