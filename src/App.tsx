@@ -48,6 +48,20 @@ type AboutCardData = {
   subItems?: AboutItem[]
 }
 
+type AiWorkflowStep = {
+  number: string
+  title: string
+  tool: string
+  image: string
+  description: string
+  detail?: {
+    lead: string[]
+    items: string[]
+    outro: string
+    outroBeforeList?: boolean
+  }
+}
+
 function SlotTitle({ text }: { text: string }) {
   const rootRef = useRef<HTMLSpanElement>(null)
   const previousScrollYRef = useRef(0)
@@ -210,52 +224,73 @@ const detailSkillRows = [
   },
 ]
 
-const aiWorkflowSteps = [
+const aiWorkflowSteps: AiWorkflowStep[] = [
   {
     number: '01',
     title: '와이어프레임 설계',
     tool: 'ChatGPT + Stitch',
-    toolIcons: [
-      { label: 'ChatGPT', src: '/assets/about/chatgpt.png' },
-      { label: 'Stitch', src: '/assets/ai-workflow/google-stitch-logo.jpg' },
-    ],
-    image: '/assets/ai-workflow/stitch-wireframe-optimized.webp',
-    description: 'ChatGPT와 Stitch를 활용해 아이디어를 구조화하고 서비스 흐름의 첫 뼈대를 설계합니다.',
+    image: '/assets/ai-workflow/step-01-flow.png',
+    description: 'ChatGPT와 Stitch를 활용해 서비스 흐름의 첫 뼈대를 설계합니다. 사용자 조사 결과를 바탕으로 핵심 MVP를 정의하고 구현 가능한 구조로 구체화합니다.',
+    detail: {
+      lead: [
+        'ChatGPT와 Stitch를 활용해',
+        '서비스 흐름의 첫 뼈대를 설계합니다.',
+        '사용자 조사 결과를 바탕으로',
+        '핵심 MVP를 정의하고',
+        '구현 가능한 구조로 구체화합니다.',
+      ],
+      items: [],
+      outro: '',
+    },
   },
   {
     number: '02',
     title: '인터페이스 구현',
     tool: 'Figma AI',
-    toolIcons: [{ label: 'Figma', src: '/assets/about/figma.svg' }],
-    image: '/assets/ai-workflow/step-02-optimized.webp',
-    description: 'Figma로 프로토타입 화면을 구현합니다.',
+    image: '/assets/ai-workflow/step-02-flow.png',
+    description: 'Figma로 프로토타입을 구현하되 AI가 제안한 구조를 그대로 적용하지 않고 정보 우선순위 재정렬, CTA 위치 최적화, 탐색 흐름 간소화 과정을 통해 화면을 구체화합니다.',
+    detail: {
+      lead: ['Figma로 프로토타입을 구현하되', 'AI가 제안한 구조를 그대로 적용하지 않고'],
+      items: ['정보 우선순위 재정렬', 'CTA 위치 최적화', '탐색 흐름 간소화'],
+      outro: '과정을 통해 화면을 구체화합니다.',
+    },
   },
   {
     number: '03',
-    title: '디자인 시스템 구축',
-    tool: 'Claude Design',
-    toolIcons: [{ label: 'Claude', src: '/assets/about/claude.svg' }],
-    image: '/assets/ai-workflow/step-05-optimized.webp',
-    description: 'Claude Design을 활용해 컬러, 타이포그래피, 컴포넌트 기준을 빠르게 정리하고 프로젝트 디자인 시스템을 구축합니다.',
+    title: '브랜드 캐릭터 제작',
+    tool: 'ChatGPT + Midjourney',
+    image: '/assets/ai-workflow/step-03-optimized.webp',
+    description: 'ChatGPT와 Midjourney를 활용해 다음과 같은 기준으로 마스코트 캐릭터를 생성합니다. 친근감과 신뢰감, 서비스 확장성, 브랜드 일관성을 기준으로 정리합니다.',
+    detail: {
+      lead: ['ChatGPT와 Midjourney를 활용해', '다음과 같은 기준으로 마스코트 캐릭터를 생성합니다.'],
+      items: ['친근감과 신뢰감', '서비스 확장성', '브랜드 일관성'],
+      outro: '',
+    },
   },
   {
     number: '04',
-    title: '캐릭터 브랜딩',
-    tool: 'ChatGPT + Nano Banana',
-    toolIcons: [
-      { label: 'ChatGPT', src: '/assets/about/chatgpt.png' },
-      { label: 'Gemini', src: '/assets/about/gemini.svg' },
-    ],
-    image: '/assets/ai-workflow/step-03-optimized.webp',
-    description: 'ChatGPT와 Nano Banana를 활용해 캐릭터 콘셉트를 구체화하고 일관된 스타일의 다양한 버전을 제작합니다.',
+    title: '개발 및 검증',
+    tool: 'AI Coding',
+    image: '/assets/ai-workflow/step-04-development.png',
+    description: 'AI가 생성한 코드를 실제 서비스에 적용하되 반복적으로 검증하는 단계를 거쳐 기능 동작 테스트, 사용자 흐름 검증, 코드 재사용성, 반응형 및 접근성을 확인하고 유지보수 가능한 구조로 최종완성합니다.',
+    detail: {
+      lead: ['AI가 생성한 코드를 실제 서비스에 적용하되', '반복적으로 검증하는 단계를 거쳐'],
+      items: ['기능 동작 테스트', '사용자 흐름 검증', '코드 재사용성', '반응형 및 접근성'],
+      outro: '유지보수 가능한 구조로 최종완성합니다.',
+      outroBeforeList: true,
+    },
   },
   {
     number: '05',
-    title: '모션 콘텐츠 제작',
-    tool: 'Midjourney',
-    toolIcons: [{ label: 'Midjourney', src: '/assets/about/midjourney.svg' }],
-    image: '/assets/ai-workflow/step-05-motion-optimized.webp',
-    description: 'Midjourney를 활용해 서비스 분위기에 맞는 온보딩 영상과 모션 에셋을 제작합니다.',
+    title: '실제 배포',
+    tool: 'Vercel',
+    image: '/assets/ai-workflow/step-05-deploy.png',
+    description: 'Vercel을 활용해 실제 서비스 환경에 배포합니다. 배포 URL 연결, 빌드 상태 확인, 유지보수 지속, 사용 환경 테스트를 진행합니다.',
+    detail: {
+      lead: ['Vercel을 활용해', '실제 서비스 환경에 배포합니다.'],
+      items: ['배포 URL 연결', '빌드 상태 확인', '유지보수 지속', '사용 환경 테스트'],
+      outro: '',
+    },
   },
 ]
 const strengthTabs = [
@@ -1241,7 +1276,7 @@ function AiWorkflowSection() {
           <strong>
             AI를 도구만이 아닌 <span className="ai-workflow-section__highlight">협업 파트너</span>로 활용해
             <br />
-            더 효율적인 디자인 프로세스를 구축합니다
+            더 효율적인 프로세스를 구축합니다
           </strong>
         </div>
 
@@ -1275,36 +1310,46 @@ function AiWorkflowSection() {
                 <span className="ai-workflow-step__marker" aria-hidden="true" />
                 <div className="ai-workflow-step__content">
                   {step.image ? (
-                    <img
-                      className="ai-workflow-step__image"
-                      src={step.image}
-                      alt=""
-                      loading="lazy"
-                      decoding="async"
-                    />
+                    <div className={`ai-workflow-step__image-frame ai-workflow-step__image-frame--${step.number}`}>
+                      <img
+                        className={`ai-workflow-step__image ai-workflow-step__image--${step.number}`}
+                        src={step.image}
+                        alt=""
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    </div>
                   ) : null}
                   <span className="ai-workflow-step__eyebrow">STEP {index + 1}</span>
                   <div className="ai-workflow-step__heading">
                     <h3>{step.title}</h3>
                   </div>
-                  <p>{step.description}</p>
-                  {step.toolIcons.length ? (
-                    <div className="ai-workflow-step__tools" aria-label={`${step.tool} 사용 도구`}>
-                      {step.toolIcons.map((icon) => (
-                        <span
-                          className={`ai-workflow-step__tool ai-workflow-step__tool--${icon.label.toLowerCase().replaceAll(' ', '-')}`}
-                          style={{ '--tool-icon': `url(${icon.src})` } as CSSProperties}
-                          title={icon.label}
-                          key={`${step.number}-${icon.label}`}
-                        >
-                          <span
-                            className={`ai-workflow-step__tool-mark ai-workflow-step__tool-mark--${icon.label.toLowerCase().replaceAll(' ', '-')}`}
-                            aria-hidden="true"
-                          />
-                        </span>
+                  {step.detail ? (
+                    <div
+                      className={`ai-workflow-step__description ai-workflow-step__description--structured${step.detail.outroBeforeList ? ' ai-workflow-step__description--outro-first' : ''}`}
+                    >
+                      {step.detail.lead.map((line) => (
+                        <p key={`${step.number}-${line}`}>{line}</p>
                       ))}
+                      {step.detail.outro && step.detail.outroBeforeList ? <p>{step.detail.outro}</p> : null}
+                      {step.detail.items.length ? (
+                        <ul
+                          className={`ai-workflow-step__check-list${step.number === '04' || step.number === '05' ? ' ai-workflow-step__check-list--columns' : ''}`}
+                          aria-label={`${step.title} 개선 항목`}
+                        >
+                          {step.detail.items.map((item) => (
+                            <li key={`${step.number}-${item}`}>
+                              <span className="ai-workflow-step__check-icon" aria-hidden="true" />
+                              <span>{item}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : null}
+                      {step.detail.outro && !step.detail.outroBeforeList ? <p>{step.detail.outro}</p> : null}
                     </div>
-                  ) : null}
+                  ) : (
+                    <p>{step.description}</p>
+                  )}
                 </div>
               </article>
             ))}
