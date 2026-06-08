@@ -248,11 +248,12 @@ const aiWorkflowSteps: AiWorkflowStep[] = [
     title: '인터페이스 구현',
     tool: 'Figma AI',
     image: '/assets/ai-workflow/step-02-flow.png',
-    description: 'Figma로 프로토타입을 구현하되 AI가 제안한 구조를 그대로 적용하지 않고 정보 우선순위 재정렬, CTA 위치 최적화, 탐색 흐름 간소화 과정을 통해 화면을 구체화합니다.',
+    description: 'Figma로 프로토타입을 구현하되 AI가 제안한 구조를 그대로 적용하지 않고 정보 우선순위 재정렬, CTA 위치 최적화, 탐색 흐름 간소화, 시각 계층 정리를 중심으로 화면을 구체화합니다.',
     detail: {
       lead: ['Figma로 프로토타입을 구현하되', 'AI가 제안한 구조를 그대로 적용하지 않고'],
-      items: ['정보 우선순위 재정렬', 'CTA 위치 최적화', '탐색 흐름 간소화'],
-      outro: '과정을 통해 화면을 구체화합니다.',
+      items: ['정보 우선순위 재정렬', 'CTA 위치 최적화', '탐색 흐름 간소화', '시각 계층 정리'],
+      outro: '아래 항목을 중심으로 화면을 구체화합니다.',
+      outroBeforeList: true,
     },
   },
   {
@@ -260,10 +261,10 @@ const aiWorkflowSteps: AiWorkflowStep[] = [
     title: '캐릭터 제작',
     tool: 'ChatGPT + Midjourney',
     image: '/assets/ai-workflow/step-03-optimized.webp',
-    description: 'ChatGPT와 Midjourney를 활용해 다음과 같은 기준으로 마스코트 캐릭터를 생성합니다. 친근감과 신뢰감, 서비스 확장성, 브랜드 일관성을 기준으로 정리합니다.',
+    description: 'ChatGPT와 Midjourney를 활용해 다음과 같은 기준으로 마스코트 캐릭터를 생성합니다. 친근감과 신뢰감, 서비스 확장성, 브랜드 일관성, 시각적 차별성을 기준으로 정리합니다.',
     detail: {
       lead: ['ChatGPT와 Midjourney를 활용해', '다음과 같은 기준으로 마스코트 캐릭터를 생성합니다.'],
-      items: ['친근감과 신뢰감', '서비스 확장성', '브랜드 일관성'],
+      items: ['친근감과 신뢰감', '서비스 확장성', '브랜드 일관성', '시각적 차별성'],
       outro: '',
     },
   },
@@ -1334,7 +1335,7 @@ function AiWorkflowSection() {
                       {step.detail.outro && step.detail.outroBeforeList ? <p>{step.detail.outro}</p> : null}
                       {step.detail.items.length ? (
                         <ul
-                          className={`ai-workflow-step__check-list${step.number === '04' || step.number === '05' ? ' ai-workflow-step__check-list--columns' : ''}`}
+                          className={`ai-workflow-step__check-list${step.detail.items.length === 4 ? ' ai-workflow-step__check-list--columns' : ''}`}
                           aria-label={`${step.title} 개선 항목`}
                         >
                           {step.detail.items.map((item) => (
