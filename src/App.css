@@ -2073,7 +2073,7 @@ body.mobile-menu-is-open {
   color: #fff;
   font-family: var(--korean);
   font-size: clamp(34px, 3vw, 56px);
-  font-weight: 650;
+  font-weight: 550;
   line-height: 1.12;
   letter-spacing: -0.02em;
   overflow-wrap: anywhere;
@@ -2125,7 +2125,7 @@ body.mobile-menu-is-open {
   margin: 0;
   color: rgba(255, 255, 255, 0.68);
   font-size: clamp(18px, 1.28vw, 24px);
-  font-weight: 500;
+  font-weight: 400;
   line-height: 1.58;
 }
 

@@ -634,6 +634,7 @@ function AboutSection() {
   const skillsToggleRef = useRef<HTMLButtonElement>(null)
   const isSkillsOpenRef = useRef(true)
   const hasAutoOpenedSkillsRef = useRef(true)
+  const shouldCenterSkillsPanelRef = useRef(false)
   const [isSkillsOpen, setIsSkillsOpen] = useState(true)
   const [hasSkillsPlayed, setHasSkillsPlayed] = useState(false)
   const logoGroups = [toolLogos.slice(0, 8), toolLogos.slice(8, 16), toolLogos.slice(16)]
@@ -667,6 +668,7 @@ function AboutSection() {
       }
 
       hasAutoOpenedSkillsRef.current = true
+      shouldCenterSkillsPanelRef.current = true
       setIsSkillsOpen(true)
     }
 
@@ -727,6 +729,7 @@ function AboutSection() {
         }
 
         hasAutoOpenedSkillsRef.current = true
+        shouldCenterSkillsPanelRef.current = true
         setIsSkillsOpen(true)
         autoOpenTimer = 0
       }, 380)
@@ -814,6 +817,11 @@ function AboutSection() {
       return
     }
 
+    if (!shouldCenterSkillsPanelRef.current) {
+      return
+    }
+
+    shouldCenterSkillsPanelRef.current = false
     document.documentElement.classList.add('is-skills-auto-positioning')
 
     const centerSkillsPanel = () => {
@@ -981,6 +989,10 @@ function AboutSection() {
         aria-controls="skills-detail"
         onClick={() => {
           const willClose = isSkillsOpen
+
+          if (!willClose) {
+            shouldCenterSkillsPanelRef.current = true
+          }
 
           setIsSkillsOpen((current) => !current)
 
@@ -1935,6 +1947,19 @@ function App() {
     navPointerHandledRef.current = true
     scrollToHash(hash)
   }
+
+  useEffect(() => {
+    const previousScrollRestoration = window.history.scrollRestoration
+    window.history.scrollRestoration = 'manual'
+
+    if (!window.location.hash) {
+      window.scrollTo({ top: 0, behavior: 'auto' })
+    }
+
+    return () => {
+      window.history.scrollRestoration = previousScrollRestoration
+    }
+  }, [])
 
   useEffect(() => {
     const handleAnchorClick = (event: MouseEvent) => {
