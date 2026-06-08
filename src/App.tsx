@@ -1213,7 +1213,7 @@ function AiWorkflowSection() {
       const activeStepElapsed = window.performance.now() - activeStepStartedAtRef.current
 
       if (!isCurrentStepCentered()) return false
-      if (direction > 0 && currentStepIndex === 0 && activeStepElapsed < 1150) return false
+      if (direction > 0 && currentStepIndex === 0 && activeStepElapsed < 2000) return false
       if (direction > 0 && currentStepIndex >= lastStepIndex) return false
       if (direction < 0 && currentStepIndex <= 0) return false
 
