@@ -369,13 +369,20 @@ const projectDescriptions: Record<string, string[]> = {
     '국립현대미술관 웹사이트의 정보 구조를 개선하여',
     '해외 방문자가 정보를 직관적으로 탐색할 수 있도록 진행한 영문 웹사이트 리뉴얼 팀 프로젝트',
   ],
-  MonoTrip: [
-    '1인 여행자를 위한 맞춤형 여행 경험을 제공하는 서비스로',
-    '안전하고 효율적인 여행 계획을 지원하는 앱 개발 개인 프로젝트',
-    '(진행중)',
-  ],
 }
-const projects = [
+type Project = {
+  badge: string
+  title: string
+  meta: { label: string; value: number; accent: boolean }[]
+  description: string[]
+  image: string
+  imageAlt: string
+  proposalUrl: string
+  websiteUrl: string
+  websiteDisabled?: boolean
+}
+
+const projects: Project[] = [
   {
     badge: 'Team Project',
     title: 'Gunit',
@@ -410,28 +417,8 @@ const projects = [
     proposalUrl: '/assets/work/mmca/proposal.pdf',
     websiteUrl: 'https://angbaebultti.github.io/mmca/',
   },
-  {
-    badge: 'Personal Project',
-    title: 'MonoTrip',
-    meta: [
-      { label: 'Planning', value: 100, accent: false },
-      { label: 'Design', value: 100, accent: false },
-      { label: 'Frontend', value: 100, accent: false },
-    ],
-    description: [
-      '1인 여행자를 위한 맞춤형 여행 경험을 제공하는 서비스로',
-      '안전하고 효율적인 여행 계획을 지원하는 앱 개발 개인 프로젝트',
-      '(진행중)',
-    ],
-    image: '/assets/work/monotrip/thumb3.png',
-    imageAlt: 'MonoTrip project visual',
-    proposalUrl: '/assets/work/monotrip/proposal.pdf',
-    websiteUrl: 'http://monotrip.vercel.app',
-    websiteDisabled: true,
-  },
 ]
 
-type Project = (typeof projects)[number]
 type ToolLogo = (typeof toolLogos)[number]
 type DetailSkill = {
   label: string
@@ -506,7 +493,6 @@ function WorkCardMeta({ project, revealIndex }: { project: Project; revealIndex:
   const metaNodeIds: Record<string, string> = {
     Gunit: '40002018:3892',
     MMCA: '40002032:320',
-    MonoTrip: '40002032:338',
   }
 
   return (
