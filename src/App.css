@@ -2873,8 +2873,15 @@ body.mobile-menu-is-open {
   pointer-events: none;
 }
 
+.contact-section__shader > div {
+  width: 100% !important;
+  height: 100% !important;
+}
+
 .contact-section__shader canvas {
   display: block;
+  width: 100% !important;
+  height: 100% !important;
 }
 
 .contact-section::after {

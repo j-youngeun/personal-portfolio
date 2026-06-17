@@ -1844,6 +1844,8 @@ function StrengthSection() {
 
 function ContactSection() {
   const contactRef = useRef<HTMLElement>(null)
+  const contactVisibleRef = useRef(false)
+  const [shaderViewKey, setShaderViewKey] = useState(0)
 
   useEffect(() => {
     const section = contactRef.current
@@ -1859,10 +1861,33 @@ function ContactSection() {
     }
 
     let animationFrame = 0
+    let shaderRefreshFrame = 0
+    let shaderRefreshTimer = 0
+
+    const refreshShader = () => {
+      setShaderViewKey((current) => current + 1)
+
+      shaderRefreshFrame = window.requestAnimationFrame(() => {
+        window.dispatchEvent(new Event('resize'))
+        shaderRefreshFrame = 0
+      })
+
+      window.clearTimeout(shaderRefreshTimer)
+      shaderRefreshTimer = window.setTimeout(() => {
+        window.dispatchEvent(new Event('resize'))
+        shaderRefreshTimer = 0
+      }, 160)
+    }
 
     const syncContactState = (isVisible: boolean) => {
       document.documentElement.classList.toggle('is-contact-active', isVisible)
       section.classList.toggle('is-contact-visible', isVisible)
+
+      if (isVisible && !contactVisibleRef.current) {
+        refreshShader()
+      }
+
+      contactVisibleRef.current = isVisible
     }
 
     const syncContactStateFromScroll = () => {
@@ -1915,6 +1940,11 @@ function ContactSection() {
         if (animationFrame) {
           window.cancelAnimationFrame(animationFrame)
         }
+        if (shaderRefreshFrame) {
+          window.cancelAnimationFrame(shaderRefreshFrame)
+        }
+        window.clearTimeout(shaderRefreshTimer)
+        contactVisibleRef.current = false
         syncContactState(false)
       }
     }
@@ -1937,7 +1967,12 @@ function ContactSection() {
       if (animationFrame) {
         window.cancelAnimationFrame(animationFrame)
       }
+      if (shaderRefreshFrame) {
+        window.cancelAnimationFrame(shaderRefreshFrame)
+      }
+      window.clearTimeout(shaderRefreshTimer)
       observer.disconnect()
+      contactVisibleRef.current = false
       syncContactState(false)
     }
   }, [])
@@ -1945,7 +1980,7 @@ function ContactSection() {
   return (
     <section ref={contactRef} className="contact-section" id="contact" aria-labelledby="contact-title">
       <div className="contact-section__shader" aria-hidden="true">
-        <ShaderGradientCanvas pixelDensity={1} fov={45} style={{ width: '100%', height: '100%' }}>
+        <ShaderGradientCanvas key={shaderViewKey} pixelDensity={1} fov={45} style={{ width: '100%', height: '100%' }}>
           <ShaderGradient
             animate="on"
             brightness={1.2}
@@ -1956,6 +1991,7 @@ function ContactSection() {
             color1="#ff5005"
             color2="#dbba95"
             color3="#d0bce1"
+            control="props"
             envPreset="city"
             grain="on"
             lightType="3d"
@@ -1968,6 +2004,7 @@ function ContactSection() {
             rotationZ={50}
             shader="defaults"
             type="plane"
+            toggleAxis={false}
             uAmplitude={1}
             uDensity={1.3}
             uFrequency={5.5}
