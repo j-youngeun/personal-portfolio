@@ -1592,6 +1592,19 @@ function StrengthSection() {
       return rect.top < viewportHeight && rect.bottom > 0
     }
 
+    const isContactActive = () => {
+      const contact = document.getElementById('contact')
+
+      if (!contact) {
+        return false
+      }
+
+      const rect = contact.getBoundingClientRect()
+      const viewportHeight = window.innerHeight || document.documentElement.clientHeight
+
+      return rect.top <= viewportHeight * 0.45 && rect.bottom >= viewportHeight * 0.25
+    }
+
     const canCaptureSectionWheel = (direction: 1 | -1) => {
       const rect = section.getBoundingClientRect()
       const viewportHeight = window.innerHeight || document.documentElement.clientHeight
@@ -1668,7 +1681,7 @@ function StrengthSection() {
     }
 
     const handleWheel = (event: WheelEvent) => {
-      if (!isSectionVisible() || Math.abs(event.deltaY) < 4) {
+      if (isContactActive() || !isSectionVisible() || Math.abs(event.deltaY) < 4) {
         return
       }
 
@@ -1715,7 +1728,7 @@ function StrengthSection() {
     }
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (!isSectionVisible()) {
+      if (isContactActive() || !isSectionVisible()) {
         return
       }
 
@@ -1871,11 +1884,34 @@ function ContactSection() {
     window.addEventListener('scroll', requestContactStateSync, { passive: true })
     window.addEventListener('resize', requestContactStateSync)
 
+    const handleContactWheel = (event: WheelEvent) => {
+      if (event.deltaY <= 0 || Math.abs(event.deltaY) < 4) {
+        return
+      }
+
+      const rect = section.getBoundingClientRect()
+      const viewportHeight = window.innerHeight || document.documentElement.clientHeight
+      const isContactActive = rect.top <= viewportHeight * 0.45 && rect.bottom >= viewportHeight * 0.25
+
+      if (!isContactActive) {
+        return
+      }
+
+      event.preventDefault()
+      window.scrollTo({
+        top: Math.round(section.getBoundingClientRect().top + window.scrollY),
+        behavior: 'auto',
+      })
+    }
+
+    window.addEventListener('wheel', handleContactWheel, { passive: false, capture: true })
+
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       targets.forEach((target) => target.classList.add('is-visible'))
       return () => {
         window.removeEventListener('scroll', requestContactStateSync)
         window.removeEventListener('resize', requestContactStateSync)
+        window.removeEventListener('wheel', handleContactWheel, { capture: true })
         if (animationFrame) {
           window.cancelAnimationFrame(animationFrame)
         }
@@ -1897,6 +1933,7 @@ function ContactSection() {
     return () => {
       window.removeEventListener('scroll', requestContactStateSync)
       window.removeEventListener('resize', requestContactStateSync)
+      window.removeEventListener('wheel', handleContactWheel, { capture: true })
       if (animationFrame) {
         window.cancelAnimationFrame(animationFrame)
       }

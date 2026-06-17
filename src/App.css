@@ -2845,16 +2845,30 @@ body.mobile-menu-is-open {
   min-height: 100svh;
   padding: 0;
   overflow: hidden;
-  background: #ff5100;
+  background:
+    radial-gradient(circle at 18% 22%, rgba(208, 188, 225, 0.94), transparent 34%),
+    radial-gradient(circle at 76% 32%, rgba(219, 186, 149, 0.9), transparent 38%),
+    linear-gradient(135deg, #ff5005 0%, #dbba95 48%, #d0bce1 100%);
   color: #fff;
   scroll-snap-align: start;
   scroll-snap-stop: always;
 }
 
-.contact-section__shader {
+.contact-section::before {
   position: absolute;
   inset: 0;
   z-index: 0;
+  background:
+    radial-gradient(circle at 34% 62%, rgba(255, 80, 5, 0.76), transparent 40%),
+    linear-gradient(105deg, rgba(255, 80, 5, 0.72), rgba(219, 186, 149, 0.58) 46%, rgba(208, 188, 225, 0.72));
+  content: '';
+  pointer-events: none;
+}
+
+.contact-section__shader {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
   overflow: hidden;
   pointer-events: none;
 }
@@ -2866,7 +2880,7 @@ body.mobile-menu-is-open {
 .contact-section::after {
   position: absolute;
   inset: 0;
-  z-index: 1;
+  z-index: 2;
   background:
     radial-gradient(circle at 50% 46%, rgba(26, 26, 26, 0.08), transparent 38%),
     linear-gradient(180deg, rgba(26, 26, 26, 0.14), rgba(26, 26, 26, 0.08));
@@ -2876,7 +2890,7 @@ body.mobile-menu-is-open {
 
 .contact-section__header {
   position: relative;
-  z-index: 2;
+  z-index: 3;
   width: 100%;
   padding: 24px;
 }
@@ -2895,7 +2909,7 @@ body.mobile-menu-is-open {
 
 .contact-section__content {
   position: relative;
-  z-index: 2;
+  z-index: 3;
   display: flex;
   width: 100%;
   justify-content: center;
