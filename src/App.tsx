@@ -416,7 +416,7 @@ const projects: Project[] = [
       {
         title: '기여도',
         value: 35,
-        lines: ['기획 · 개발 (팀원 5명)'],
+        lines: ['기획 · 개발 · 디자인'],
       },
       {
         title: '문제점',

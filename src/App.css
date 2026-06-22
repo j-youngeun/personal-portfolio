@@ -4620,6 +4620,10 @@ body.mobile-menu-is-open {
     bottom: 28px;
   }
 
+  .contact-info .mail-click-icon {
+    display: none;
+  }
+
   .work-section {
     --work-section-px: 16px;
     --work-section-py: 28px;
