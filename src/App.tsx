@@ -1272,13 +1272,17 @@ function AiWorkflowSection() {
       const rect = section.getBoundingClientRect()
       const viewportHeight = window.innerHeight || document.documentElement.clientHeight
       const pinTolerance = Math.min(28, viewportHeight * 0.028)
+      const approachTop = viewportHeight * 0.72
+      const approachBottom = viewportHeight * 0.28
       const isInZone =
-        rect.top >= -pinTolerance &&
-        rect.top <= viewportHeight * 0.18 &&
-        rect.bottom >= viewportHeight - pinTolerance
+        rect.top >= -viewportHeight * 0.08 &&
+        rect.top <= viewportHeight * 0.34 &&
+        rect.bottom >= viewportHeight * 0.62
       const isPinned = Math.abs(rect.top) <= pinTolerance
+      const shouldSnapFromAbove = rect.top > pinTolerance && rect.top <= approachTop
+      const shouldSnapFromBelow = rect.top < -pinTolerance && rect.bottom >= approachBottom
 
-      return { isInZone, isPinned }
+      return { isInZone, isPinned, shouldSnapFromAbove, shouldSnapFromBelow }
     }
     const pinSection = () => {
       isStepScrollingRef.current = true
@@ -1332,17 +1336,19 @@ function AiWorkflowSection() {
     const handleWheel = (event: WheelEvent) => {
       const wheelDelta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY
 
-      const { isInZone, isPinned } = getSectionScrollState()
-
-      if (isTypingTarget(event.target) || Math.abs(wheelDelta) < 18 || !isInZone) return
+      if (isTypingTarget(event.target) || Math.abs(wheelDelta) < 18) return
 
       const direction = wheelDelta > 0 ? 1 : -1
+      const { isInZone, isPinned, shouldSnapFromAbove, shouldSnapFromBelow } = getSectionScrollState()
+      const shouldSnapToSection = direction > 0 ? shouldSnapFromAbove : shouldSnapFromBelow
+
+      if (!isInZone && !shouldSnapToSection) return
 
       event.preventDefault()
 
       if (isStepScrollingRef.current) return
 
-      if (!isPinned) {
+      if (!isPinned || shouldSnapToSection) {
         pinSection()
         return
       }
@@ -1355,21 +1361,22 @@ function AiWorkflowSection() {
       moveStep(direction)
     }
     const handleKeyDown = (event: KeyboardEvent) => {
-      const { isInZone, isPinned } = getSectionScrollState()
-
-      if (isTypingTarget(event.target) || !isInZone) return
-
       const nextKeys = ['ArrowDown', 'ArrowRight', 'PageDown', ' ']
       const previousKeys = ['ArrowUp', 'ArrowLeft', 'PageUp']
       const direction = nextKeys.includes(event.key) ? 1 : previousKeys.includes(event.key) ? -1 : null
 
       if (!direction) return
 
+      const { isInZone, isPinned, shouldSnapFromAbove, shouldSnapFromBelow } = getSectionScrollState()
+      const shouldSnapToSection = direction > 0 ? shouldSnapFromAbove : shouldSnapFromBelow
+
+      if (isTypingTarget(event.target) || (!isInZone && !shouldSnapToSection)) return
+
       event.preventDefault()
 
       if (isStepScrollingRef.current) return
 
-      if (!isPinned) {
+      if (!isPinned || shouldSnapToSection) {
         pinSection()
         return
       }
@@ -2098,7 +2105,9 @@ function HireToast({ onDismiss }: { onDismiss: () => void }) {
   return (
     <aside className="hire-toast" aria-label="Hiring availability notice">
       <div className="hire-toast__profile" aria-hidden="true">
-        <img src="/assets/about/hire-profile.png" alt="" width={96} height={96} decoding="async" />
+        <span className="hire-toast__profile-image">
+          <img src="/assets/about/hire-profile-toast.png" alt="" width={160} height={160} decoding="async" />
+        </span>
       </div>
       <strong>영은 님 채용 가능</strong>
       <a href="https://mail.google.com/mail/?view=cm&fs=1&to=yxungeun@gmail.com" target="_blank" rel="noreferrer">
