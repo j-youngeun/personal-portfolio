@@ -147,7 +147,7 @@
   box-shadow: 0 18px 48px rgba(0, 0, 0, 0.18);
   font-family: var(--korean);
   transform: translateX(-50%);
-  animation: hire-toast-in 620ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: hire-toast-in 1050ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .hire-toast__profile {
