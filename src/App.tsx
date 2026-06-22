@@ -2091,15 +2091,35 @@ function ContactSection() {
   )
 }
 
+function HireToast({ onDismiss }: { onDismiss: () => void }) {
+  return (
+    <aside className="hire-toast" aria-label="Hiring availability notice">
+      <div className="hire-toast__profile" aria-hidden="true">
+        <img src="/assets/about/hire-profile.png" alt="" width={96} height={96} decoding="async" />
+      </div>
+      <strong>영은 님 채용 가능</strong>
+      <a href="https://mail.google.com/mail/?view=cm&fs=1&to=yxungeun@gmail.com" target="_blank" rel="noreferrer">
+        이메일 보내기
+      </a>
+      <button className="hire-toast__close" type="button" aria-label="채용 가능 팝업 닫기" onClick={onDismiss}>
+        ×
+      </button>
+    </aside>
+  )
+}
+
 function App() {
   const heroRef = useRef<HTMLElement>(null)
   const lensRef = useRef<HTMLImageElement>(null)
   const workRevealRef = useRef<HTMLDivElement>(null)
   const navPointerHandledRef = useRef(false)
+  const hasHireToastTriggeredRef = useRef(false)
+  const isHireToastDismissedRef = useRef(false)
   const [isHeaderVisible, setIsHeaderVisible] = useState(true)
   const [isTopButtonVisible, setIsTopButtonVisible] = useState(false)
   const [isContactButtonHidden, setIsContactButtonHidden] = useState(false)
   const [scrollProgress, setScrollProgress] = useState(0)
+  const [isHireToastVisible, setIsHireToastVisible] = useState(false)
 
   const scrollToHash = (hash: string, behavior: ScrollBehavior = 'smooth') => {
     const target = document.querySelector<HTMLElement>(hash)
@@ -2190,6 +2210,65 @@ function App() {
 
     return () => {
       document.removeEventListener('click', handleAnchorClick)
+    }
+  }, [])
+
+  useEffect(() => {
+    let previousScrollY = window.scrollY
+    let animationFrame = 0
+
+    const syncHireToast = () => {
+      animationFrame = 0
+
+      if (hasHireToastTriggeredRef.current || isHireToastDismissedRef.current) {
+        previousScrollY = window.scrollY
+        return
+      }
+
+      const workSection = document.getElementById('work')
+      const skillsDetail = document.getElementById('skills-detail')
+      const aboutSection = document.getElementById('about')
+
+      if (!workSection) {
+        previousScrollY = window.scrollY
+        return
+      }
+
+      const viewportHeight = window.innerHeight || document.documentElement.clientHeight
+      const workTop = workSection.getBoundingClientRect().top + window.scrollY
+      const skillsBottom = skillsDetail
+        ? skillsDetail.getBoundingClientRect().bottom + window.scrollY
+        : aboutSection
+          ? aboutSection.getBoundingClientRect().bottom + window.scrollY
+          : workTop - viewportHeight * 0.6
+      const triggerTop = skillsBottom + Math.max((workTop - skillsBottom) * 0.48, viewportHeight * 0.12)
+      const previousViewportPoint = previousScrollY + viewportHeight * 0.45
+      const currentViewportPoint = window.scrollY + viewportHeight * 0.45
+
+      if (previousViewportPoint < triggerTop && currentViewportPoint >= triggerTop) {
+        hasHireToastTriggeredRef.current = true
+        setIsHireToastVisible(true)
+      }
+
+      previousScrollY = window.scrollY
+    }
+
+    const requestSync = () => {
+      if (!animationFrame) {
+        animationFrame = window.requestAnimationFrame(syncHireToast)
+      }
+    }
+
+    window.addEventListener('scroll', requestSync, { passive: true })
+    window.addEventListener('resize', requestSync)
+
+    return () => {
+      window.removeEventListener('scroll', requestSync)
+      window.removeEventListener('resize', requestSync)
+
+      if (animationFrame) {
+        window.cancelAnimationFrame(animationFrame)
+      }
     }
   }, [])
 
@@ -2343,6 +2422,15 @@ function App() {
   return (
     <>
       <main className="portfolio-home" aria-label="Youngeun Jeong portfolio home">
+        {isHireToastVisible ? (
+          <HireToast
+            onDismiss={() => {
+              isHireToastDismissedRef.current = true
+              setIsHireToastVisible(false)
+            }}
+          />
+        ) : null}
+
         <header className={`site-header${isHeaderVisible ? '' : ' site-header--hidden'}`}>
           <a
             className="site-header__brand"
