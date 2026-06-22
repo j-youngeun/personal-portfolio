@@ -3,7 +3,6 @@ import {
   useRef,
   useState,
   type CSSProperties,
-  type ComponentType,
   type MouseEvent as ReactMouseEvent,
   type PointerEvent as ReactPointerEvent,
   type RefObject,
@@ -15,12 +14,11 @@ import {
   type PanInfo,
 } from 'framer-motion'
 import { ShaderGradient, ShaderGradientCanvas } from 'shadergradient'
+import CustomCursor from './components/CustomCursor'
 import CountUpNumber from './components/CountUpNumber'
 import HamburgerMenu from './components/HamburgerMenu'
 import { useWorkCardMetaInView } from './hooks/useWorkCardMetaInView'
 import './App.css'
-
-const ContactShaderGradient = ShaderGradient as unknown as ComponentType<Record<string, unknown>>
 
 type NavItem = {
   label: string
@@ -29,10 +27,12 @@ type NavItem = {
 }
 
 const navItems: NavItem[] = [
-  { label: 'ABOUT', hash: '#about' },
   { label: 'PROJECT', hash: '#work' },
-  { label: 'PAST WORKS', hash: '#past-works' },
+  { label: 'ABOUT', hash: '#about' },
+  { label: 'SKILLS', hash: '#skills' },
   { label: 'AI WORKFLOW', hash: '#ai-workflow' },
+  { label: 'PAST WORKS', hash: '#past-works' },
+  { label: 'STRENGTH', hash: '#strength' },
   { label: 'CONTACT', hash: '#contact' },
 ]
 const titleLead = 'Create with'
@@ -128,21 +128,6 @@ function SlotTitle({ text }: { text: string }) {
   )
 }
 
-function MailClickIcon() {
-  return (
-    <span className="mail-click-icon" aria-hidden="true">
-      <svg width="24" height="24" viewBox="0 0 24 24" focusable="false">
-        <path className="mail-click-icon__ray mail-click-icon__ray--1" d="M3 12H6" />
-        <path className="mail-click-icon__ray mail-click-icon__ray--2" d="M12 3V6" />
-        <path className="mail-click-icon__ray mail-click-icon__ray--3" d="M7.8 7.8L5.6 5.6" />
-        <path className="mail-click-icon__ray mail-click-icon__ray--4" d="M16.2 7.8L18.4 5.6" />
-        <path className="mail-click-icon__ray mail-click-icon__ray--5" d="M7.8 16.2L5.6 18.4" />
-        <path className="mail-click-icon__cursor" d="M12 12L21 15L17 17L15 21L12 12Z" />
-      </svg>
-    </span>
-  )
-}
-
 const aboutCards: AboutCardData[] = [
   {
     title: 'WORK HISTORY',
@@ -150,12 +135,12 @@ const aboutCards: AboutCardData[] = [
       {
         name: '대한무역투자진흥공사',
         date: '2024-2025',
-        description: '그래픽 디자인',
+        description: '그래픽 디자인 · 공사 행정 업무',
       },
       {
         name: '서울특별시미디어재단티비에스',
         date: '2021-2023',
-        description: '영상 촬영편집',
+        description: '영상 촬영편집 · 유튜브 업로드',
       },
     ],
   },
@@ -172,9 +157,9 @@ const aboutCards: AboutCardData[] = [
     title: 'EDUCATION & EXPERIENCE',
     items: [
       {
-        name: 'UXUI디자인&웹기획 프론트엔드 교육 수료',
+        name: '이젠아카데미DX교육센터 수료',
         date: '2026',
-        description: '이젠아카데미DX교육센터',
+        description: 'UXUI디자인&웹기획 프론트엔드',
       },
       {
         name: '호주 워킹홀리데이',
@@ -276,7 +261,7 @@ const aiWorkflowSteps: AiWorkflowStep[] = [
     number: '03',
     title: '캐릭터 제작',
     tool: 'ChatGPT + Midjourney',
-    image: '/assets/ai-workflow/step-03-character-sheet.png',
+    image: '/assets/ai-workflow/step-03-optimized.webp',
     description: 'ChatGPT와 Midjourney를 활용해 다음과 같은 기준으로 마스코트 캐릭터를 생성합니다. 친근감과 신뢰감, 서비스 확장성, 브랜드 일관성, 시각적 차별성을 기준으로 정리합니다.',
     detail: {
       lead: ['ChatGPT와 Midjourney를 활용해', '다음과 같은 기준으로 마스코트 캐릭터를 생성합니다.'],
@@ -389,13 +374,7 @@ const projectDescriptions: Record<string, string[]> = {
 type Project = {
   badge: string
   title: string
-  year?: string
   meta: { label: string; value: number; accent: boolean }[]
-  overview: {
-    title: string
-    lines: string[]
-    value?: number
-  }[]
   description: string[]
   image: string
   imageAlt: string
@@ -408,26 +387,10 @@ const projects: Project[] = [
   {
     badge: 'Team Project',
     title: 'Gunit',
-    year: '2026',
     meta: [
       { label: 'Planning', value: 20, accent: false },
       { label: 'Design', value: 30, accent: false },
       { label: 'Frontend', value: 50, accent: true },
-    ],
-    overview: [
-      {
-        title: '기여도',
-        value: 35,
-        lines: ['기획 · 개발 · 디자인'],
-      },
-      {
-        title: '문제점',
-        lines: ['입문자의 정보 탐색 장벽'],
-      },
-      {
-        title: '개선안',
-        lines: ['AI 챗봇과 초보자 가이드 제공'],
-      },
     ],
     description: [
       '에어소프트 입문자의 정보 탐색 장벽을 낮추고, 팬덤형 커뮤니티를 통해',
@@ -441,26 +404,10 @@ const projects: Project[] = [
   {
     badge: 'Team Project',
     title: 'MMCA',
-    year: '2026',
     meta: [
       { label: 'Planning', value: 20, accent: false },
       { label: 'Design', value: 70, accent: true },
       { label: 'Frontend', value: 10, accent: false },
-    ],
-    overview: [
-      {
-        title: '기여도',
-        value: 40,
-        lines: ['디자인 팀장'],
-      },
-      {
-        title: '문제점',
-        lines: ['복잡한 정보 구조'],
-      },
-      {
-        title: '개선안',
-        lines: ['IA 재정비 및 GNB 개선'],
-      },
     ],
     description: [
       '국립현대미술관 웹사이트의 정보 구조를 개선하여',
@@ -528,24 +475,21 @@ const pastWorkPhotographyCards: PastWorkCard[] = [
 const pastWorkShowcases: PastWorkShowcase[] = [
   {
     title: 'Graphic Design',
-    subtitle: '2024-2025 · KOTRA',
     cards: pastWorkTopCards,
   },
   {
     title: 'Video',
-    subtitle: '2021-2023 · TBS',
     cards: pastWorkTbsCards,
   },
   {
     title: 'Photography',
-    subtitle: '2016-',
     cards: pastWorkPhotographyCards,
     variant: 'portrait',
   },
 ]
 
 function WorkCardMeta({ project, revealIndex }: { project: Project; revealIndex: number }) {
-  const metaRef = useRef<HTMLDivElement>(null)
+  const metaRef = useRef<HTMLParagraphElement>(null)
   const metaInView = useWorkCardMetaInView(metaRef)
   const metaNodeIds: Record<string, string> = {
     Gunit: '40002018:3892',
@@ -553,72 +497,20 @@ function WorkCardMeta({ project, revealIndex }: { project: Project; revealIndex:
   }
 
   return (
-    <div
+    <p
       ref={metaRef}
       className="work-card__meta"
       data-node-id={metaNodeIds[project.title]}
       data-work-reveal
       style={{ '--work-reveal-index': revealIndex } as CSSProperties}
     >
-      {project.overview.map((item, metaIndex) => (
-        <section className="work-card__meta-item" key={item.title}>
-          <h4>{item.title}</h4>
-          {typeof item.value === 'number' ? (
-            <p className="work-card__meta-total">
-              총 기여도{' '}
-              <span>
-                <CountUpNumber start={metaInView} to={item.value} delay={metaIndex * 0.12} duration={1.65} />%
-              </span>
-            </p>
-          ) : null}
-          {item.lines.map((line) => (
-            <p key={`${item.title}-${line}`}>{line}</p>
-          ))}
-        </section>
+      {project.meta.map((item, metaIndex) => (
+        <span className={item.accent ? 'is-accent' : undefined} key={item.label}>
+          {item.label} <CountUpNumber start={metaInView} to={item.value} delay={metaIndex * 0.14} duration={1.85} />%
+          {metaIndex < project.meta.length - 1 ? <span className="work-card__meta-separator">  I  </span> : null}
+        </span>
       ))}
-    </div>
-  )
-}
-
-function WorkCardActions({ project, className = '' }: { project: Project; className?: string }) {
-  return (
-    <div className={`work-card__actions${className ? ` ${className}` : ''}`} aria-label={`${project.title} links`}>
-      <a
-        href={project.proposalUrl ?? '#work'}
-        target={project.proposalUrl ? '_blank' : undefined}
-        rel={project.proposalUrl ? 'noreferrer' : undefined}
-        data-work-reveal
-        style={{ '--work-reveal-index': 4 } as CSSProperties}
-      >
-        <span>Proposal</span>
-        <img src="/assets/icons/work-arrow.svg" alt="" aria-hidden="true" />
-      </a>
-      {project.websiteDisabled ? (
-        <button
-          className="is-primary is-disabled"
-          type="button"
-          disabled
-          aria-label={`${project.title} project is not available yet`}
-          data-work-reveal
-          style={{ '--work-reveal-index': 5 } as CSSProperties}
-        >
-          <span>Project</span>
-          <img src="/assets/icons/work-arrow.svg" alt="" aria-hidden="true" />
-        </button>
-      ) : (
-        <a
-          className="is-primary"
-          href={project.websiteUrl ?? '#work'}
-          target={project.websiteUrl ? '_blank' : undefined}
-          rel={project.websiteUrl ? 'noreferrer' : undefined}
-          data-work-reveal
-          style={{ '--work-reveal-index': 5 } as CSSProperties}
-        >
-          <span>Project</span>
-          <img src="/assets/icons/work-arrow.svg" alt="" aria-hidden="true" />
-        </a>
-      )}
-    </div>
+    </p>
   )
 }
 
@@ -758,6 +650,7 @@ function SkillsDetailSection({
 
 function AboutSection() {
   const introRef = useRef<HTMLDivElement>(null)
+  const introTextRef = useRef<HTMLDivElement>(null)
   const revealScopeRef = useRef<HTMLElement>(null)
   const skillsDetailRef = useRef<HTMLDivElement>(null)
   const skillsMarqueeRef = useRef<HTMLDivElement>(null)
@@ -887,6 +780,62 @@ function AboutSection() {
   }, [])
 
   useEffect(() => {
+    const introElement = introRef.current
+    const textElement = introTextRef.current
+
+    if (!introElement || !textElement) {
+      return
+    }
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      textElement.style.setProperty('--about-text-progress', '1')
+      ;[0, 1, 2].forEach((lineIndex) => {
+        textElement.style.setProperty(`--about-line-${lineIndex}`, '1')
+      })
+      return
+    }
+
+    let animationFrame = 0
+
+    const syncTextProgress = () => {
+      const rect = introElement.getBoundingClientRect()
+      const viewportHeight = window.innerHeight || document.documentElement.clientHeight
+      const start = viewportHeight * 0.48
+      const end = -viewportHeight * 0.08
+      const rawProgress = (start - rect.top) / Math.max(start - end, 1)
+      const progress = Math.min(Math.max(rawProgress, 0), 1)
+      const lineStarts = [0.02, 0.28, 0.54]
+      const lineDuration = 0.36
+
+      textElement.style.setProperty('--about-text-progress', progress.toFixed(4))
+      ;[0, 1, 2].forEach((lineIndex) => {
+        const lineProgress = Math.min(Math.max((progress - lineStarts[lineIndex]) / lineDuration, 0), 1)
+        textElement.style.setProperty(`--about-line-${lineIndex}`, lineProgress.toFixed(4))
+      })
+      animationFrame = 0
+    }
+
+    const requestSync = () => {
+      if (!animationFrame) {
+        animationFrame = window.requestAnimationFrame(syncTextProgress)
+      }
+    }
+
+    syncTextProgress()
+    window.addEventListener('scroll', requestSync, { passive: true })
+    window.addEventListener('resize', requestSync)
+
+    return () => {
+      window.removeEventListener('scroll', requestSync)
+      window.removeEventListener('resize', requestSync)
+
+      if (animationFrame) {
+        window.cancelAnimationFrame(animationFrame)
+      }
+    }
+  }, [])
+
+  useEffect(() => {
     if (!isSkillsOpen) {
       return
     }
@@ -993,7 +942,7 @@ function AboutSection() {
           target.classList.remove('is-visible')
         })
       },
-      { threshold: 0.08, rootMargin: '0px 0px 14% 0px' },
+      { threshold: 0.18, rootMargin: '0px 0px -8% 0px' },
     )
 
     targets.forEach((target) => observer.observe(target))
@@ -1020,20 +969,16 @@ function AboutSection() {
           <img src="/assets/about/profile.png" alt="" width={374} height={407} decoding="async" />
         </div>
 
-        <div className="about-intro__copy">
-          <div className="about-intro__identity" data-about-reveal>
-            <strong>정영은</strong>
-            <a href="https://mail.google.com/mail/?view=cm&fs=1&to=yxungeun@gmail.com" target="_blank" rel="noreferrer">
-              <span>yxungeun@gmail.com</span>
-              <MailClickIcon />
-            </a>
-          </div>
-          <div className="about-intro__text" data-about-reveal>
+        <div className="about-intro__copy" data-about-reveal>
+          <div ref={introTextRef} className="about-intro__text">
             <span className="about-intro__line" style={{ '--line-index': 0 } as CSSProperties}>
               기획·개발·디자인을 연결하며
             </span>
             <span className="about-intro__line" style={{ '--line-index': 1 } as CSSProperties}>
-              AI로 빠르게 검증합니다
+              AI로 더 빠르게 검증하는
+            </span>
+            <span className="about-intro__line about-intro__line--name" style={{ '--line-index': 2 } as CSSProperties}>
+              정영은입니다
             </span>
           </div>
         </div>
@@ -1098,7 +1043,6 @@ function AiWorkflowSection() {
   const [activeStepIndex, setActiveStepIndex] = useState(0)
   const [isWorkflowVisible, setIsWorkflowVisible] = useState(false)
   const sectionRef = useRef<HTMLElement | null>(null)
-  const timelineRef = useRef<HTMLDivElement | null>(null)
   const stepRefs = useRef<Array<HTMLElement | null>>([])
   const activeStepIndexRef = useRef(0)
   const activeStepStartedAtRef = useRef(0)
@@ -1121,25 +1065,22 @@ function AiWorkflowSection() {
 
     if (!section) return
 
+    // Make the observer a bit more permissive on large viewports
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting && entry.intersectionRatio >= 0.68) {
-          setIsWorkflowVisible(true)
-          observer.disconnect()
-        }
+        setIsWorkflowVisible(entry.isIntersecting)
       },
-      { threshold: [0, 0.68], rootMargin: '0px' },
+      { threshold: 0.08, rootMargin: '0px 0px -20% 0px' },
     )
 
     observer.observe(section)
 
+    // Fallback: on desktop, if the observer doesn't trigger quickly, enable visibility
     const fallbackTimer = window.setTimeout(() => {
       const rect = section.getBoundingClientRect()
-      const viewportHeight = window.innerHeight || document.documentElement.clientHeight
-      const visibleHeight = Math.min(rect.bottom, viewportHeight) - Math.max(rect.top, 0)
-      const visibleRatio = visibleHeight / Math.min(rect.height, viewportHeight)
+      const inViewport = rect.top < window.innerHeight && rect.bottom > 0
 
-      if (visibleRatio >= 0.68) {
+      if (inViewport || window.innerWidth >= 1200) {
         setIsWorkflowVisible(true)
         observer.disconnect()
       }
@@ -1165,90 +1106,36 @@ function AiWorkflowSection() {
     setActiveStepIndex(nextStepIndex)
   }
 
-  const activateWorkflowStep = (nextStepIndex: number) => {
-    const timeline = timelineRef.current
-    const nextStep = stepRefs.current[nextStepIndex]
-
-    syncActiveStep(nextStepIndex)
-
-    if (!timeline || !nextStep) return
-
-    const targetLeft =
-      nextStepIndex === 0
-        ? 0
-        : nextStep.offsetLeft - Math.max((timeline.clientWidth - nextStep.clientWidth) / 2, 0)
-
-    timeline.scrollTo({
-      left: Math.max(0, Math.round(targetLeft)),
-      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
-    })
-  }
-
-  const skipAiWorkflow = () => {
-    document.getElementById('contact')?.scrollIntoView({
-      block: 'start',
-      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
-    })
-  }
-
   useEffect(() => {
-    const timeline = timelineRef.current
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const bestEntry = entries.sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0]
 
-    if (!timeline) return
+        if (bestEntry && bestEntry.intersectionRatio > 0) {
+          syncActiveStep(Number((bestEntry.target as HTMLElement).dataset.stepIndex ?? 0))
+        }
+      },
+      {
+        rootMargin: '-42% 0px -42% 0px',
+        threshold: [0, 0.25, 0.5, 0.75, 1],
+      },
+    )
 
-    let animationFrame = 0
+    stepRefs.current.forEach((step) => {
+      if (step) observer.observe(step)
+    })
 
-    timeline.scrollTo({ left: 0, behavior: 'auto' })
-    activeStepIndexRef.current = 0
-    setActiveStepIndex(0)
-
-    const syncStepFromHorizontalScroll = () => {
-      animationFrame = 0
-
-      const timelineRect = timeline.getBoundingClientRect()
-      const timelineFocus = timeline.scrollLeft <= 8 ? Number.NEGATIVE_INFINITY : timelineRect.left + timelineRect.width * 0.38
-      const nextStepIndex = stepRefs.current.reduce((nearestIndex, step, index) => {
-        if (!step) return nearestIndex
-        if (timeline.scrollLeft <= 8) return 0
-
-        const stepRect = step.getBoundingClientRect()
-        const currentDistance = Math.abs(stepRect.left + stepRect.width / 2 - timelineFocus)
-        const nearestStep = stepRefs.current[nearestIndex]
-        const nearestRect = nearestStep?.getBoundingClientRect()
-        const nearestDistance = nearestRect ? Math.abs(nearestRect.left + nearestRect.width / 2 - timelineFocus) : Number.POSITIVE_INFINITY
-
-        return currentDistance < nearestDistance ? index : nearestIndex
-      }, 0)
-
-      syncActiveStep(nextStepIndex)
-    }
-
-    const requestSync = () => {
-      if (!animationFrame) {
-        animationFrame = window.requestAnimationFrame(syncStepFromHorizontalScroll)
-      }
-    }
-
-    requestSync()
-    timeline.addEventListener('scroll', requestSync, { passive: true })
-    window.addEventListener('resize', requestSync)
-
-    return () => {
-      if (animationFrame) {
-        window.cancelAnimationFrame(animationFrame)
-      }
-
-      timeline.removeEventListener('scroll', requestSync)
-      window.removeEventListener('resize', requestSync)
-    }
+    return () => observer.disconnect()
   }, [])
 
   useEffect(() => {
     const section = sectionRef.current
-    const timeline = timelineRef.current
 
-    if (!section || !timeline) return
-    const canUseDesktopStepScroll = window.matchMedia('(min-width: 1025px)').matches
+    if (!section) return
+    const canUseDesktopStepScroll =
+      window.matchMedia('(min-width: 1025px)').matches &&
+      window.matchMedia('(hover: hover)').matches &&
+      window.matchMedia('(pointer: fine)').matches
 
     if (!canUseDesktopStepScroll) return
 
@@ -1259,6 +1146,27 @@ function AiWorkflowSection() {
 
       return Boolean(target.closest('input, textarea, select, button, a, [contenteditable="true"]'))
     }
+    const isCurrentStepCentered = () => {
+      const currentStep = stepRefs.current[activeStepIndexRef.current]
+
+      if (!currentStep) return false
+
+      const marker = currentStep.querySelector<HTMLElement>('.ai-workflow-step__marker')
+      const rect = (marker ?? currentStep).getBoundingClientRect()
+      const viewportAnchor = window.innerHeight * 0.5
+      const stepCenter = rect.top + rect.height * 0.5
+      const centerTolerance = Math.min(window.innerHeight * 0.34, 260)
+
+      return Math.abs(stepCenter - viewportAnchor) <= centerTolerance
+    }
+    const getStepScrollTop = (step: HTMLElement) => {
+      const marker = step.querySelector<HTMLElement>('.ai-workflow-step__marker')
+      const rect = (marker ?? step).getBoundingClientRect()
+      const markerCenter = rect.top + rect.height * 0.5
+      const viewportAnchor = window.innerHeight * 0.5
+
+      return Math.max(0, Math.round(window.scrollY + markerCenter - viewportAnchor))
+    }
     const releaseStepScroll = () => {
       if (stepScrollTimeoutRef.current) {
         window.clearTimeout(stepScrollTimeoutRef.current)
@@ -1266,120 +1174,66 @@ function AiWorkflowSection() {
 
       stepScrollTimeoutRef.current = window.setTimeout(() => {
         isStepScrollingRef.current = false
-      }, prefersReducedMotion ? 80 : 420)
+      }, prefersReducedMotion ? 120 : 820)
     }
-    const getSectionScrollState = () => {
-      const rect = section.getBoundingClientRect()
-      const viewportHeight = window.innerHeight || document.documentElement.clientHeight
-      const pinTolerance = Math.min(28, viewportHeight * 0.028)
-      const isInZone =
-        rect.top >= -pinTolerance &&
-        rect.top <= viewportHeight * 0.18 &&
-        rect.bottom >= viewportHeight - pinTolerance
-      const isPinned = Math.abs(rect.top) <= pinTolerance
-
-      return { isInZone, isPinned }
-    }
-    const pinSection = () => {
-      isStepScrollingRef.current = true
-      window.scrollTo({
-        top: Math.round(section.getBoundingClientRect().top + window.scrollY),
-        behavior: prefersReducedMotion ? 'auto' : 'smooth',
-      })
-      releaseStepScroll()
-    }
-    const canMoveStep = (direction: 1 | -1) => {
+    const moveToStep = (direction: 1 | -1) => {
       const currentStepIndex = activeStepIndexRef.current
       const nextStepIndex = Math.min(Math.max(currentStepIndex + direction, 0), lastStepIndex)
 
-      return nextStepIndex !== currentStepIndex
-    }
-    const scrollToAdjacentSection = (direction: 1 | -1) => {
-      const pastWorksShowcases = Array.from(document.querySelectorAll<HTMLElement>('.past-works-showcase'))
-      const previousTarget = pastWorksShowcases[pastWorksShowcases.length - 1] ?? document.getElementById('past-works')
-      const nextTarget = document.getElementById('contact')
-      const target = direction > 0 ? nextTarget : previousTarget
+      if (nextStepIndex === currentStepIndex) return false
 
-      if (!target) return
-
-      isStepScrollingRef.current = true
-      window.scrollTo({
-        top: Math.round(target.getBoundingClientRect().top + window.scrollY),
-        behavior: prefersReducedMotion ? 'auto' : 'smooth',
-      })
-      releaseStepScroll()
-    }
-    const moveStep = (direction: 1 | -1) => {
-      const currentStepIndex = activeStepIndexRef.current
-      const nextStepIndex = Math.min(Math.max(currentStepIndex + direction, 0), lastStepIndex)
       const nextStep = stepRefs.current[nextStepIndex]
 
-      if (!nextStep || nextStepIndex === currentStepIndex) return
-
-      const targetLeft =
-        nextStepIndex === 0
-          ? 0
-          : nextStep.offsetLeft - Math.max((timeline.clientWidth - nextStep.clientWidth) / 2, 0)
+      if (!nextStep) return false
 
       isStepScrollingRef.current = true
       syncActiveStep(nextStepIndex)
-      timeline.scrollTo({
-        left: Math.max(0, Math.round(targetLeft)),
+      window.scrollTo({
+        top: getStepScrollTop(nextStep),
         behavior: prefersReducedMotion ? 'auto' : 'smooth',
       })
       releaseStepScroll()
+
+      return true
+    }
+    const canCaptureStepScroll = (direction: 1 | -1) => {
+      const currentStepIndex = activeStepIndexRef.current
+      const activeStepElapsed = window.performance.now() - activeStepStartedAtRef.current
+
+      if (!isCurrentStepCentered()) return false
+      if (direction > 0 && currentStepIndex === 0 && activeStepElapsed < 2000) return false
+      if (direction > 0 && currentStepIndex >= lastStepIndex) return false
+      if (direction < 0 && currentStepIndex <= 0) return false
+
+      return true
     }
     const handleWheel = (event: WheelEvent) => {
-      const wheelDelta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY
+      if (isTypingTarget(event.target) || Math.abs(event.deltaY) < 18) return
 
-      const { isInZone, isPinned } = getSectionScrollState()
+      const direction = event.deltaY > 0 ? 1 : -1
 
-      if (isTypingTarget(event.target) || Math.abs(wheelDelta) < 18 || !isInZone) return
-
-      const direction = wheelDelta > 0 ? 1 : -1
+      if (!canCaptureStepScroll(direction)) return
 
       event.preventDefault()
 
       if (isStepScrollingRef.current) return
 
-      if (!isPinned) {
-        pinSection()
-        return
-      }
-
-      if (!canMoveStep(direction)) {
-        scrollToAdjacentSection(direction)
-        return
-      }
-
-      moveStep(direction)
+      moveToStep(direction)
     }
     const handleKeyDown = (event: KeyboardEvent) => {
-      const { isInZone, isPinned } = getSectionScrollState()
+      if (isTypingTarget(event.target)) return
 
-      if (isTypingTarget(event.target) || !isInZone) return
-
-      const nextKeys = ['ArrowDown', 'ArrowRight', 'PageDown', ' ']
-      const previousKeys = ['ArrowUp', 'ArrowLeft', 'PageUp']
+      const nextKeys = ['ArrowDown', 'PageDown', ' ']
+      const previousKeys = ['ArrowUp', 'PageUp']
       const direction = nextKeys.includes(event.key) ? 1 : previousKeys.includes(event.key) ? -1 : null
 
-      if (!direction) return
+      if (!direction || !canCaptureStepScroll(direction)) return
 
       event.preventDefault()
 
       if (isStepScrollingRef.current) return
 
-      if (!isPinned) {
-        pinSection()
-        return
-      }
-
-      if (!canMoveStep(direction)) {
-        scrollToAdjacentSection(direction)
-        return
-      }
-
-      moveStep(direction)
+      moveToStep(direction)
     }
 
     window.addEventListener('wheel', handleWheel, { passive: false })
@@ -1431,22 +1285,12 @@ function AiWorkflowSection() {
             </div>
           </aside>
 
-          <div className="ai-workflow-timeline" ref={timelineRef} data-ai-workflow-reveal>
+          <div className="ai-workflow-timeline" data-ai-workflow-reveal>
             {aiWorkflowSteps.map((step, index) => (
               <article
                 className={`ai-workflow-step${index === activeStepIndex ? ' is-active' : ''}`}
                 data-step-index={index}
                 key={step.number}
-                role="button"
-                tabIndex={0}
-                aria-pressed={index === activeStepIndex}
-                onClick={() => activateWorkflowStep(index)}
-                onKeyDown={(event) => {
-                  if (event.key !== 'Enter' && event.key !== ' ') return
-
-                  event.preventDefault()
-                  activateWorkflowStep(index)
-                }}
                 ref={(node) => {
                   stepRefs.current[index] = node
                 }}
@@ -1472,12 +1316,10 @@ function AiWorkflowSection() {
                     <div
                       className={`ai-workflow-step__description ai-workflow-step__description--structured${step.detail.outroBeforeList ? ' ai-workflow-step__description--outro-first' : ''}`}
                     >
-                      <div className="ai-workflow-step__copy">
-                        {step.detail.lead.map((line) => (
-                          <p key={`${step.number}-${line}`}>{line}</p>
-                        ))}
-                        {step.detail.outro && step.detail.outroBeforeList ? <p>{step.detail.outro}</p> : null}
-                      </div>
+                      {step.detail.lead.map((line) => (
+                        <p key={`${step.number}-${line}`}>{line}</p>
+                      ))}
+                      {step.detail.outro && step.detail.outroBeforeList ? <p>{step.detail.outro}</p> : null}
                       {step.detail.items.length ? (
                         <ul
                           className={`ai-workflow-step__check-list${step.detail.items.length === 4 ? ' ai-workflow-step__check-list--columns' : ''}`}
@@ -1491,7 +1333,7 @@ function AiWorkflowSection() {
                           ))}
                         </ul>
                       ) : null}
-                      {step.detail.outro && !step.detail.outroBeforeList ? <p className="ai-workflow-step__outro">{step.detail.outro}</p> : null}
+                      {step.detail.outro && !step.detail.outroBeforeList ? <p>{step.detail.outro}</p> : null}
                     </div>
                   ) : (
                     <p>{step.description}</p>
@@ -1500,24 +1342,7 @@ function AiWorkflowSection() {
               </article>
             ))}
           </div>
-
-          <div className="ai-workflow-progress" aria-label="AI workflow carousel progress" data-ai-workflow-reveal>
-            {aiWorkflowSteps.map((step, index) => (
-              <button
-                className={`ai-workflow-progress__dot${index === activeStepIndex ? ' is-active' : ''}`}
-                type="button"
-                key={`workflow-progress-${step.number}`}
-                aria-label={`Go to step ${index + 1}`}
-                aria-current={index === activeStepIndex ? 'step' : undefined}
-                onClick={() => activateWorkflowStep(index)}
-              />
-            ))}
-          </div>
         </div>
-
-        <button className="ai-workflow-skip" type="button" onClick={skipAiWorkflow}>
-          SKIP
-        </button>
       </div>
     </section>
   )
@@ -1583,6 +1408,82 @@ function PastWorksCarousel({ showcase, index: showcaseIndex }: { showcase: PastW
 
 function PastWorksSection() {
   const sectionRef = useRef<HTMLElement>(null)
+
+  useEffect(() => {
+    const section = sectionRef.current
+
+    if (!section) {
+      return
+    }
+
+    let snapLocked = false
+    let snapTimer = 0
+
+    const getDocumentTop = (target: HTMLElement) => Math.round(target.getBoundingClientRect().top + window.scrollY)
+    const getScrollOffset = () => Math.min(Math.max(window.innerHeight * 0.1, 72), 128)
+
+    const scrollToTarget = (target: HTMLElement, offset = getScrollOffset()) => {
+      snapLocked = true
+      window.scrollTo({
+        top: Math.max(0, getDocumentTop(target) - offset),
+        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+      })
+      window.clearTimeout(snapTimer)
+      snapTimer = window.setTimeout(() => {
+        snapLocked = false
+      }, 760)
+    }
+
+    const handleWheel = (event: WheelEvent) => {
+      if (Math.abs(event.deltaY) <= 8) {
+        return
+      }
+
+      const sectionTop = getDocumentTop(section)
+      const sectionBottom = sectionTop + section.offsetHeight
+      const scrollY = window.scrollY
+
+      if (scrollY < sectionTop - 24 || scrollY > sectionBottom - 24) {
+        return
+      }
+
+      const direction = event.deltaY > 0 ? 1 : -1
+      const snapTargets = Array.from(section.querySelectorAll<HTMLElement>('.past-works-section__header, .past-works-showcase'))
+      const targetPositions = snapTargets.map((target) => ({
+        element: target,
+        top: getDocumentTop(target) - getScrollOffset(),
+      }))
+
+      const internalTarget =
+        direction > 0
+          ? targetPositions.find((target) => target.top > scrollY + 28)?.element
+          : [...targetPositions].reverse().find((target) => target.top < scrollY - 28)?.element
+      const nextTarget = internalTarget ?? (direction > 0 ? document.getElementById('strength') : null)
+
+      if (!nextTarget) {
+        return
+      }
+
+      if (!internalTarget && direction > 0 && scrollY < targetPositions[targetPositions.length - 1].top - 28) {
+        return
+      }
+
+      event.preventDefault()
+
+      if (snapLocked) {
+        return
+      }
+
+      scrollToTarget(nextTarget, nextTarget.id === 'strength' ? 0 : getScrollOffset())
+    }
+
+    window.addEventListener('wheel', handleWheel, { passive: false })
+
+    return () => {
+      window.removeEventListener('wheel', handleWheel)
+      window.clearTimeout(snapTimer)
+    }
+  }, [])
 
   return (
     <section ref={sectionRef} className="past-works-section" id="past-works" aria-labelledby="past-works-title">
@@ -1748,9 +1649,7 @@ function StrengthSection() {
       }
 
       const pastWorksShowcases = Array.from(document.querySelectorAll<HTMLElement>('.past-works-showcase'))
-      const previousTarget = window.matchMedia('(max-width: 1024px)').matches
-        ? pastWorksShowcases[pastWorksShowcases.length - 1] ?? document.getElementById('past-works')
-        : document.getElementById('ai-workflow')
+      const previousTarget = pastWorksShowcases[pastWorksShowcases.length - 1] ?? document.getElementById('past-works')
       const target = direction > 0 ? document.getElementById('contact') : previousTarget
 
       if (!target) {
@@ -1946,6 +1845,7 @@ function StrengthSection() {
 function ContactSection() {
   const contactRef = useRef<HTMLElement>(null)
   const contactVisibleRef = useRef(false)
+  const [shaderViewKey, setShaderViewKey] = useState(0)
 
   useEffect(() => {
     const section = contactRef.current
@@ -1961,9 +1861,31 @@ function ContactSection() {
     }
 
     let animationFrame = 0
+    let shaderRefreshFrame = 0
+    let shaderRefreshTimer = 0
+
+    const refreshShader = () => {
+      setShaderViewKey((current) => current + 1)
+
+      shaderRefreshFrame = window.requestAnimationFrame(() => {
+        window.dispatchEvent(new Event('resize'))
+        shaderRefreshFrame = 0
+      })
+
+      window.clearTimeout(shaderRefreshTimer)
+      shaderRefreshTimer = window.setTimeout(() => {
+        window.dispatchEvent(new Event('resize'))
+        shaderRefreshTimer = 0
+      }, 160)
+    }
+
     const syncContactState = (isVisible: boolean) => {
       document.documentElement.classList.toggle('is-contact-active', isVisible)
       section.classList.toggle('is-contact-visible', isVisible)
+
+      if (isVisible && !contactVisibleRef.current) {
+        refreshShader()
+      }
 
       contactVisibleRef.current = isVisible
     }
@@ -1987,14 +1909,41 @@ function ContactSection() {
     window.addEventListener('scroll', requestContactStateSync, { passive: true })
     window.addEventListener('resize', requestContactStateSync)
 
+    const handleContactWheel = (event: WheelEvent) => {
+      if (event.deltaY <= 0 || Math.abs(event.deltaY) < 4) {
+        return
+      }
+
+      const rect = section.getBoundingClientRect()
+      const viewportHeight = window.innerHeight || document.documentElement.clientHeight
+      const isContactActive = rect.top <= viewportHeight * 0.45 && rect.bottom >= viewportHeight * 0.25
+
+      if (!isContactActive) {
+        return
+      }
+
+      event.preventDefault()
+      window.scrollTo({
+        top: Math.round(section.getBoundingClientRect().top + window.scrollY),
+        behavior: 'auto',
+      })
+    }
+
+    window.addEventListener('wheel', handleContactWheel, { passive: false, capture: true })
+
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       targets.forEach((target) => target.classList.add('is-visible'))
       return () => {
         window.removeEventListener('scroll', requestContactStateSync)
         window.removeEventListener('resize', requestContactStateSync)
+        window.removeEventListener('wheel', handleContactWheel, { capture: true })
         if (animationFrame) {
           window.cancelAnimationFrame(animationFrame)
         }
+        if (shaderRefreshFrame) {
+          window.cancelAnimationFrame(shaderRefreshFrame)
+        }
+        window.clearTimeout(shaderRefreshTimer)
         contactVisibleRef.current = false
         syncContactState(false)
       }
@@ -2014,9 +1963,14 @@ function ContactSection() {
     return () => {
       window.removeEventListener('scroll', requestContactStateSync)
       window.removeEventListener('resize', requestContactStateSync)
+      window.removeEventListener('wheel', handleContactWheel, { capture: true })
       if (animationFrame) {
         window.cancelAnimationFrame(animationFrame)
       }
+      if (shaderRefreshFrame) {
+        window.cancelAnimationFrame(shaderRefreshFrame)
+      }
+      window.clearTimeout(shaderRefreshTimer)
       observer.disconnect()
       contactVisibleRef.current = false
       syncContactState(false)
@@ -2026,10 +1980,9 @@ function ContactSection() {
   return (
     <section ref={contactRef} className="contact-section" id="contact" aria-labelledby="contact-title">
       <div className="contact-section__shader" aria-hidden="true">
-        <ShaderGradientCanvas pixelDensity={1} fov={45} style={{ width: '100%', height: '100%' }}>
-          <ContactShaderGradient
+        <ShaderGradientCanvas key={shaderViewKey} pixelDensity={1} fov={45} style={{ width: '100%', height: '100%' }}>
+          <ShaderGradient
             animate="on"
-            axesHelper="off"
             brightness={1.2}
             cAzimuthAngle={180}
             cDistance={3.6}
@@ -2038,28 +1991,20 @@ function ContactSection() {
             color1="#ff5005"
             color2="#dbba95"
             color3="#d0bce1"
-            destination="onCanvas"
-            embedMode="off"
+            control="props"
             envPreset="city"
-            format="gif"
-            fov={45}
-            frameRate={10}
-            gizmoHelper="hide"
             grain="on"
             lightType="3d"
-            pixelDensity={1}
             positionX={-1.4}
             positionY={0}
             positionZ={0}
-            range="disabled"
-            rangeEnd={40}
-            rangeStart={0}
             reflection={0.1}
             rotationX={0}
             rotationY={10}
             rotationZ={50}
             shader="defaults"
             type="plane"
+            toggleAxis={false}
             uAmplitude={1}
             uDensity={1.3}
             uFrequency={5.5}
@@ -2079,35 +2024,10 @@ function ContactSection() {
       <div className="contact-section__content">
         <div className="contact-info">
           <p data-contact-reveal>Email Address</p>
-          <a
-            href="https://mail.google.com/mail/?view=cm&fs=1&to=yxungeun@gmail.com"
-            target="_blank"
-            rel="noreferrer"
-            data-contact-reveal
-          >
-            <span>yxungeun@gmail.com</span>
-            <MailClickIcon />
-          </a>
+          <a href="mailto:yxungeun@gmail.com" data-contact-reveal>yxungeun@gmail.com</a>
         </div>
       </div>
     </section>
-  )
-}
-
-function HireToast({ onDismiss }: { onDismiss: () => void }) {
-  return (
-    <aside className="hire-toast" aria-label="Hiring availability notice">
-      <div className="hire-toast__profile" aria-hidden="true">
-        <img src="/assets/about/hire-profile.png" alt="" width={96} height={96} decoding="async" />
-      </div>
-      <strong>영은 님 채용 가능</strong>
-      <a href="https://mail.google.com/mail/?view=cm&fs=1&to=yxungeun@gmail.com" target="_blank" rel="noreferrer">
-        이메일 보내기
-      </a>
-      <button className="hire-toast__close" type="button" aria-label="채용 가능 팝업 닫기" onClick={onDismiss}>
-        ×
-      </button>
-    </aside>
   )
 }
 
@@ -2116,13 +2036,10 @@ function App() {
   const lensRef = useRef<HTMLImageElement>(null)
   const workRevealRef = useRef<HTMLDivElement>(null)
   const navPointerHandledRef = useRef(false)
-  const hasHireToastTriggeredRef = useRef(false)
-  const isHireToastDismissedRef = useRef(false)
   const [isHeaderVisible, setIsHeaderVisible] = useState(true)
   const [isTopButtonVisible, setIsTopButtonVisible] = useState(false)
   const [isContactButtonHidden, setIsContactButtonHidden] = useState(false)
   const [scrollProgress, setScrollProgress] = useState(0)
-  const [isHireToastVisible, setIsHireToastVisible] = useState(false)
 
   const scrollToHash = (hash: string, behavior: ScrollBehavior = 'smooth') => {
     const target = document.querySelector<HTMLElement>(hash)
@@ -2213,65 +2130,6 @@ function App() {
 
     return () => {
       document.removeEventListener('click', handleAnchorClick)
-    }
-  }, [])
-
-  useEffect(() => {
-    let previousScrollY = window.scrollY
-    let animationFrame = 0
-
-    const syncHireToast = () => {
-      animationFrame = 0
-
-      if (hasHireToastTriggeredRef.current || isHireToastDismissedRef.current) {
-        previousScrollY = window.scrollY
-        return
-      }
-
-      const workSection = document.getElementById('work')
-      const skillsDetail = document.getElementById('skills-detail')
-      const aboutSection = document.getElementById('about')
-
-      if (!workSection) {
-        previousScrollY = window.scrollY
-        return
-      }
-
-      const viewportHeight = window.innerHeight || document.documentElement.clientHeight
-      const workTop = workSection.getBoundingClientRect().top + window.scrollY
-      const skillsBottom = skillsDetail
-        ? skillsDetail.getBoundingClientRect().bottom + window.scrollY
-        : aboutSection
-          ? aboutSection.getBoundingClientRect().bottom + window.scrollY
-          : workTop - viewportHeight * 0.6
-      const triggerTop = skillsBottom + Math.max((workTop - skillsBottom) * 0.48, viewportHeight * 0.12)
-      const previousViewportPoint = previousScrollY + viewportHeight * 0.45
-      const currentViewportPoint = window.scrollY + viewportHeight * 0.45
-
-      if (previousViewportPoint < triggerTop && currentViewportPoint >= triggerTop) {
-        hasHireToastTriggeredRef.current = true
-        setIsHireToastVisible(true)
-      }
-
-      previousScrollY = window.scrollY
-    }
-
-    const requestSync = () => {
-      if (!animationFrame) {
-        animationFrame = window.requestAnimationFrame(syncHireToast)
-      }
-    }
-
-    window.addEventListener('scroll', requestSync, { passive: true })
-    window.addEventListener('resize', requestSync)
-
-    return () => {
-      window.removeEventListener('scroll', requestSync)
-      window.removeEventListener('resize', requestSync)
-
-      if (animationFrame) {
-        window.cancelAnimationFrame(animationFrame)
-      }
     }
   }, [])
 
@@ -2413,6 +2271,98 @@ function App() {
     }
   }, [])
 
+  useEffect(() => {
+    const scope = workRevealRef.current
+    const workSection = scope?.closest<HTMLElement>('.work-section')
+
+    if (!scope || !workSection) {
+      return
+    }
+
+    const cards = Array.from(scope.querySelectorAll<HTMLElement>('.work-card'))
+
+    if (!cards.length) {
+      return
+    }
+
+    let snapLocked = false
+    let snapTimer = 0
+
+    const getDocumentTop = (element: HTMLElement) => {
+      const scrollY = window.scrollY || document.documentElement.scrollTop
+
+      return element.getBoundingClientRect().top + scrollY
+    }
+
+    const getNearestCardIndex = () => {
+      const scrollY = window.scrollY || document.documentElement.scrollTop
+
+      return cards.reduce((nearestIndex, card, index) => {
+        const currentDistance = Math.abs(getDocumentTop(card) - scrollY)
+        const nearestDistance = Math.abs(getDocumentTop(cards[nearestIndex]) - scrollY)
+
+        return currentDistance < nearestDistance ? index : nearestIndex
+      }, 0)
+    }
+
+    const snapToSection = (target: HTMLElement) => {
+      snapLocked = true
+      window.clearTimeout(snapTimer)
+      window.scrollTo({
+        top: Math.round(getDocumentTop(target)),
+        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+      })
+      snapTimer = window.setTimeout(() => {
+        snapLocked = false
+      }, 760)
+    }
+
+    const handleWorkWheel = (event: WheelEvent) => {
+      const viewportHeight = window.innerHeight || document.documentElement.clientHeight
+      const workRect = workSection.getBoundingClientRect()
+      const isWorkVisible = workRect.top < viewportHeight && workRect.bottom > 0
+
+      if (!isWorkVisible || Math.abs(event.deltaY) < 8) {
+        return
+      }
+
+      event.preventDefault()
+
+      if (snapLocked) {
+        return
+      }
+
+      const direction = event.deltaY > 0 ? 1 : -1
+      const scrollY = window.scrollY || document.documentElement.scrollTop
+      const workTop = getDocumentTop(workSection)
+      const lastCard = cards[cards.length - 1]
+      const lastCardTop = getDocumentTop(lastCard)
+      const isReturningFromAfterWork = direction < 0 && scrollY > lastCardTop + viewportHeight * 0.65
+      const currentIndex = getNearestCardIndex()
+      const target =
+        isReturningFromAfterWork
+          ? lastCard
+          : direction > 0
+          ? scrollY < workTop - 2
+            ? cards[0]
+            : cards[currentIndex + 1] ?? document.getElementById('ai-workflow')
+          : currentIndex > 0
+            ? cards[currentIndex - 1]
+            : document.getElementById('top')
+
+      if (target) {
+        snapToSection(target)
+      }
+    }
+
+    window.addEventListener('wheel', handleWorkWheel, { passive: false })
+
+    return () => {
+      window.removeEventListener('wheel', handleWorkWheel)
+      window.clearTimeout(snapTimer)
+    }
+  }, [])
+
   const handleTitlePointerMove = (event: ReactPointerEvent<HTMLElement>) => {
     const bounds = event.currentTarget.getBoundingClientRect()
     const x = event.clientX - bounds.left
@@ -2424,16 +2374,8 @@ function App() {
 
   return (
     <>
+      <CustomCursor />
       <main className="portfolio-home" aria-label="Youngeun Jeong portfolio home">
-        {isHireToastVisible ? (
-          <HireToast
-            onDismiss={() => {
-              isHireToastDismissedRef.current = true
-              setIsHireToastVisible(false)
-            }}
-          />
-        ) : null}
-
         <header className={`site-header${isHeaderVisible ? '' : ' site-header--hidden'}`}>
           <a
             className="site-header__brand"
@@ -2470,7 +2412,7 @@ function App() {
             CONTACT
           </a>
 
-          <HamburgerMenu items={navItems.filter((item) => item.hash !== '#ai-workflow')} onNavigate={scrollToHash} />
+          <HamburgerMenu items={navItems} onNavigate={scrollToHash} />
         </header>
 
         <button
@@ -2561,21 +2503,56 @@ function App() {
                   <div className="work-card__inner">
                     <div className="work-card__content">
                       <div className="work-card__text">
-                        <div className="work-card__title-wrapper" data-work-reveal style={{ '--work-reveal-index': 1 } as CSSProperties}>
-                          <h3>{project.title}</h3>
-                          {project.year && <span className="work-card__year">{project.year}</span>}
-                        </div>
+                        <h3 data-work-reveal style={{ '--work-reveal-index': 1 } as CSSProperties}>
+                          {project.title}
+                        </h3>
+                        <WorkCardMeta project={project} revealIndex={2} />
                         <p
                           className="work-card__description"
                           data-work-reveal
-                          style={{ '--work-reveal-index': 2 } as CSSProperties}
+                          style={{ '--work-reveal-index': 3 } as CSSProperties}
                         >
                           {(projectDescriptions[project.title] ?? project.description).join(' ')}
                         </p>
-                        <WorkCardMeta project={project} revealIndex={3} />
                       </div>
 
-                      <WorkCardActions project={project} />
+                      <div className="work-card__actions" aria-label={`${project.title} links`}>
+                        <a
+                          href={project.proposalUrl ?? '#work'}
+                          target={project.proposalUrl ? '_blank' : undefined}
+                          rel={project.proposalUrl ? 'noreferrer' : undefined}
+                          data-work-reveal
+                          style={{ '--work-reveal-index': 4 } as CSSProperties}
+                        >
+                          <span>Proposal</span>
+                          <img src="/assets/icons/work-arrow.svg" alt="" aria-hidden="true" />
+                        </a>
+                        {project.websiteDisabled ? (
+                          <button
+                            className="is-primary is-disabled"
+                            type="button"
+                            disabled
+                            aria-label={`${project.title} project is not available yet`}
+                            data-work-reveal
+                            style={{ '--work-reveal-index': 5 } as CSSProperties}
+                          >
+                            <span>Project</span>
+                            <img src="/assets/icons/work-arrow.svg" alt="" aria-hidden="true" />
+                          </button>
+                        ) : (
+                          <a
+                            className="is-primary"
+                            href={project.websiteUrl ?? '#work'}
+                            target={project.websiteUrl ? '_blank' : undefined}
+                            rel={project.websiteUrl ? 'noreferrer' : undefined}
+                            data-work-reveal
+                            style={{ '--work-reveal-index': 5 } as CSSProperties}
+                          >
+                            <span>Project</span>
+                            <img src="/assets/icons/work-arrow.svg" alt="" aria-hidden="true" />
+                          </a>
+                        )}
+                      </div>
                     </div>
 
                     <div className="work-card__image" data-work-reveal style={{ '--work-reveal-index': 0 } as CSSProperties}>
@@ -2595,11 +2572,11 @@ function App() {
           </div>
         </section>
 
-        <PastWorksSection />
-
         <AiWorkflowSection />
 
-        {false ? <StrengthSection /> : null}
+        <PastWorksSection />
+
+        <StrengthSection />
 
         <ContactSection />
       </main>
