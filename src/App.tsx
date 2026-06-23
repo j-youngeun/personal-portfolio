@@ -128,21 +128,6 @@ function SlotTitle({ text }: { text: string }) {
   )
 }
 
-function MailClickIcon() {
-  return (
-    <span className="mail-click-icon" aria-hidden="true">
-      <svg width="24" height="24" viewBox="0 0 24 24" focusable="false">
-        <path className="mail-click-icon__ray mail-click-icon__ray--1" d="M3 12H6" />
-        <path className="mail-click-icon__ray mail-click-icon__ray--2" d="M12 3V6" />
-        <path className="mail-click-icon__ray mail-click-icon__ray--3" d="M7.8 7.8L5.6 5.6" />
-        <path className="mail-click-icon__ray mail-click-icon__ray--4" d="M16.2 7.8L18.4 5.6" />
-        <path className="mail-click-icon__ray mail-click-icon__ray--5" d="M7.8 16.2L5.6 18.4" />
-        <path className="mail-click-icon__cursor" d="M12 12L21 15L17 17L15 21L12 12Z" />
-      </svg>
-    </span>
-  )
-}
-
 const aboutCards: AboutCardData[] = [
   {
     title: 'WORK HISTORY',
@@ -386,6 +371,8 @@ const projectDescriptions: Record<string, string[]> = {
     '해외 방문자가 정보를 직관적으로 탐색할 수 있도록 진행한 영문 웹사이트 리뉴얼 팀 프로젝트',
   ],
 }
+const SHOW_PROJECT_DESCRIPTIONS = false
+
 type Project = {
   badge: string
   title: string
@@ -400,6 +387,10 @@ type Project = {
   image: string
   imageAlt: string
   proposalUrl: string
+  proposalPreviewImages?: Array<{
+    page: number
+    src: string
+  }>
   websiteUrl: string
   websiteDisabled?: boolean
 }
@@ -436,6 +427,19 @@ const projects: Project[] = [
     image: '/assets/work/gunit/cover.png',
     imageAlt: 'Gunit project visual',
     proposalUrl: '/assets/work/gunit/proposal.pdf',
+    proposalPreviewImages: [
+      { page: 18, src: '/assets/work/gunit/proposal-preview/preview-01-page-018.webp' },
+      { page: 19, src: '/assets/work/gunit/proposal-preview/preview-02-page-019.webp' },
+      { page: 17, src: '/assets/work/gunit/proposal-preview/preview-03-page-017.webp' },
+      { page: 27, src: '/assets/work/gunit/proposal-preview/preview-04-page-027.webp' },
+      { page: 41, src: '/assets/work/gunit/proposal-preview/preview-05-page-041.webp' },
+      { page: 54, src: '/assets/work/gunit/proposal-preview/preview-06-page-054.webp' },
+      { page: 57, src: '/assets/work/gunit/proposal-preview/preview-07-page-057.webp' },
+      { page: 58, src: '/assets/work/gunit/proposal-preview/preview-08-page-058.webp' },
+      { page: 64, src: '/assets/work/gunit/proposal-preview/preview-09-page-064.webp' },
+      { page: 92, src: '/assets/work/gunit/proposal-preview/preview-10-page-092.webp' },
+      { page: 94, src: '/assets/work/gunit/proposal-preview/preview-11-page-094.webp' },
+    ],
     websiteUrl: 'https://airsoft-nine.vercel.app/',
   },
   {
@@ -469,6 +473,15 @@ const projects: Project[] = [
     image: '/assets/work/mmca/cover.png',
     imageAlt: 'MMCA project visual',
     proposalUrl: '/assets/work/mmca/proposal.pdf',
+    proposalPreviewImages: [
+      { page: 4, src: '/assets/work/mmca/proposal-preview/preview-01-page-004.webp' },
+      { page: 9, src: '/assets/work/mmca/proposal-preview/preview-02-page-009.webp' },
+      { page: 13, src: '/assets/work/mmca/proposal-preview/preview-03-page-013.webp' },
+      { page: 25, src: '/assets/work/mmca/proposal-preview/preview-04-page-025.webp' },
+      { page: 30, src: '/assets/work/mmca/proposal-preview/preview-05-page-030.webp' },
+      { page: 36, src: '/assets/work/mmca/proposal-preview/preview-06-page-036.webp' },
+      { page: 39, src: '/assets/work/mmca/proposal-preview/preview-07-page-039.webp' },
+    ],
     websiteUrl: 'https://angbaebultti.github.io/mmca/',
   },
 ]
@@ -528,12 +541,12 @@ const pastWorkPhotographyCards: PastWorkCard[] = [
 const pastWorkShowcases: PastWorkShowcase[] = [
   {
     title: 'Graphic Design',
-    subtitle: '2024-2025 · KOTRA',
+    subtitle: '2024-2025',
     cards: pastWorkTopCards,
   },
   {
     title: 'Video',
-    subtitle: '2021-2023 · TBS',
+    subtitle: '2021-2023',
     cards: pastWorkTbsCards,
   },
   {
@@ -588,7 +601,7 @@ function WorkCardActions({ project, className = '' }: { project: Project; classN
         target={project.proposalUrl ? '_blank' : undefined}
         rel={project.proposalUrl ? 'noreferrer' : undefined}
         data-work-reveal
-        style={{ '--work-reveal-index': 4 } as CSSProperties}
+        style={{ '--work-reveal-index': 3 } as CSSProperties}
       >
         <span>Proposal</span>
         <img src="/assets/icons/work-arrow.svg" alt="" aria-hidden="true" />
@@ -600,7 +613,7 @@ function WorkCardActions({ project, className = '' }: { project: Project; classN
           disabled
           aria-label={`${project.title} project is not available yet`}
           data-work-reveal
-          style={{ '--work-reveal-index': 5 } as CSSProperties}
+          style={{ '--work-reveal-index': 4 } as CSSProperties}
         >
           <span>Project</span>
           <img src="/assets/icons/work-arrow.svg" alt="" aria-hidden="true" />
@@ -612,7 +625,7 @@ function WorkCardActions({ project, className = '' }: { project: Project; classN
           target={project.websiteUrl ? '_blank' : undefined}
           rel={project.websiteUrl ? 'noreferrer' : undefined}
           data-work-reveal
-          style={{ '--work-reveal-index': 5 } as CSSProperties}
+          style={{ '--work-reveal-index': 4 } as CSSProperties}
         >
           <span>Project</span>
           <img src="/assets/icons/work-arrow.svg" alt="" aria-hidden="true" />
@@ -1025,7 +1038,6 @@ function AboutSection() {
             <strong>정영은</strong>
             <a href="https://mail.google.com/mail/?view=cm&fs=1&to=yxungeun@gmail.com" target="_blank" rel="noreferrer">
               <span>yxungeun@gmail.com</span>
-              <MailClickIcon />
             </a>
           </div>
           <div className="about-intro__text" data-about-reveal>
@@ -2093,7 +2105,6 @@ function ContactSection() {
             data-contact-reveal
           >
             <span>yxungeun@gmail.com</span>
-            <MailClickIcon />
           </a>
         </div>
       </div>
@@ -2574,31 +2585,82 @@ function App() {
                           <h3>{project.title}</h3>
                           {project.year && <span className="work-card__year">{project.year}</span>}
                         </div>
-                        <p
-                          className="work-card__description"
-                          data-work-reveal
-                          style={{ '--work-reveal-index': 2 } as CSSProperties}
-                        >
-                          {(projectDescriptions[project.title] ?? project.description).join(' ')}
-                        </p>
-                        <WorkCardMeta project={project} revealIndex={3} />
+                        {SHOW_PROJECT_DESCRIPTIONS ? (
+                          <p
+                            className="work-card__description"
+                            data-work-reveal
+                            style={{ '--work-reveal-index': 2 } as CSSProperties}
+                          >
+                            {(projectDescriptions[project.title] ?? project.description).join(' ')}
+                          </p>
+                        ) : null}
+                        <WorkCardMeta project={project} revealIndex={2} />
                       </div>
 
                       <WorkCardActions project={project} />
                     </div>
 
-                    <div className="work-card__image" data-work-reveal style={{ '--work-reveal-index': 0 } as CSSProperties}>
-                      <img
-                        src={project.image}
-                        alt={project.imageAlt}
-                        width={928}
-                        height={560}
-                        loading={index === 0 ? 'eager' : 'lazy'}
-                        decoding="async"
-                        sizes="(max-width: 560px) calc(100vw - 32px), (max-width: 1024px) calc(100vw - 40px), (max-width: 1280px) 44vw, 928px"
-                      />
+                    <div className={`work-card__media${project.proposalPreviewImages ? ' work-card__media--has-preview' : ''}`}>
+                      <div className="work-card__image" data-work-reveal style={{ '--work-reveal-index': 0 } as CSSProperties}>
+                        <img
+                          src={project.image}
+                          alt={project.imageAlt}
+                          width={928}
+                          height={560}
+                          loading={index === 0 ? 'eager' : 'lazy'}
+                          decoding="async"
+                          sizes="(max-width: 560px) calc(100vw - 32px), (max-width: 1024px) calc(100vw - 40px), (max-width: 1280px) 44vw, 928px"
+                        />
+                      </div>
+
+                      {project.proposalPreviewImages ? (
+                        <div
+                          className="work-card__proposal-preview work-card__proposal-preview--inline"
+                          data-work-reveal
+                          style={{ '--work-reveal-index': 1 } as CSSProperties}
+                          aria-label={`${project.title} proposal preview pages`}
+                        >
+                          <div className="work-card__proposal-track">
+                            {[...project.proposalPreviewImages, ...project.proposalPreviewImages].map((preview, previewIndex) => (
+                              <a
+                                className="work-card__proposal-thumb"
+                                href={`${project.proposalUrl}#page=${preview.page}`}
+                                target="_blank"
+                                rel="noreferrer"
+                                key={`${preview.src}-inline-${previewIndex}`}
+                              >
+                                <img src={preview.src} alt={`${project.title} proposal page ${preview.page}`} loading="lazy" decoding="async" />
+                              </a>
+                            ))}
+                          </div>
+                        </div>
+                      ) : null}
+
                     </div>
                   </div>
+
+                  {project.proposalPreviewImages ? (
+                    <div
+                      className="work-card__proposal-preview work-card__proposal-preview--wide"
+                      data-work-reveal
+                      style={{ '--work-reveal-index': 3 } as CSSProperties}
+                      aria-label={`${project.title} proposal preview pages`}
+                    >
+                      <div className="work-card__proposal-track">
+                        {[...project.proposalPreviewImages, ...project.proposalPreviewImages].map((preview, previewIndex) => (
+                          <a
+                            className="work-card__proposal-thumb"
+                            href={`${project.proposalUrl}#page=${preview.page}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            key={`${preview.src}-${previewIndex}`}
+                          >
+                            <img src={preview.src} alt={`${project.title} proposal page ${preview.page}`} loading="lazy" decoding="async" />
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+                  ) : null}
                 </article>
             ))}
           </div>
