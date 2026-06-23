@@ -885,7 +885,7 @@ body.mobile-menu-is-open {
 
 .work-card:first-child {
   align-content: start;
-  padding-top: clamp(310px, 29svh, 380px);
+  padding-top: clamp(430px, 36svh, 520px);
 }
 
 .work-card:last-child {
@@ -4326,6 +4326,11 @@ body.mobile-menu-is-open {
     padding: 0 20px 56px;
   }
 
+  .work-card:first-child {
+    align-content: center;
+    padding: 0 20px 56px;
+  }
+
   .work-card:not(:first-child) {
     padding: 72px 20px 56px;
   }
@@ -4798,6 +4803,10 @@ body.mobile-menu-is-open {
   }
 
   .work-card {
+    padding: 0 var(--work-section-px) 48px;
+  }
+
+  .work-card:first-child {
     padding: 0 var(--work-section-px) 48px;
   }
 
