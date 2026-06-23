@@ -7,6 +7,7 @@ import {
   type MouseEvent as ReactMouseEvent,
   type PointerEvent as ReactPointerEvent,
   type RefObject,
+  type TouchEvent as ReactTouchEvent,
 } from 'react'
 import {
   animate,
@@ -372,11 +373,11 @@ const projectDescriptions: Record<string, string[]> = {
   ],
 }
 const SHOW_PROJECT_DESCRIPTIONS = false
+const SHOW_STRENGTH_SECTION = import.meta.env.VITE_SHOW_STRENGTH_SECTION === 'true'
 
 type Project = {
   badge: string
   title: string
-  year?: string
   meta: { label: string; value: number; accent: boolean }[]
   overview: {
     title: string
@@ -387,10 +388,13 @@ type Project = {
   image: string
   imageAlt: string
   proposalUrl: string
+  subInfo?: string[]
   proposalPreviewImages?: Array<{
     page: number
     src: string
   }>
+  proposalPreviewDuration?: string
+  proposalPreviewFillEdges?: boolean
   websiteUrl: string
   websiteDisabled?: boolean
 }
@@ -399,7 +403,6 @@ const projects: Project[] = [
   {
     badge: 'Team Project',
     title: 'Gunit',
-    year: '2026',
     meta: [
       { label: 'Planning', value: 20, accent: false },
       { label: 'Design', value: 30, accent: false },
@@ -427,25 +430,25 @@ const projects: Project[] = [
     image: '/assets/work/gunit/cover.png',
     imageAlt: 'Gunit project visual',
     proposalUrl: '/assets/work/gunit/proposal.pdf',
+    subInfo: ['프로젝트 기간 : 2026. 04 - 2026. 05', '주요 성과 : 우수상 수상'],
     proposalPreviewImages: [
-      { page: 18, src: '/assets/work/gunit/proposal-preview/preview-01-page-018.webp' },
-      { page: 19, src: '/assets/work/gunit/proposal-preview/preview-02-page-019.webp' },
-      { page: 17, src: '/assets/work/gunit/proposal-preview/preview-03-page-017.webp' },
-      { page: 27, src: '/assets/work/gunit/proposal-preview/preview-04-page-027.webp' },
-      { page: 41, src: '/assets/work/gunit/proposal-preview/preview-05-page-041.webp' },
-      { page: 54, src: '/assets/work/gunit/proposal-preview/preview-06-page-054.webp' },
-      { page: 57, src: '/assets/work/gunit/proposal-preview/preview-07-page-057.webp' },
-      { page: 58, src: '/assets/work/gunit/proposal-preview/preview-08-page-058.webp' },
-      { page: 64, src: '/assets/work/gunit/proposal-preview/preview-09-page-064.webp' },
-      { page: 92, src: '/assets/work/gunit/proposal-preview/preview-10-page-092.webp' },
-      { page: 94, src: '/assets/work/gunit/proposal-preview/preview-11-page-094.webp' },
+      { page: 18, src: '/assets/work/gunit/proposal-preview-optimized/preview-01-page-018.webp' },
+      { page: 19, src: '/assets/work/gunit/proposal-preview-optimized/preview-02-page-019.webp' },
+      { page: 17, src: '/assets/work/gunit/proposal-preview-optimized/preview-03-page-017.webp' },
+      { page: 27, src: '/assets/work/gunit/proposal-preview-optimized/preview-04-page-027.webp' },
+      { page: 41, src: '/assets/work/gunit/proposal-preview-optimized/preview-05-page-041.webp' },
+      { page: 54, src: '/assets/work/gunit/proposal-preview-optimized/preview-06-page-054.webp' },
+      { page: 57, src: '/assets/work/gunit/proposal-preview-optimized/preview-07-page-057.webp' },
+      { page: 58, src: '/assets/work/gunit/proposal-preview-optimized/preview-08-page-058.webp' },
+      { page: 64, src: '/assets/work/gunit/proposal-preview-optimized/preview-09-page-064.webp' },
+      { page: 92, src: '/assets/work/gunit/proposal-preview-optimized/preview-10-page-092.webp' },
+      { page: 94, src: '/assets/work/gunit/proposal-preview-optimized/preview-11-page-094.webp' },
     ],
     websiteUrl: 'https://airsoft-nine.vercel.app/',
   },
   {
     badge: 'Team Project',
     title: 'MMCA',
-    year: '2026',
     meta: [
       { label: 'Planning', value: 20, accent: false },
       { label: 'Design', value: 70, accent: true },
@@ -473,15 +476,18 @@ const projects: Project[] = [
     image: '/assets/work/mmca/cover.png',
     imageAlt: 'MMCA project visual',
     proposalUrl: '/assets/work/mmca/proposal.pdf',
+    subInfo: ['프로젝트 기간 : 2026. 02 - 2026. 03'],
     proposalPreviewImages: [
-      { page: 4, src: '/assets/work/mmca/proposal-preview/preview-01-page-004.webp' },
-      { page: 9, src: '/assets/work/mmca/proposal-preview/preview-02-page-009.webp' },
-      { page: 13, src: '/assets/work/mmca/proposal-preview/preview-03-page-013.webp' },
-      { page: 25, src: '/assets/work/mmca/proposal-preview/preview-04-page-025.webp' },
-      { page: 30, src: '/assets/work/mmca/proposal-preview/preview-05-page-030.webp' },
-      { page: 36, src: '/assets/work/mmca/proposal-preview/preview-06-page-036.webp' },
-      { page: 39, src: '/assets/work/mmca/proposal-preview/preview-07-page-039.webp' },
+      { page: 4, src: '/assets/work/mmca/proposal-preview-optimized/preview-01-page-004.webp' },
+      { page: 9, src: '/assets/work/mmca/proposal-preview-optimized/preview-02-page-009.webp' },
+      { page: 13, src: '/assets/work/mmca/proposal-preview-optimized/preview-03-page-013.webp' },
+      { page: 25, src: '/assets/work/mmca/proposal-preview-optimized/preview-04-page-025.webp' },
+      { page: 30, src: '/assets/work/mmca/proposal-preview-optimized/preview-05-page-030.webp' },
+      { page: 36, src: '/assets/work/mmca/proposal-preview-optimized/preview-06-page-036.webp' },
+      { page: 39, src: '/assets/work/mmca/proposal-preview-optimized/preview-07-page-039.webp' },
     ],
+    proposalPreviewDuration: '21.64s',
+    proposalPreviewFillEdges: true,
     websiteUrl: 'https://angbaebultti.github.io/mmca/',
   },
 ]
@@ -593,7 +599,15 @@ function WorkCardMeta({ project, revealIndex }: { project: Project; revealIndex:
   )
 }
 
-function WorkCardActions({ project, className = '' }: { project: Project; className?: string }) {
+function WorkCardActions({
+  project,
+  className = '',
+  revealIndex = 3,
+}: {
+  project: Project
+  className?: string
+  revealIndex?: number
+}) {
   return (
     <div className={`work-card__actions${className ? ` ${className}` : ''}`} aria-label={`${project.title} links`}>
       <a
@@ -601,7 +615,7 @@ function WorkCardActions({ project, className = '' }: { project: Project; classN
         target={project.proposalUrl ? '_blank' : undefined}
         rel={project.proposalUrl ? 'noreferrer' : undefined}
         data-work-reveal
-        style={{ '--work-reveal-index': 3 } as CSSProperties}
+        style={{ '--work-reveal-index': revealIndex } as CSSProperties}
       >
         <span>Proposal</span>
         <img src="/assets/icons/work-arrow.svg" alt="" aria-hidden="true" />
@@ -613,7 +627,7 @@ function WorkCardActions({ project, className = '' }: { project: Project; classN
           disabled
           aria-label={`${project.title} project is not available yet`}
           data-work-reveal
-          style={{ '--work-reveal-index': 4 } as CSSProperties}
+          style={{ '--work-reveal-index': revealIndex + 1 } as CSSProperties}
         >
           <span>Project</span>
           <img src="/assets/icons/work-arrow.svg" alt="" aria-hidden="true" />
@@ -625,7 +639,7 @@ function WorkCardActions({ project, className = '' }: { project: Project; classN
           target={project.websiteUrl ? '_blank' : undefined}
           rel={project.websiteUrl ? 'noreferrer' : undefined}
           data-work-reveal
-          style={{ '--work-reveal-index': 4 } as CSSProperties}
+          style={{ '--work-reveal-index': revealIndex + 1 } as CSSProperties}
         >
           <span>Project</span>
           <img src="/assets/icons/work-arrow.svg" alt="" aria-hidden="true" />
@@ -1116,6 +1130,9 @@ function AiWorkflowSection() {
   const activeStepStartedAtRef = useRef(0)
   const isStepScrollingRef = useRef(false)
   const stepScrollTimeoutRef = useRef<number | null>(null)
+  const workflowTouchStartRef = useRef<{ x: number; y: number } | null>(null)
+  const workflowPointerStartRef = useRef<{ x: number; y: number } | null>(null)
+  const workflowSwipeHandledAtRef = useRef(0)
   const activeStep = aiWorkflowSteps[activeStepIndex] ?? aiWorkflowSteps[0]
 
   useEffect(() => {
@@ -1201,6 +1218,61 @@ function AiWorkflowSection() {
       block: 'start',
       behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
     })
+  }
+
+  const moveWorkflowStepFromSwipe = (deltaX: number, deltaY: number) => {
+    const isHorizontalSwipe = Math.abs(deltaX) >= 42 && Math.abs(deltaX) > Math.abs(deltaY) * 1.2
+
+    if (!isHorizontalSwipe) return
+
+    const now = window.performance.now()
+
+    if (now - workflowSwipeHandledAtRef.current < 260) return
+
+    workflowSwipeHandledAtRef.current = now
+
+    const nextStepIndex = Math.min(
+      Math.max(activeStepIndexRef.current + (deltaX < 0 ? 1 : -1), 0),
+      aiWorkflowSteps.length - 1,
+    )
+
+    activateWorkflowStep(nextStepIndex)
+  }
+
+  const handleWorkflowTouchStart = (event: ReactTouchEvent<HTMLDivElement>) => {
+    const touch = event.touches[0]
+
+    if (!touch) return
+
+    workflowTouchStartRef.current = { x: touch.clientX, y: touch.clientY }
+  }
+
+  const handleWorkflowTouchEnd = (event: ReactTouchEvent<HTMLDivElement>) => {
+    const touchStart = workflowTouchStartRef.current
+    const touch = event.changedTouches[0]
+
+    workflowTouchStartRef.current = null
+
+    if (!touchStart || !touch) return
+
+    moveWorkflowStepFromSwipe(touch.clientX - touchStart.x, touch.clientY - touchStart.y)
+  }
+
+  const handleWorkflowPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (event.pointerType === 'mouse') return
+
+    workflowPointerStartRef.current = { x: event.clientX, y: event.clientY }
+  }
+
+  const handleWorkflowPointerUp = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (event.pointerType === 'mouse') return
+
+    const pointerStart = workflowPointerStartRef.current
+    workflowPointerStartRef.current = null
+
+    if (!pointerStart) return
+
+    moveWorkflowStepFromSwipe(event.clientX - pointerStart.x, event.clientY - pointerStart.y)
   }
 
   useEffect(() => {
@@ -1450,7 +1522,15 @@ function AiWorkflowSection() {
             </div>
           </aside>
 
-          <div className="ai-workflow-timeline" ref={timelineRef} data-ai-workflow-reveal>
+          <div
+            className="ai-workflow-timeline"
+            ref={timelineRef}
+            data-ai-workflow-reveal
+            onPointerDown={handleWorkflowPointerDown}
+            onPointerUp={handleWorkflowPointerUp}
+            onTouchStart={handleWorkflowTouchStart}
+            onTouchEnd={handleWorkflowTouchEnd}
+          >
             {aiWorkflowSteps.map((step, index) => (
               <article
                 className={`ai-workflow-step${index === activeStepIndex ? ' is-active' : ''}`}
@@ -2143,6 +2223,9 @@ function App() {
   const [isContactButtonHidden, setIsContactButtonHidden] = useState(false)
   const [scrollProgress, setScrollProgress] = useState(0)
   const [isHireToastVisible, setIsHireToastVisible] = useState(false)
+  const [isCompactPreviewLayout, setIsCompactPreviewLayout] = useState(() =>
+    typeof window === 'undefined' ? false : window.matchMedia('(max-width: 1024px)').matches,
+  )
 
   const scrollToHash = (hash: string, behavior: ScrollBehavior = 'smooth') => {
     const target = document.querySelector<HTMLElement>(hash)
@@ -2191,6 +2274,16 @@ function App() {
     navPointerHandledRef.current = true
     scrollToHash(hash)
   }
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(max-width: 1024px)')
+    const syncPreviewLayout = () => setIsCompactPreviewLayout(mediaQuery.matches)
+
+    syncPreviewLayout()
+    mediaQuery.addEventListener('change', syncPreviewLayout)
+
+    return () => mediaQuery.removeEventListener('change', syncPreviewLayout)
+  }, [])
 
   useEffect(() => {
     const previousScrollRestoration = window.history.scrollRestoration
@@ -2490,7 +2583,7 @@ function App() {
             CONTACT
           </a>
 
-          <HamburgerMenu items={navItems.filter((item) => item.hash !== '#ai-workflow')} onNavigate={scrollToHash} />
+          <HamburgerMenu items={navItems} onNavigate={scrollToHash} />
         </header>
 
         <button
@@ -2574,34 +2667,33 @@ function App() {
 
           <div className="work-list" ref={workRevealRef}>
             {projects.map((project, index) => (
-                <article
-                  className="work-card"
-                  key={project.title}
-                >
+              <article className="work-card" key={project.title}>
                   <div className="work-card__inner">
                     <div className="work-card__content">
                       <div className="work-card__text">
                         <div className="work-card__title-wrapper" data-work-reveal style={{ '--work-reveal-index': 1 } as CSSProperties}>
                           <h3>{project.title}</h3>
-                          {project.year && <span className="work-card__year">{project.year}</span>}
                         </div>
+                        <WorkCardActions project={project} revealIndex={2} />
                         {SHOW_PROJECT_DESCRIPTIONS ? (
                           <p
                             className="work-card__description"
                             data-work-reveal
-                            style={{ '--work-reveal-index': 2 } as CSSProperties}
+                            style={{ '--work-reveal-index': 4 } as CSSProperties}
                           >
                             {(projectDescriptions[project.title] ?? project.description).join(' ')}
                           </p>
                         ) : null}
-                        <WorkCardMeta project={project} revealIndex={2} />
+                        <WorkCardMeta project={project} revealIndex={4} />
                       </div>
-
-                      <WorkCardActions project={project} />
                     </div>
 
                     <div className={`work-card__media${project.proposalPreviewImages ? ' work-card__media--has-preview' : ''}`}>
-                      <div className="work-card__image" data-work-reveal style={{ '--work-reveal-index': 0 } as CSSProperties}>
+                      <div
+                        className={`work-card__image${project.subInfo ? ' work-card__image--has-overlay' : ''}`}
+                        data-work-reveal
+                        style={{ '--work-reveal-index': 0 } as CSSProperties}
+                      >
                         <img
                           src={project.image}
                           alt={project.imageAlt}
@@ -2611,16 +2703,32 @@ function App() {
                           decoding="async"
                           sizes="(max-width: 560px) calc(100vw - 32px), (max-width: 1024px) calc(100vw - 40px), (max-width: 1280px) 44vw, 928px"
                         />
+                        {project.subInfo ? (
+                          <div className="work-card__image-overlay" aria-hidden="true">
+                            {project.subInfo.map((line) => (
+                              <p key={`${project.title}-image-overlay-${line}`}>{line}</p>
+                            ))}
+                          </div>
+                        ) : null}
                       </div>
 
-                      {project.proposalPreviewImages ? (
+                      {project.proposalPreviewImages && isCompactPreviewLayout ? (
                         <div
-                          className="work-card__proposal-preview work-card__proposal-preview--inline"
+                          className={`work-card__proposal-preview work-card__proposal-preview--inline${
+                            project.proposalPreviewFillEdges ? ' work-card__proposal-preview--fill-edges' : ''
+                          }`}
                           data-work-reveal
                           style={{ '--work-reveal-index': 1 } as CSSProperties}
                           aria-label={`${project.title} proposal preview pages`}
                         >
-                          <div className="work-card__proposal-track">
+                          <div
+                            className="work-card__proposal-track"
+                            style={
+                              project.proposalPreviewDuration
+                                ? ({ '--work-proposal-preview-duration': project.proposalPreviewDuration } as CSSProperties)
+                                : undefined
+                            }
+                          >
                             {[...project.proposalPreviewImages, ...project.proposalPreviewImages].map((preview, previewIndex) => (
                               <a
                                 className="work-card__proposal-thumb"
@@ -2629,7 +2737,15 @@ function App() {
                                 rel="noreferrer"
                                 key={`${preview.src}-inline-${previewIndex}`}
                               >
-                                <img src={preview.src} alt={`${project.title} proposal page ${preview.page}`} loading="lazy" decoding="async" />
+                                <img
+                                  src={preview.src}
+                                  alt={`${project.title} proposal page ${preview.page}`}
+                                  width={420}
+                                  height={236}
+                                  loading={previewIndex < (project.proposalPreviewImages?.length ?? 0) ? 'eager' : 'lazy'}
+                                  decoding="async"
+                                  sizes="(max-width: 560px) 196px, (max-width: 1024px) 29vw, 292px"
+                                />
                               </a>
                             ))}
                           </div>
@@ -2639,14 +2755,23 @@ function App() {
                     </div>
                   </div>
 
-                  {project.proposalPreviewImages ? (
+                  {!isCompactPreviewLayout && project.proposalPreviewImages ? (
                     <div
-                      className="work-card__proposal-preview work-card__proposal-preview--wide"
+                      className={`work-card__proposal-preview work-card__proposal-preview--wide${
+                        project.proposalPreviewFillEdges ? ' work-card__proposal-preview--fill-edges' : ''
+                      }`}
                       data-work-reveal
                       style={{ '--work-reveal-index': 3 } as CSSProperties}
                       aria-label={`${project.title} proposal preview pages`}
                     >
-                      <div className="work-card__proposal-track">
+                      <div
+                        className="work-card__proposal-track"
+                        style={
+                          project.proposalPreviewDuration
+                            ? ({ '--work-proposal-preview-duration': project.proposalPreviewDuration } as CSSProperties)
+                            : undefined
+                        }
+                      >
                         {[...project.proposalPreviewImages, ...project.proposalPreviewImages].map((preview, previewIndex) => (
                           <a
                             className="work-card__proposal-thumb"
@@ -2655,7 +2780,15 @@ function App() {
                             rel="noreferrer"
                             key={`${preview.src}-${previewIndex}`}
                           >
-                            <img src={preview.src} alt={`${project.title} proposal page ${preview.page}`} loading="lazy" decoding="async" />
+                            <img
+                              src={preview.src}
+                              alt={`${project.title} proposal page ${preview.page}`}
+                              width={420}
+                              height={236}
+                              loading="lazy"
+                              decoding="async"
+                              sizes="(max-width: 1280px) 15vw, 292px"
+                            />
                           </a>
                         ))}
                       </div>
@@ -2670,7 +2803,7 @@ function App() {
 
         <AiWorkflowSection />
 
-        {false ? <StrengthSection /> : null}
+        {SHOW_STRENGTH_SECTION ? <StrengthSection /> : null}
 
         <ContactSection />
       </main>
