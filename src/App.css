@@ -753,12 +753,12 @@ body.mobile-menu-is-open {
   --work-title-size: clamp(48px, 2.6vw, 72px);
   --work-body-size: clamp(20px, 1.04vw, 28px);
   --work-btn-gap: 14px;
-  --work-btn-size: clamp(18px, 0.94vw, 24px);
-  --work-btn-py: clamp(10px, 0.62vw, 16px);
+  --work-btn-size: clamp(16px, 0.84vw, 21px);
+  --work-btn-py: clamp(7px, 0.46vw, 11px);
   --work-btn-pl: clamp(20px, 1.15vw, 30px);
   --work-btn-pr: clamp(10px, 0.58vw, 14px);
   --work-btn-icon-size: clamp(33.941px, 1.72vw, 48px);
-  --work-btn-radius: 10px;
+  --work-btn-radius: 32px;
   --work-btn-width: clamp(148px, 9.45vw, 182px);
 
   position: relative;
@@ -1021,6 +1021,10 @@ body.mobile-menu-is-open {
   margin-top: clamp(8px, 0.78vw, 16px);
 }
 
+.work-card__meta + .work-card__actions {
+  margin-top: clamp(10px, 1.1vw, 22px);
+}
+
 .count-up-number {
   display: inline-block;
 }
@@ -1067,18 +1071,18 @@ body.mobile-menu-is-open {
 
 .work-card__meta-item h4 {
   color: #fff;
-  font-size: clamp(18px, 1.28vw, 25px);
-  font-weight: 500;
-  line-height: 1.22;
-  letter-spacing: -0.02em;
-  margin-bottom: clamp(10px, 0.95vw, 18px);
+  font-size: clamp(17px, 1.12vw, 22px);
+  font-weight: 600;
+  line-height: 1.16;
+  letter-spacing: -0.03em;
+  margin-bottom: clamp(7px, 0.65vw, 12px);
 }
 
 .work-card__meta-item p {
-  color: rgba(255, 255, 255, 0.72);
-  font-size: clamp(15px, 0.98vw, 19px);
+  color: rgba(255, 255, 255, 0.66);
+  font-size: clamp(14px, 0.88vw, 17px);
   font-weight: 400;
-  line-height: 1.52;
+  line-height: 1.48;
   letter-spacing: -0.02em;
   word-break: keep-all;
   overflow-wrap: break-word;
@@ -1103,15 +1107,15 @@ body.mobile-menu-is-open {
 }
 
 .work-card__description {
-  display: grid;
-  gap: 0;
   width: min(100%, var(--work-desc-max-width));
   max-width: var(--work-desc-max-width);
   color: #b4b4b4;
   font-family: var(--korean);
+  font-size: clamp(15px, 0.98vw, 19px);
   font-weight: 400;
-  letter-spacing: -0.04em;
-  overflow-wrap: normal;
+  line-height: 1.52;
+  letter-spacing: -0.02em;
+  overflow-wrap: break-word;
   word-break: keep-all;
 }
 
@@ -1141,14 +1145,13 @@ body.mobile-menu-is-open {
   line-height: 110%;
   letter-spacing: 0;
   text-decoration: none;
-  backdrop-filter: blur(15px);
   appearance: none;
   transition:
-    background-color 140ms ease,
-    box-shadow 140ms ease,
-    color 140ms ease,
+    background-color 160ms ease,
+    box-shadow 160ms ease,
+    color 160ms ease,
     opacity 120ms ease,
-    transform 160ms cubic-bezier(0.22, 1, 0.36, 1);
+    transform 160ms ease;
 }
 
 .work-card__actions a span,
@@ -1167,9 +1170,9 @@ body.mobile-menu-is-open {
 
 .work-card__actions a:hover,
 .work-card__actions button:not(:disabled):hover {
-  background: #f0f0f0;
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.24);
-  transform: translateY(-1px);
+  background: #e8e8e8;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.22);
+  transform: translateY(-2px);
 }
 
 .work-card__actions .is-primary {
@@ -1179,7 +1182,7 @@ body.mobile-menu-is-open {
 
 .work-card__actions .is-primary:hover {
   background: #ff6a24;
-  box-shadow: 0 10px 24px rgba(255, 81, 0, 0.2);
+  box-shadow: 0 0 0 1px rgba(255, 106, 36, 0.32);
 }
 
 .work-card__actions .is-primary img {
@@ -4792,8 +4795,8 @@ body.mobile-menu-is-open {
     --work-card-gap: 32px;
     --work-content-gap: 24px;
     --work-text-gap: 16px;
-    --work-btn-size: 16px;
-    --work-btn-py: 9px;
+    --work-btn-size: 15px;
+    --work-btn-py: 7px;
     --work-btn-pl: 16px;
     --work-btn-pr: 8px;
     --work-btn-icon-size: 32px;

@@ -366,7 +366,7 @@ const gunitDescription = [
   '지속적인 참여를 유도하는 AI 챗봇 기반 커뮤니티 앱 개발 팀 프로젝트',
 ]
 const projectDescriptions: Record<string, string[]> = {
-  Gunit: gunitDescription,
+  GUNIT: gunitDescription,
   MMCA: [
     '국립현대미술관 웹사이트의 정보 구조를 개선하여',
     '해외 방문자가 정보를 직관적으로 탐색할 수 있도록 진행한 영문 웹사이트 리뉴얼 팀 프로젝트',
@@ -385,6 +385,7 @@ type Project = {
     value?: number
   }[]
   description: string[]
+  detailDescription: string
   image: string
   imageAlt: string
   proposalUrl: string
@@ -402,7 +403,7 @@ type Project = {
 const projects: Project[] = [
   {
     badge: 'Team Project',
-    title: 'Gunit',
+    title: 'GUNIT',
     meta: [
       { label: 'Planning', value: 20, accent: false },
       { label: 'Design', value: 30, accent: false },
@@ -427,6 +428,8 @@ const projects: Project[] = [
       '에어소프트 입문자의 정보 탐색 장벽을 낮추고, 팬덤형 커뮤니티를 통해',
       '지속적인 참여를 유도하는 AI 챗봇 기반 커뮤니티 앱 개발 팀 프로젝트',
     ],
+    detailDescription:
+      'AI 기반 입문 가이드와 커뮤니티 경험을 연결한 모바일 UX/UI 프로젝트. 사용자 조사와 경쟁 서비스 분석을 바탕으로 IA를 재설계하고, 디자인 시스템 구축부터 React 구현까지 진행.',
     image: '/assets/work/gunit/cover.png',
     imageAlt: 'Gunit project visual',
     proposalUrl: '/assets/work/gunit/proposal.pdf',
@@ -473,6 +476,8 @@ const projects: Project[] = [
       '국립현대미술관 웹사이트의 정보 구조를 개선하여',
       '해외 방문자가 정보를 직관적으로 탐색할 수 있도록 진행한 영문 웹사이트 리뉴얼 팀 프로젝트',
     ],
+    detailDescription:
+      '사용자 조사 기반으로 정보 구조를 재설계한 웹 리디자인 프로젝트. 복잡한 전시 정보 탐색 흐름을 개선하기 위해 IA와 디자인 시스템을 구축하고, 탐색 단계를 4단계에서 2단계로 단축.',
     image: '/assets/work/mmca/cover.png',
     imageAlt: 'MMCA project visual',
     proposalUrl: '/assets/work/mmca/proposal.pdf',
@@ -488,7 +493,7 @@ const projects: Project[] = [
     ],
     proposalPreviewDuration: '21.64s',
     proposalPreviewFillEdges: true,
-    websiteUrl: 'https://angbaebultti.github.io/mmca/',
+    websiteUrl: 'https://j-youngeun.github.io/mmca/',
   },
 ]
 
@@ -567,7 +572,7 @@ function WorkCardMeta({ project, revealIndex }: { project: Project; revealIndex:
   const metaRef = useRef<HTMLDivElement>(null)
   const metaInView = useWorkCardMetaInView(metaRef)
   const metaNodeIds: Record<string, string> = {
-    Gunit: '40002018:3892',
+    GUNIT: '40002018:3892',
     MMCA: '40002032:320',
   }
 
@@ -2674,7 +2679,13 @@ function App() {
                         <div className="work-card__title-wrapper" data-work-reveal style={{ '--work-reveal-index': 1 } as CSSProperties}>
                           <h3>{project.title}</h3>
                         </div>
-                        <WorkCardActions project={project} revealIndex={2} />
+                        <p
+                          className="work-card__description"
+                          data-work-reveal
+                          style={{ '--work-reveal-index': 2 } as CSSProperties}
+                        >
+                          {project.detailDescription}
+                        </p>
                         {SHOW_PROJECT_DESCRIPTIONS ? (
                           <p
                             className="work-card__description"
@@ -2684,7 +2695,8 @@ function App() {
                             {(projectDescriptions[project.title] ?? project.description).join(' ')}
                           </p>
                         ) : null}
-                        <WorkCardMeta project={project} revealIndex={4} />
+                        <WorkCardMeta project={project} revealIndex={3} />
+                        <WorkCardActions project={project} revealIndex={4} />
                       </div>
                     </div>
 
