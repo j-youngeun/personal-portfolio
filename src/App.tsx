@@ -375,8 +375,6 @@ const projectDescriptions: Record<string, string[]> = {
 const SHOW_PROJECT_DESCRIPTIONS = false
 const SHOW_STRENGTH_SECTION = import.meta.env.VITE_SHOW_STRENGTH_SECTION === 'true'
 
-const getMobileProposalPreviewSrc = (src: string) => src.replace('/proposal-preview-optimized/', '/proposal-preview-mobile/')
-
 type Project = {
   badge: string
   title: string
@@ -587,7 +585,7 @@ const pastWorkShowcases: PastWorkShowcase[] = [
       { label: '주요성과', lines: ['라이브 시청자 1,000명 달성', '유튜브 클립 50만 조회수 달성'] },
       {
         label: '주요업무',
-        lines: ['보이는 라디오 방송 송출 관리 및 실시간 모니터링', '방송 촬영 및 영상 편집, 클립 제작', '유튜브 및 SNS 콘텐츠 운영'],
+        lines: ['보이는 라디오 방송 송출 관리 및 실시간 모니터링', '방송 촬영 및 영상 편집', '클립 및 썸네일 제작', '유튜브 및 SNS 콘텐츠 운영'],
       },
       { label: '사용기술', lines: ['Premiere Pro, Photoshop, After Effects'] },
     ],
@@ -2817,46 +2815,6 @@ function App() {
                           </div>
                         ) : null}
                       </div>
-
-                      {project.proposalPreviewImages && isCompactPreviewLayout ? (
-                        <div
-                          className={`work-card__proposal-preview work-card__proposal-preview--inline${
-                            project.proposalPreviewFillEdges ? ' work-card__proposal-preview--fill-edges' : ''
-                          }`}
-                          data-work-reveal
-                          style={{ '--work-reveal-index': 1 } as CSSProperties}
-                          aria-label={`${project.title} proposal preview pages`}
-                        >
-                          <div
-                            className="work-card__proposal-track"
-                            style={
-                              project.proposalPreviewDuration
-                                ? ({ '--work-proposal-preview-duration': project.proposalPreviewDuration } as CSSProperties)
-                                : undefined
-                            }
-                          >
-                            {[...project.proposalPreviewImages, ...project.proposalPreviewImages].map((preview, previewIndex) => (
-                              <a
-                                className="work-card__proposal-thumb"
-                                href={`${project.proposalUrl}#page=${preview.page}`}
-                                target="_blank"
-                                rel="noreferrer"
-                                key={`${preview.src}-inline-${previewIndex}`}
-                              >
-                                <img
-                                  src={getMobileProposalPreviewSrc(preview.src)}
-                                  alt={`${project.title} proposal page ${preview.page}`}
-                                  width={300}
-                                  height={169}
-                                  loading="eager"
-                                  decoding="async"
-                                  sizes="(max-width: 560px) 196px, (max-width: 1024px) 29vw, 300px"
-                                />
-                              </a>
-                            ))}
-                          </div>
-                        </div>
-                      ) : null}
 
                     </div>
                   </div>

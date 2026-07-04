@@ -4624,7 +4624,7 @@ body.mobile-menu-is-open {
   }
 
   .work-card__proposal-preview--inline {
-    display: block;
+    display: none;
     width: 100%;
     margin-inline: 0;
   }
