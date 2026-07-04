@@ -4977,7 +4977,7 @@ body.mobile-menu-is-open {
 
   .work-section {
     --work-image-width: clamp(300px, 100%, 640px);
-    --work-section-px: 16px;
+    --work-section-px: 22px;
     --work-section-py: 28px;
     --work-section-gap: 28px;
     --work-card-gap: 32px;
