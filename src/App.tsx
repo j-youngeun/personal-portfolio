@@ -375,6 +375,8 @@ const projectDescriptions: Record<string, string[]> = {
 const SHOW_PROJECT_DESCRIPTIONS = false
 const SHOW_STRENGTH_SECTION = import.meta.env.VITE_SHOW_STRENGTH_SECTION === 'true'
 
+const getMobileProposalPreviewSrc = (src: string) => src.replace('/proposal-preview-optimized/', '/proposal-preview-mobile/')
+
 type Project = {
   badge: string
   title: string
@@ -429,7 +431,7 @@ const projects: Project[] = [
       '지속적인 참여를 유도하는 AI 챗봇 기반 커뮤니티 앱 개발 팀 프로젝트',
     ],
     detailDescription:
-      'AI 기반 입문 가이드와 커뮤니티 경험을 연결한 모바일 UX/UI 프로젝트. 사용자 조사와 경쟁 서비스 분석을 바탕으로 IA를 재설계하고, 디자인 시스템 구축부터 React 구현까지 진행.',
+      'AI 챗봇 기반 입문 가이드와 커뮤니티 경험을 연결한 모바일 UX/UI 프로젝트. 사용자 조사와 경쟁 서비스 분석을 바탕으로 IA를 재설계하고, 디자인 시스템 구축부터 React 구현까지 진행.',
     image: '/assets/work/gunit/cover.png',
     imageAlt: 'Gunit project visual',
     proposalUrl: '/assets/work/gunit/proposal.pdf',
@@ -511,6 +513,13 @@ type PastWorkShowcase = {
   title: string
   subtitle?: string
   cards: PastWorkCard[]
+  company?: {
+    name: string
+  }
+  details?: Array<{
+    label: string
+    lines: string[]
+  }>
   variant?: 'portrait'
 }
 
@@ -554,16 +563,49 @@ const pastWorkShowcases: PastWorkShowcase[] = [
     title: 'Graphic Design',
     subtitle: '2024-2025',
     cards: pastWorkTopCards,
+    company: {
+      name: '대한무역투자진흥공사',
+    },
+    details: [
+      { label: '담당부서', lines: ['해외전시팀 디자인파트'] },
+      {
+        label: '주요업무',
+        lines: ['국내외 온오프라인 전시 그래픽 디자인 지원', 'B2B 수출 플랫폼 홍보 콘텐츠 제작', '기관 사보 및 간행물 원고 검수, 대형 출력 지원'],
+      },
+      { label: '사용기술', lines: ['Photoshop, Illustrator, InDesign'] },
+    ],
   },
   {
     title: 'Video',
     subtitle: '2021-2023',
     cards: pastWorkTbsCards,
+    company: {
+      name: '서울특별시미디어재단 TBS',
+    },
+    details: [
+      { label: '담당부서', lines: ['라디오제작본부 뉴미디어파트'] },
+      { label: '주요성과', lines: ['라이브 시청자 1,000명 달성', '유튜브 클립 50만 조회수 달성'] },
+      {
+        label: '주요업무',
+        lines: ['보이는 라디오 방송 송출 관리 및 실시간 모니터링', '방송 촬영 및 영상 편집, 클립 제작', '유튜브 및 SNS 콘텐츠 운영'],
+      },
+      { label: '사용기술', lines: ['Premiere Pro, Photoshop, After Effects'] },
+    ],
   },
   {
     title: 'Photography',
     subtitle: '2016-',
     cards: pastWorkPhotographyCards,
+    company: {
+      name: '중앙대학교 사진학과',
+    },
+    details: [
+      {
+        label: '교육내용',
+        lines: ['DSLR·필름·드론 촬영', '뷰티·패션·광고·인물 분야 촬영', '스튜디오 및 조명 실습'],
+      },
+      { label: '사용기술', lines: ['Photoshop, Lightroom, Illustrator, InDesign, Premiere Pro, Maya'] },
+    ],
     variant: 'portrait',
   },
 ]
@@ -1632,6 +1674,8 @@ function PastWorksCarousel({ showcase, index: showcaseIndex }: { showcase: PastW
   const cardDepth = 620
   const rotationValue = useMotionValue(0)
   const accumulatedDrag = useRef(0)
+  const detailsRef = useRef<HTMLDListElement>(null)
+  const [areDetailsVisible, setAreDetailsVisible] = useState(false)
   const rotationDirection = showcase.title === 'Video' ? 360 : showcaseIndex % 2 === 0 ? 360 : -360
 
   useEffect(() => {
@@ -1643,6 +1687,25 @@ function PastWorksCarousel({ showcase, index: showcaseIndex }: { showcase: PastW
 
     return () => animation.stop()
   }, [rotationValue, rotationDirection, showcaseIndex])
+
+  useEffect(() => {
+    const detailsElement = detailsRef.current
+
+    if (!detailsElement) {
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setAreDetailsVisible(entry.isIntersecting)
+      },
+      { threshold: 0.28 },
+    )
+
+    observer.observe(detailsElement)
+
+    return () => observer.disconnect()
+  }, [])
 
   const handleDrag = (_event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
     accumulatedDrag.current -= info.delta.x * 0.18
@@ -1681,6 +1744,37 @@ function PastWorksCarousel({ showcase, index: showcaseIndex }: { showcase: PastW
           ))}
         </motion.div>
       </div>
+
+      {showcase.details ? (
+        <dl
+          ref={detailsRef}
+          className={`past-works-showcase__details${areDetailsVisible ? ' is-visible' : ''}`}
+          aria-label={`${showcase.title} details`}
+        >
+          {showcase.company ? (
+            <div className="past-works-showcase__company">
+              <dt>{showcase.company.name}</dt>
+            </div>
+          ) : null}
+          <div className="past-works-showcase__divider" aria-hidden="true" />
+          <div className="past-works-showcase__detail-list">
+            {showcase.details.map((detail, detailIndex) => (
+              <div
+                className="past-works-showcase__detail"
+                key={detail.label}
+                style={{ '--past-detail-index': detailIndex } as CSSProperties}
+              >
+                <dt>{detail.label}</dt>
+                <dd>
+                  {detail.lines.map((line) => (
+                    <span key={`${detail.label}-${line}`}>{line}</span>
+                  ))}
+                </dd>
+              </div>
+            ))}
+          </div>
+        </dl>
+      ) : null}
     </div>
   )
 }
@@ -2750,13 +2844,13 @@ function App() {
                                 key={`${preview.src}-inline-${previewIndex}`}
                               >
                                 <img
-                                  src={preview.src}
+                                  src={getMobileProposalPreviewSrc(preview.src)}
                                   alt={`${project.title} proposal page ${preview.page}`}
-                                  width={420}
-                                  height={236}
-                                  loading={previewIndex < (project.proposalPreviewImages?.length ?? 0) ? 'eager' : 'lazy'}
+                                  width={300}
+                                  height={169}
+                                  loading="eager"
                                   decoding="async"
-                                  sizes="(max-width: 560px) 196px, (max-width: 1024px) 29vw, 292px"
+                                  sizes="(max-width: 560px) 196px, (max-width: 1024px) 29vw, 300px"
                                 />
                               </a>
                             ))}
