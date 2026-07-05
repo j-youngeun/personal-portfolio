@@ -2342,6 +2342,7 @@ function App() {
   const [isHeaderVisible, setIsHeaderVisible] = useState(true)
   const [isTopButtonVisible, setIsTopButtonVisible] = useState(false)
   const [isContactButtonHidden, setIsContactButtonHidden] = useState(false)
+  const [isHeaderOnAiWorkflow, setIsHeaderOnAiWorkflow] = useState(false)
   const [scrollProgress, setScrollProgress] = useState(0)
   const [isHireToastVisible, setIsHireToastVisible] = useState(false)
   const [themeMode, setThemeMode] = useState<ThemeMode>('light')
@@ -2590,12 +2591,17 @@ function App() {
       const workStart = workSection ? workSection.offsetTop - 1 : window.innerHeight
       const contactSection = document.getElementById('contact')
       const contactRect = contactSection?.getBoundingClientRect()
+      const aiWorkflowSection = document.getElementById('ai-workflow')
+      const aiWorkflowRect = aiWorkflowSection?.getBoundingClientRect()
       const viewportHeight = window.innerHeight || document.documentElement.clientHeight
+      const headerSampleY = Math.min(Math.max(viewportHeight * 0.08, 56), 96)
       const isContactActive = contactRect ? contactRect.top <= viewportHeight * 0.45 && contactRect.bottom >= viewportHeight * 0.25 : false
+      const isAiWorkflowActive = aiWorkflowRect ? aiWorkflowRect.top <= headerSampleY && aiWorkflowRect.bottom >= headerSampleY : false
 
       setScrollProgress(nextProgress)
       setIsTopButtonVisible(scrollTop >= workStart)
       setIsContactButtonHidden(isContactActive)
+      setIsHeaderOnAiWorkflow(isAiWorkflowActive)
       animationFrame = 0
     }
 
@@ -2674,7 +2680,7 @@ function App() {
           />
         ) : null}
 
-        <header className={`site-header${isHeaderVisible ? '' : ' site-header--hidden'}`}>
+        <header className={`site-header${isHeaderVisible ? '' : ' site-header--hidden'}${isHeaderOnAiWorkflow ? ' site-header--on-ai-workflow' : ''}`}>
           <a
             className="site-header__brand"
             href="#top"
