@@ -2344,13 +2344,7 @@ function App() {
   const [isContactButtonHidden, setIsContactButtonHidden] = useState(false)
   const [scrollProgress, setScrollProgress] = useState(0)
   const [isHireToastVisible, setIsHireToastVisible] = useState(false)
-  const [themeMode, setThemeMode] = useState<ThemeMode>(() => {
-    if (typeof window === 'undefined') {
-      return 'light'
-    }
-
-    return window.localStorage.getItem('portfolio-theme') === 'dark' ? 'dark' : 'light'
-  })
+  const [themeMode, setThemeMode] = useState<ThemeMode>('light')
   const [isCompactPreviewLayout, setIsCompactPreviewLayout] = useState(() =>
     typeof window === 'undefined' ? false : window.matchMedia('(max-width: 1024px)').matches,
   )
@@ -2406,7 +2400,6 @@ function App() {
 
   useEffect(() => {
     document.documentElement.dataset.theme = themeMode
-    window.localStorage.setItem('portfolio-theme', themeMode)
   }, [themeMode])
 
   useEffect(() => {
