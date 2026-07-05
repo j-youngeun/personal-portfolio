@@ -29,6 +29,8 @@ type NavItem = {
   hideOnMobile?: boolean
 }
 
+type ThemeMode = 'light' | 'dark'
+
 const navItems: NavItem[] = [
   { label: 'ABOUT', hash: '#about' },
   { label: 'PROJECT', hash: '#work' },
@@ -206,7 +208,7 @@ const toolLogos = [
 const detailSkillRows = [
   {
     category: 'PLANNING',
-    color: '#ff7a1a',
+    color: '#0066ff',
     skills: ['Notion', 'Excel', 'PowerPoint'],
   },
   {
@@ -312,7 +314,7 @@ const strengthTabs = [
       [{ text: '사용자의 흐름을 고려한 비주얼 설계에 강점이 되었습니다' }],
     ],
     image: '/assets/about/optimized/strength-visual-photo-optimized.webp',
-    accent: '#ff5100',
+    accent: '#0066ff',
   },
   {
     key: 'planning',
@@ -834,7 +836,7 @@ function SkillsDetailSection({
   )
 }
 
-function AboutSection() {
+function AboutSection({ isDarkMode }: { isDarkMode: boolean }) {
   const introRef = useRef<HTMLDivElement>(null)
   const revealScopeRef = useRef<HTMLElement>(null)
   const skillsDetailRef = useRef<HTMLDivElement>(null)
@@ -845,8 +847,21 @@ function AboutSection() {
   const shouldCenterSkillsPanelRef = useRef(false)
   const [isSkillsOpen, setIsSkillsOpen] = useState(false)
   const [hasSkillsPlayed, setHasSkillsPlayed] = useState(false)
-  const logoGroups = [toolLogos.slice(0, 8), toolLogos.slice(8, 16), toolLogos.slice(16)]
+  const themedToolLogos = toolLogos.map((logo) =>
+    !isDarkMode && logo.src === '/assets/about/gemini-circle.svg'
+      ? { ...logo, src: '/assets/about/gemini-circle-light.svg' }
+      : logo,
+  )
+  const logoGroups = [themedToolLogos.slice(0, 8), themedToolLogos.slice(8, 16), themedToolLogos.slice(16)]
   const marqueeGroups = [...logoGroups, ...logoGroups]
+  const themedDetailSkillRows = detailSkillRows.map((row) =>
+    row.category === 'PLANNING'
+      ? {
+          ...row,
+          color: isDarkMode ? '#ff7a1a' : '#0066ff',
+        }
+      : row,
+  )
   const isNavigatingPastSkills = () => document.documentElement.classList.contains('is-anchor-scrolling') && window.location.hash !== '#skills'
 
   const centerSkillsToggle = () => {
@@ -1166,7 +1181,7 @@ function AboutSection() {
         View All Skills
       </button>
 
-      <SkillsDetailSection rows={detailSkillRows} isOpen={isSkillsOpen} detailRef={skillsDetailRef} hasPlayed={hasSkillsPlayed} />
+      <SkillsDetailSection rows={themedDetailSkillRows} isOpen={isSkillsOpen} detailRef={skillsDetailRef} hasPlayed={hasSkillsPlayed} />
     </section>
   )
 }
@@ -1803,7 +1818,7 @@ function PastWorksSection() {
   )
 }
 
-function StrengthSection() {
+function StrengthSection({ isDarkMode }: { isDarkMode: boolean }) {
   const sectionRef = useRef<HTMLElement>(null)
   const [isStrengthVisible, setIsStrengthVisible] = useState(false)
   const [hasStrengthIntroPlayed, setHasStrengthIntroPlayed] = useState(false)
@@ -2092,7 +2107,10 @@ function StrengthSection() {
           </h2>
         </div>
 
-        <article className="strength-showcase" style={{ '--strength-accent': activeStrength.accent } as CSSProperties}>
+        <article
+          className="strength-showcase"
+          style={{ '--strength-accent': isDarkMode && activeStrength.key === 'visual' ? '#ff5100' : activeStrength.accent } as CSSProperties}
+        >
           <div
             id="strength-panel"
             className="strength-showcase__media"
@@ -2145,7 +2163,7 @@ function StrengthSection() {
   )
 }
 
-function ContactSection() {
+function ContactSection({ isDarkMode }: { isDarkMode: boolean }) {
   const contactRef = useRef<HTMLElement>(null)
   const contactVisibleRef = useRef(false)
 
@@ -2237,9 +2255,9 @@ function ContactSection() {
             cDistance={3.6}
             cPolarAngle={90}
             cameraZoom={1}
-            color1="#ff5005"
-            color2="#dbba95"
-            color3="#d0bce1"
+            color1={isDarkMode ? '#ff5005' : '#0066ff'}
+            color2={isDarkMode ? '#dbba95' : '#8ec5ff'}
+            color3={isDarkMode ? '#d0bce1' : '#dfeaff'}
             destination="onCanvas"
             embedMode="off"
             envPreset="city"
@@ -2326,9 +2344,17 @@ function App() {
   const [isContactButtonHidden, setIsContactButtonHidden] = useState(false)
   const [scrollProgress, setScrollProgress] = useState(0)
   const [isHireToastVisible, setIsHireToastVisible] = useState(false)
+  const [themeMode, setThemeMode] = useState<ThemeMode>(() => {
+    if (typeof window === 'undefined') {
+      return 'light'
+    }
+
+    return window.localStorage.getItem('portfolio-theme') === 'dark' ? 'dark' : 'light'
+  })
   const [isCompactPreviewLayout, setIsCompactPreviewLayout] = useState(() =>
     typeof window === 'undefined' ? false : window.matchMedia('(max-width: 1024px)').matches,
   )
+  const isDarkMode = themeMode === 'dark'
 
   const scrollToHash = (hash: string, behavior: ScrollBehavior = 'smooth') => {
     const target = document.querySelector<HTMLElement>(hash)
@@ -2377,6 +2403,11 @@ function App() {
     navPointerHandledRef.current = true
     scrollToHash(hash)
   }
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = themeMode
+    window.localStorage.setItem('portfolio-theme', themeMode)
+  }, [themeMode])
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(max-width: 1024px)')
@@ -2690,6 +2721,16 @@ function App() {
         </header>
 
         <button
+          className="theme-toggle"
+          type="button"
+          aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+          aria-pressed={isDarkMode}
+          onClick={() => setThemeMode((current) => (current === 'dark' ? 'light' : 'dark'))}
+        >
+          <img src={isDarkMode ? '/assets/icons/theme-light.svg' : '/assets/icons/theme-night.svg'} alt="" aria-hidden="true" />
+        </button>
+
+        <button
           className={`floating-top${isTopButtonVisible ? ' is-visible' : ''}`}
           type="button"
           aria-label="Back to top"
@@ -2759,7 +2800,7 @@ function App() {
           </a>
         </section>
 
-        <AboutSection />
+        <AboutSection isDarkMode={isDarkMode} />
 
         <section className="work-section" id="work" aria-labelledby="work-title">
           <div className="work-section__header">
@@ -2770,7 +2811,7 @@ function App() {
 
           <div className="work-list" ref={workRevealRef}>
             {projects.map((project, index) => (
-              <article className="work-card" key={project.title}>
+              <article className={`work-card${project.title === 'MMCA' ? ' work-card--reverse' : ''}`} key={project.title}>
                   <div className="work-card__inner">
                     <div className="work-card__content">
                       <div className="work-card__text">
@@ -2873,9 +2914,9 @@ function App() {
 
         <AiWorkflowSection />
 
-        {SHOW_STRENGTH_SECTION ? <StrengthSection /> : null}
+        {SHOW_STRENGTH_SECTION ? <StrengthSection isDarkMode={isDarkMode} /> : null}
 
-        <ContactSection />
+        <ContactSection isDarkMode={isDarkMode} />
       </main>
     </>
   )

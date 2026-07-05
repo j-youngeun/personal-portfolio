@@ -6,15 +6,50 @@
   --english: 'Inter Tight', Inter, system-ui, sans-serif;
   --korean: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   --mono: 'Fragment Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --color-bg: #ffffff;
+  --color-bg-soft: #f7f8fa;
+  --color-section: #f4f6f8;
+  --color-section-strong: #eef2f6;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f8fafc;
+  --color-text: #111111;
+  --color-text-soft: #555555;
+  --color-text-muted: #777777;
+  --color-border: #e5e7eb;
+  --color-border-strong: #d6dde6;
+  --color-accent: #0066ff;
+  --color-accent-hover: #0054d6;
+  --color-accent-soft: #e8f1ff;
+  --color-accent-rgb: 0, 102, 255;
 
   font-family: var(--korean);
-  color: #f7f7f7;
-  background: #1a1a1a;
-  color-scheme: dark;
+  color: var(--color-text);
+  background: var(--color-bg);
+  color-scheme: light;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+:root[data-theme='dark'] {
+  --color-bg: #1a1a1a;
+  --color-bg-soft: #181818;
+  --color-section: #1a1a1a;
+  --color-section-strong: #111111;
+  --color-surface: #111111;
+  --color-surface-muted: #141414;
+  --color-text: #ffffff;
+  --color-text-soft: #f0f0f0;
+  --color-text-muted: #b4b4b4;
+  --color-border: rgba(255, 255, 255, 0.12);
+  --color-border-strong: rgba(255, 255, 255, 0.34);
+  --color-accent: #ff5100;
+  --color-accent-hover: #ff6a24;
+  --color-accent-soft: rgba(255, 81, 0, 0.1);
+  --color-accent-rgb: 255, 81, 0;
+
+  color-scheme: dark;
 }
 
 * {
@@ -25,7 +60,7 @@ html {
   min-width: 100%;
   min-height: 100%;
   overflow-x: hidden;
-  background: #1a1a1a;
+  background: var(--color-bg);
   scroll-padding-top: 96px;
   scroll-behavior: smooth;
 }
@@ -34,14 +69,14 @@ body,
 #root {
   min-width: 100%;
   min-height: 100%;
-  background: #1a1a1a;
+  background: var(--color-bg);
 }
 
 body {
   margin: 0;
   overflow-x: hidden;
   overscroll-behavior-y: auto;
-  background: #1a1a1a;
+  background: var(--color-bg);
   font-family: var(--korean);
   line-height: normal;
   letter-spacing: -0.03em;
@@ -67,7 +102,7 @@ select {
 }
 
 ::selection {
-  background: #ff4c00;
+  background: var(--color-accent);
   color: #fff;
 }
 
@@ -107,13 +142,13 @@ select {
   .custom-cursor__vertical {
     width: 1px;
     height: 100vh;
-    background: rgba(255, 255, 255, 0.22);
+    background: rgba(var(--color-accent-rgb), 0.28);
   }
 
   .custom-cursor__horizontal {
     width: 100vw;
     height: 1px;
-    background: rgba(255, 255, 255, 0.22);
+    background: rgba(var(--color-accent-rgb), 0.28);
   }
 
   .custom-cursor__dot-wrap {
@@ -129,9 +164,19 @@ select {
     width: 6px;
     height: 6px;
     border-radius: 999px;
+    background: var(--color-accent);
+    box-shadow: 0 0 12px rgba(var(--color-accent-rgb), 0.3);
+    transform: translate(-50%, -50%);
+  }
+
+  :root[data-theme='dark'] .custom-cursor__vertical,
+  :root[data-theme='dark'] .custom-cursor__horizontal {
+    background: rgba(255, 255, 255, 0.22);
+  }
+
+  :root[data-theme='dark'] .custom-cursor__dot {
     background: #fff;
     box-shadow: 0 0 12px rgba(255, 255, 255, 0.38);
-    transform: translate(-50%, -50%);
   }
 
 }
