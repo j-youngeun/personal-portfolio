@@ -593,7 +593,7 @@ const pastWorkShowcases: PastWorkShowcase[] = [
       { label: '주요성과', lines: ['라이브 시청자 1,000명 달성', '유튜브 클립 50만 조회수 달성'] },
       {
         label: '주요업무',
-        lines: ['보이는 라디오 방송 송출 관리 및 실시간 모니터링', '방송 촬영 및 영상 편집', '클립 및 썸네일 제작', '유튜브 및 SNS 콘텐츠 운영'],
+        lines: ['보이는 라디오 송출 및 모니터링', '방송 촬영 및 영상 편집', '클립 및 썸네일 제작', '유튜브 및 SNS 콘텐츠 운영'],
       },
       { label: '사용기술', lines: ['Premiere Pro, Photoshop, After Effects'] },
     ],
@@ -1635,7 +1635,9 @@ function AiWorkflowSection() {
                   </div>
                   {step.detail ? (
                     <div
-                      className={`ai-workflow-step__description ai-workflow-step__description--structured${step.detail.outroBeforeList ? ' ai-workflow-step__description--outro-first' : ''}`}
+                      className={`ai-workflow-step__description ai-workflow-step__description--structured ai-workflow-step__description--${step.number}${
+                        step.detail.outroBeforeList ? ' ai-workflow-step__description--outro-first' : ''
+                      }`}
                     >
                       <div className="ai-workflow-step__copy">
                         {step.detail.lead.map((line) => (
