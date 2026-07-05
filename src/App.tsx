@@ -1693,11 +1693,17 @@ function PastWorksCarousel({ showcase, index: showcaseIndex }: { showcase: PastW
   const cardDepth = 620
   const rotationValue = useMotionValue(0)
   const accumulatedDrag = useRef(0)
+  const showcaseRef = useRef<HTMLDivElement>(null)
   const detailsRef = useRef<HTMLDListElement>(null)
+  const [isCarouselActive, setIsCarouselActive] = useState(false)
   const [areDetailsVisible, setAreDetailsVisible] = useState(false)
   const rotationDirection = showcase.title === 'Video' ? 360 : showcaseIndex % 2 === 0 ? 360 : -360
 
   useEffect(() => {
+    if (!isCarouselActive || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      return
+    }
+
     const animation = animate(rotationValue, rotationDirection, {
       duration: 32,
       repeat: Infinity,
@@ -1705,7 +1711,26 @@ function PastWorksCarousel({ showcase, index: showcaseIndex }: { showcase: PastW
     })
 
     return () => animation.stop()
-  }, [rotationValue, rotationDirection, showcaseIndex])
+  }, [isCarouselActive, rotationValue, rotationDirection])
+
+  useEffect(() => {
+    const showcaseElement = showcaseRef.current
+
+    if (!showcaseElement) {
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsCarouselActive(entry.isIntersecting)
+      },
+      { rootMargin: '35% 0px 35% 0px', threshold: 0 },
+    )
+
+    observer.observe(showcaseElement)
+
+    return () => observer.disconnect()
+  }, [])
 
   useEffect(() => {
     const detailsElement = detailsRef.current
@@ -1732,7 +1757,7 @@ function PastWorksCarousel({ showcase, index: showcaseIndex }: { showcase: PastW
   }
 
   return (
-    <div className={`past-works-showcase${showcase.variant ? ` past-works-showcase--${showcase.variant}` : ''}`}>
+    <div ref={showcaseRef} className={`past-works-showcase${showcase.variant ? ` past-works-showcase--${showcase.variant}` : ''}`}>
       <div className="past-works-showcase__title">
         <h3>{showcase.title}</h3>
         {showcase.subtitle ? <p>{showcase.subtitle}</p> : null}
