@@ -616,6 +616,15 @@ const pastWorkShowcases: PastWorkShowcase[] = [
   },
 ]
 
+const exhibitionImages = [
+  { src: '/assets/past-works/exhibition/exhibition-01-card.jpg', alt: 'Korea Biohealth Hub exhibition booth with lounge seating' },
+  { src: '/assets/past-works/exhibition/exhibition-04-card.jpg', alt: 'Korea pavilion beauty product exhibition booth' },
+  { src: '/assets/past-works/exhibition/exhibition-03-card.jpg', alt: 'Korea pavilion exhibition aisle with product booths' },
+  { src: '/assets/past-works/exhibition/exhibition-02-card.jpg', alt: 'Korea booth wall with presentation screen' },
+  { src: '/assets/past-works/exhibition/exhibition-05-card.jpg', alt: 'Kotra floor plan and exhibition information boards' },
+  { src: '/assets/past-works/exhibition/exhibition-06-card.jpg', alt: 'Kotra partner wall and product display shelves' },
+]
+
 function WorkCardMeta({ project, revealIndex }: { project: Project; revealIndex: number }) {
   const metaRef = useRef<HTMLDivElement>(null)
   const metaInView = useWorkCardMetaInView(metaRef)
@@ -1759,7 +1768,12 @@ function PastWorksCarousel({ showcase, index: showcaseIndex }: { showcase: PastW
   }
 
   return (
-    <div ref={showcaseRef} className={`past-works-showcase${showcase.variant ? ` past-works-showcase--${showcase.variant}` : ''}`}>
+    <div
+      ref={showcaseRef}
+      className={`past-works-showcase${showcase.variant ? ` past-works-showcase--${showcase.variant}` : ''}${
+        showcase.title === 'Graphic Design' ? ' past-works-showcase--has-exhibition' : ''
+      }`}
+    >
       <div className="past-works-showcase__title">
         <h3>{showcase.title}</h3>
         {showcase.subtitle ? <p>{showcase.subtitle}</p> : null}
@@ -1821,6 +1835,106 @@ function PastWorksCarousel({ showcase, index: showcaseIndex }: { showcase: PastW
           </div>
         </dl>
       ) : null}
+
+      {showcase.title === 'Graphic Design' ? <ExhibitionImageBox isVisible={areDetailsVisible} /> : null}
+    </div>
+  )
+}
+
+function ExhibitionImageBox({ isVisible }: { isVisible: boolean }) {
+  const exhibitionTrackRef = useRef<HTMLDivElement>(null)
+  const exhibitionDragRef = useRef({ pointerId: -1, startX: 0, scrollLeft: 0 })
+  const [isExhibitionDragging, setIsExhibitionDragging] = useState(false)
+
+  const handleExhibitionSlide = (direction: -1 | 1) => {
+    const track = exhibitionTrackRef.current
+
+    if (!track) return
+
+    track.scrollBy({
+      left: direction * track.clientWidth * 0.52,
+      behavior: 'smooth',
+    })
+  }
+
+  const handleExhibitionPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
+    const track = exhibitionTrackRef.current
+
+    if (!track || track.scrollWidth <= track.clientWidth) return
+
+    exhibitionDragRef.current = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      scrollLeft: track.scrollLeft,
+    }
+    setIsExhibitionDragging(true)
+    track.setPointerCapture(event.pointerId)
+  }
+
+  const handleExhibitionPointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
+    const track = exhibitionTrackRef.current
+    const dragState = exhibitionDragRef.current
+
+    if (!track || dragState.pointerId !== event.pointerId) return
+
+    track.scrollLeft = dragState.scrollLeft - (event.clientX - dragState.startX)
+  }
+
+  const endExhibitionDrag = (event: ReactPointerEvent<HTMLDivElement>) => {
+    const track = exhibitionTrackRef.current
+
+    if (track?.hasPointerCapture(event.pointerId)) {
+      track.releasePointerCapture(event.pointerId)
+    }
+
+    exhibitionDragRef.current.pointerId = -1
+    setIsExhibitionDragging(false)
+  }
+
+  return (
+    <div className={`past-works-exhibition-wrap${isVisible ? ' is-visible' : ''}`}>
+      <div className="past-works-exhibition__header">
+        <p className="past-works-exhibition-title">전시 현장</p>
+      </div>
+      <div className="past-works-exhibition-stage">
+        <div
+          className={`past-works-exhibition${isExhibitionDragging ? ' is-dragging' : ''}`}
+          ref={exhibitionTrackRef}
+          aria-label="전시 현장 사진"
+          onPointerDown={handleExhibitionPointerDown}
+          onPointerMove={handleExhibitionPointerMove}
+          onPointerUp={endExhibitionDrag}
+          onPointerCancel={endExhibitionDrag}
+        >
+          <div className="past-works-exhibition__track">
+            {exhibitionImages.map((image, index) => (
+              <figure
+                className="past-works-exhibition__item"
+                key={image.src}
+                style={{ '--exhibition-image-index': index } as CSSProperties}
+              >
+                <img src={encodeURI(image.src)} alt={image.alt} loading={index < 4 ? 'eager' : 'lazy'} decoding="async" />
+              </figure>
+            ))}
+          </div>
+        </div>
+        <button
+          type="button"
+          className="past-works-exhibition-arrow past-works-exhibition-arrow--prev"
+          onClick={() => handleExhibitionSlide(-1)}
+          aria-label="이전 전시 현장 사진"
+        >
+          <img src="/assets/icons/formkit_right.svg" alt="" aria-hidden="true" />
+        </button>
+        <button
+          type="button"
+          className="past-works-exhibition-arrow past-works-exhibition-arrow--next"
+          onClick={() => handleExhibitionSlide(1)}
+          aria-label="다음 전시 현장 사진"
+        >
+          <img src="/assets/icons/formkit_right.svg" alt="" aria-hidden="true" />
+        </button>
+        </div>
     </div>
   )
 }
