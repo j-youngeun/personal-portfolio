@@ -150,9 +150,9 @@ const aboutCards: AboutCardData[] = [
   {
     title: 'CERTIFICATE',
     items: [
-      { name: '한국사능력검정시험1급', date: '2023' },
+      { name: '한국사능력검정시험 1급', date: '2023' },
       { name: '컴퓨터그래픽스운용기능사', date: '2022' },
-      { name: 'GTQ(그래픽기술자격) 1급', date: '2021' },
+      { name: 'GTQ 1급', date: '2021' },
       { name: '컴퓨터활용능력 2급', date: '2020' },
     ],
   },
@@ -160,7 +160,7 @@ const aboutCards: AboutCardData[] = [
     title: 'EDUCATION & EXPERIENCE',
     items: [
       {
-        name: 'UXUI디자인&웹기획 프론트엔드 교육 수료',
+        name: 'UXUI디자인&프론트엔드 교육 수료',
         date: '2026',
         description: '이젠아카데미DX교육센터',
       },
@@ -172,6 +172,10 @@ const aboutCards: AboutCardData[] = [
         name: '중앙대학교(안성) 졸업',
         date: '2021',
         description: '사진학과',
+      },
+      {
+        name: 'CJ올리브영 아르바이트',
+        date: '2018',
       },
     ],
   },
