@@ -3306,12 +3306,22 @@ body.mobile-menu-is-open {
   padding: 0;
   border: 0;
   background: transparent;
-  opacity: 0.08;
+  opacity: 0.16;
   cursor: pointer;
   transform: translateY(-50%);
   transition:
     opacity 180ms ease,
     transform 180ms ease;
+}
+
+:root:not([data-theme='dark']) .past-works-exhibition-title {
+  border-color: rgba(0, 0, 0, 0.08);
+  background: var(--color-surface-muted);
+  color: var(--color-text-soft);
+}
+
+:root:not([data-theme='dark']) .past-works-exhibition-arrow {
+  opacity: 0.24;
 }
 
 .past-works-exhibition-wrap:not(.is-visible) .past-works-exhibition-arrow {
@@ -3327,11 +3337,11 @@ body.mobile-menu-is-open {
 }
 
 .past-works-exhibition-arrow--prev {
-  left: clamp(-64px, -4.5vw, -42px);
+  left: clamp(-80px, -7vw, -42px);
 }
 
 .past-works-exhibition-arrow--next {
-  right: clamp(-64px, -4.5vw, -42px);
+  right: clamp(-80px, -7vw, -42px);
 }
 
 .past-works-exhibition-arrow:hover {
@@ -3498,11 +3508,11 @@ body.mobile-menu-is-open {
   }
 
   .past-works-exhibition-arrow--prev {
-    left: -24px;
+    left: clamp(-80px, -7vw, -32px);
   }
 
   .past-works-exhibition-arrow--next {
-    right: -24px;
+    right: clamp(-80px, -7vw, -32px);
   }
 
   .past-work-card {
@@ -6242,6 +6252,10 @@ body.mobile-menu-is-open {
   border-color: rgba(255, 255, 255, 0.16);
   background: rgba(255, 255, 255, 0.06);
   color: rgba(255, 255, 255, 0.9);
+}
+
+:root[data-theme='dark'] .past-works-exhibition-arrow {
+  opacity: 0.34;
 }
 
 :root[data-theme='dark'] .past-works-exhibition-arrow img {
