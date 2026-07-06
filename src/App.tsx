@@ -34,7 +34,7 @@ type ThemeMode = 'light' | 'dark'
 const navItems: NavItem[] = [
   { label: 'ABOUT', hash: '#about' },
   { label: 'PROJECT', hash: '#work' },
-  { label: 'PAST WORKS', hash: '#past-works' },
+  { label: 'WORKS', hash: '#past-works' },
   { label: 'AI WORKFLOW', hash: '#ai-workflow' },
   { label: 'CONTACT', hash: '#contact' },
 ]
@@ -1765,7 +1765,7 @@ function PastWorksCarousel({ showcase, index: showcaseIndex }: { showcase: PastW
         {showcase.subtitle ? <p>{showcase.subtitle}</p> : null}
       </div>
 
-      <div className="past-works-carousel" aria-label={`${showcase.title} past works carousel`}>
+      <div className="past-works-carousel" aria-label={`${showcase.title} works carousel`}>
         <motion.div
           className="past-works-carousel__track"
           style={{ rotateY: rotationValue }}
@@ -1832,7 +1832,7 @@ function PastWorksSection() {
     <section ref={sectionRef} className="past-works-section" id="past-works" aria-labelledby="past-works-title">
       <div className="past-works-section__header">
         <h2 id="past-works-title">
-          <SlotTitle text="PAST WORKS" />
+          <SlotTitle text="WORKS" />
         </h2>
       </div>
 

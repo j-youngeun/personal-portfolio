@@ -2745,14 +2745,6 @@ body.mobile-menu-is-open {
   margin-top: 0;
 }
 
-.ai-workflow-step__description--03 .ai-workflow-step__copy {
-  gap: 0;
-}
-
-.ai-workflow-step__description--03 p {
-  line-height: 1.34;
-}
-
 .ai-workflow-step__description--structured p + .ai-workflow-step__check-list {
   margin-top: 0;
 }
