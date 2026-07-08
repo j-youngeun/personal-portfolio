@@ -586,7 +586,7 @@ const pastWorkShowcases: PastWorkShowcase[] = [
     ],
   },
   {
-    title: 'Video',
+    title: 'Video Production & Editing',
     subtitle: '2021-2023',
     cards: pastWorkTbsCards,
     company: {
@@ -1712,7 +1712,7 @@ function PastWorksCarousel({ showcase, index: showcaseIndex }: { showcase: PastW
   const detailsRef = useRef<HTMLDListElement>(null)
   const [isCarouselActive, setIsCarouselActive] = useState(false)
   const [areDetailsVisible, setAreDetailsVisible] = useState(false)
-  const rotationDirection = showcase.title === 'Video' ? 360 : showcaseIndex % 2 === 0 ? 360 : -360
+  const rotationDirection = showcase.title === 'Video Production & Editing' ? 360 : showcaseIndex % 2 === 0 ? 360 : -360
 
   useEffect(() => {
     if (!isCarouselActive || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
