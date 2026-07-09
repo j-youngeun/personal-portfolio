@@ -5350,7 +5350,7 @@ body.mobile-menu-is-open {
     --about-logo-size: 96px;
     --about-logo-gap: 18px;
 
-    padding: 150px var(--about-px) 72px;
+    padding: 112px var(--about-px) 72px;
   }
 
   .about-section__header h2 {
