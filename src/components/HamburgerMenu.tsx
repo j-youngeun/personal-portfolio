@@ -50,9 +50,7 @@ export default function HamburgerMenu({ items, onNavigate }: HamburgerMenuProps)
         aria-label={isOpen ? 'Close menu' : 'Open menu'}
         onClick={() => setIsOpen((current) => !current)}
       >
-        <span aria-hidden="true" />
-        <span aria-hidden="true" />
-        <span aria-hidden="true" />
+        <span className="mobile-menu__dot" aria-hidden="true" />
       </button>
 
       <AnimatePresence>

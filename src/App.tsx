@@ -271,7 +271,7 @@ const aiWorkflowSteps: AiWorkflowStep[] = [
     image: '/assets/ai-workflow/step-03-character-sheet.png',
     description: 'ChatGPT와 Midjourney를 활용해 다음과 같은 기준으로 마스코트 캐릭터를 생성합니다. 친근감과 신뢰감, 서비스 확장성, 브랜드 일관성, 시각적 차별성을 기준으로 정리합니다.',
     detail: {
-      lead: ['ChatGPT와 Midjourney를 활용해', '다음과 같은 기준으로 마스코트 캐릭터를 생성합니다.'],
+      lead: ['ChatGPT와 Midjourney를 활용해', '다음과 같은 기준으로 마스코트 캐릭터를', '생성합니다.'],
       items: ['친근감과 신뢰감', '서비스 확장성', '브랜드 일관성', '시각적 차별성'],
       outro: '',
     },

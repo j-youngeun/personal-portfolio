@@ -258,10 +258,7 @@
 
 .mobile-menu {
   --mobile-menu-size: clamp(38px, 5.4vw, 46px);
-  --mobile-menu-icon-size: 22px;
-  --mobile-menu-line-width: calc(var(--mobile-menu-icon-size) * 0.82);
-  --mobile-menu-line-height: 2px;
-  --mobile-menu-line-gap: 5px;
+  --mobile-menu-dot-size: clamp(9px, 1.8vw, 12px);
   --mobile-menu-panel-gap: clamp(10px, 1.6vw, 12px);
   --mobile-menu-panel-width: clamp(260px, 42vw, 340px);
 
@@ -298,44 +295,23 @@
   opacity: 0.72;
 }
 
-.mobile-menu__button span {
-  position: absolute;
-  left: 50%;
-  width: var(--mobile-menu-line-width);
-  height: var(--mobile-menu-line-height);
-  border-radius: 999px;
+.mobile-menu__dot {
+  display: block;
+  width: var(--mobile-menu-dot-size);
+  height: var(--mobile-menu-dot-size);
+  border-radius: 50%;
   background: currentColor;
-  transform: translateX(-50%);
+  box-shadow: 0 0 0 0 currentColor;
   transition:
-    transform 200ms ease,
-    opacity 160ms ease,
-    top 200ms ease;
+    background-color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
 }
 
-.mobile-menu__button span:nth-child(1) {
-  top: calc(50% - var(--mobile-menu-line-gap));
-}
-
-.mobile-menu__button span:nth-child(2) {
-  top: 50%;
-}
-
-.mobile-menu__button span:nth-child(3) {
-  top: calc(50% + var(--mobile-menu-line-gap));
-}
-
-.mobile-menu__button.is-open span:nth-child(1) {
-  top: 50%;
-  transform: translateX(-50%) rotate(45deg);
-}
-
-.mobile-menu__button.is-open span:nth-child(2) {
-  opacity: 0;
-}
-
-.mobile-menu__button.is-open span:nth-child(3) {
-  top: 50%;
-  transform: translateX(-50%) rotate(-45deg);
+.mobile-menu__button.is-open .mobile-menu__dot {
+  background: transparent;
+  box-shadow: 0 0 0 2px currentColor;
+  transform: scale(1.18);
 }
 
 .mobile-menu__backdrop {
