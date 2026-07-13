@@ -2490,7 +2490,7 @@ function App() {
   const [isHeaderOnAiWorkflow, setIsHeaderOnAiWorkflow] = useState(false)
   const [scrollProgress, setScrollProgress] = useState(0)
   const [isHireToastVisible, setIsHireToastVisible] = useState(false)
-  const [themeMode, setThemeMode] = useState<ThemeMode>('light')
+  const [themeMode, setThemeMode] = useState<ThemeMode>('dark')
   const [isCompactPreviewLayout, setIsCompactPreviewLayout] = useState(() =>
     typeof window === 'undefined' ? false : window.matchMedia('(max-width: 1024px)').matches,
   )
